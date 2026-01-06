@@ -637,17 +637,18 @@ const app = {
         this.renderDriversHome();
     },
 
-  getFallbackDrivers: () => {
-        return Array.from({ length: 20 }, (_, i) => ({
-            id: 100 + i, // ID bắt đầu từ 100 để tránh trùng với xe
-            name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
-            experience: 5 + (i % 15), // Để dạng số để dễ so sánh
-            rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
-            status: i % 4 === 0 ? "Đang bận" : "Sẵn sàng", // Đổi "Đang đi tour" thành "Đang bận" để khớp logic Admin
-            image_url: `https://i.pravatar.cc/150?u=${i}`, // Tự động tạo ảnh đại diện giả lập
-            bio: "Tài xế chuyên nghiệp, tận tâm, rành đường đi tỉnh và nội thành."
-        }));
-    },
+ getFallbackDrivers: () => {
+    return Array.from({ length: 20 }, (_, i) => ({
+        id: 100 + i,
+        name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ...`,
+        experience: 5 + (i % 15),
+        rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
+        // SỬA DÒNG DƯỚI ĐÂY:
+        status: "Sẵn sàng", 
+        image_url: `https://i.pravatar.cc/150?u=${i}`,
+        bio: "Tài xế chuyên nghiệp, tận tâm, rành đường đi tỉnh và nội thành."
+    }));
+},
    getFallbackCars: () => [
         { id: 1, name: "Toyota Camry 2024", category: "5", price: 1200000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=800", desc: "Sedan hạng D sang trọng." },
         { id: 2, name: "VinFast VF8", category: "5", price: 1500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?q=80&w=800", desc: "Xe điện thông minh." },
