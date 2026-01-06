@@ -628,8 +628,8 @@ updateAdminStats: function() {
     const imgData = canvas.toDataURL('image/png');
     
     // 3. Khởi tạo PDF (Sửa lỗi jspdf ở đây)
-    const { jsPDF } = window.jspdf; 
-    const pdf = new jsPDF('p', 'mm', 'a4');
+  const { jsPDF } = window.jspdf; 
+const pdf = new jsPDF('p', 'mm', 'a4');
     
     const imgProps = pdf.getImageProperties(imgData);
     const pdfWidth = pdf.internal.pageSize.getWidth();
