@@ -622,15 +622,37 @@ const app = {
         this.renderDriversHome();
     },
 
-    getFallbackDrivers: () => [
-        { id: 101, name: "Nguyễn Văn Long", experience: 10, status: 'available', bio: "Tài xế điềm đạm, rành đường đi tỉnh." },
-        { id: 102, name: "Trần Thế Vinh", experience: 8, status: 'available', bio: "Vui vẻ, nhiệt tình, hỗ trợ bê đồ." },
-        { id: 103, name: "Lê Minh Tú", experience: 5, status: 'busy', bio: "Chuyên chạy xe 7 chỗ gia đình." }
+   getFallbackDrivers: () => [
+        { id: 101, name: "Nguyễn Văn Long", experience: 10, status: 'Sẵn sàng', bio: "Tài xế điềm đạm, rành đường đi tỉnh." },
+        { id: 102, name: "Trần Thế Vinh", experience: 8, status: 'Sẵn sàng', bio: "Vui vẻ, nhiệt tình, hỗ trợ bê đồ." },
+        { id: 103, name: "Lê Minh Tú", experience: 5, status: 'Đang bận', bio: "Chuyên chạy xe 7 chỗ gia đình." }
     ],
-    getFallbackCars: () => [
-        { id: 1, name: "Toyota Vios 2024", price: 800000, status: 'available', seats: 4, image_url: "https://images.unsplash.com/photo-1590362891991-f776e747a588" },
-        { id: 2, name: "Mazda 3 Premium", price: 1200000, status: 'available', seats: 4, image_url: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341" },
-        { id: 3, name: "Hyundai SantaFe", price: 1500000, status: 'busy', seats: 7, image_url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf" }
+   getFallbackCars: () => [
+        { id: 1, name: "Toyota Camry 2024", category: "5", price: 1200000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=800", desc: "Sedan hạng D sang trọng." },
+        { id: 2, name: "VinFast VF8", category: "5", price: 1500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?q=80&w=800", desc: "Xe điện thông minh." },
+        { id: 3, name: "Hyundai SantaFe", category: "7", price: 1800000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800", desc: "SUV 7 chỗ gia đình." },
+        { id: 4, name: "Kia Morning", category: "4", price: 600000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800", desc: "Nhỏ gọn, tiết kiệm." },
+        { id: 5, name: "Mazda 3", category: "5", price: 950000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1532581133564-9ca29e9e72fc?q=80&w=800", desc: "Thiết kế trẻ trung." },
+        { id: 6, name: "Mitsubishi Xpander", category: "7", price: 1000000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1645731504300-726da6844903?q=80&w=800", desc: "Xe 7 chỗ quốc dân." },
+        { id: 7, name: "Mercedes C200", category: "5", price: 2800000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800", desc: "Xe sang đi sự kiện." },
+        { id: 8, name: "Ford Everest", category: "7", price: 2200000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800", desc: "SUV mạnh mẽ." },
+        { id: 9, name: "Honda City", category: "5", price: 800000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?q=80&w=800", desc: "Bền bỉ, rộng rãi." },
+        { id: 10, name: "Kia Carnival", category: "7", price: 3500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1632245889029-e406fbdd3997?q=80&w=800", desc: "Chuyên cơ mặt đất." },
+        { id: 11, name: "Hyundai Accent", category: "5", price: 750000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=800", desc: "Lựa chọn kinh tế." },
+        { id: 12, name: "BMW 320i", category: "5", price: 3200000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800", desc: "Đẳng cấp thể thao." },
+        { id: 13, name: "Toyota Fortuner", category: "7", price: 1700000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=800", desc: " SUV đa dụng." },
+        { id: 14, name: "VinFast VF9", category: "7", price: 2500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1662546411505-f938c5b967ec?q=80&w=800", desc: "SUV điện hạng sang." },
+        { id: 15, name: "Kia Soluto", category: "4", price: 550000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=800", desc: "Giá rẻ bất ngờ." },
+        { id: 16, name: "Toyota Vios", category: "5", price: 700000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1606148047425-460436894560?q=80&w=800", desc: "Xe chạy phố bền bỉ." },
+        { id: 17, name: "Mazda CX-5", category: "5", price: 1300000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800", desc: "SUV 5 chỗ thời thượng." },
+        { id: 18, name: "Hyundai Tucson", category: "5", price: 1250000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1631836310116-3e8f81005a92?q=80&w=800", desc: "Thiết kế phá cách." },
+        { id: 19, name: "Toyota Innova", category: "7", price: 1100000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1620301131707-33e3a4e9081e?q=80&w=800", desc: "Dòng xe 7 chỗ huyền thoại." },
+        { id: 20, name: "VinFast VF6", category: "5", price: 1000000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1688649474929-37f2ca299066?q=80&w=800", desc: "Xe điện trẻ trung, năng động." },
+        { id: 21, name: "Kia K3", category: "5", price: 900000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1628519592419-f28666804153?q=80&w=800", desc: "Sedan công nghệ ngập tràn." },
+        { id: 22, name: "Honda CR-V", category: "7", price: 1600000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1606611013016-969c19ba27bb?q=80&w=800", desc: "An toàn tuyệt đối." },
+        { id: 23, name: "Hyundai i10", category: "4", price: 500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1582234032432-8495f57f5c76?q=80&w=800", desc: "Giá thuê tối ưu nhất." },
+        { id: 24, name: "Mercedes E300", category: "5", price: 4500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1616455579100-2ceaa4eb2837?q=80&w=800", desc: "Đỉnh cao xe hạng sang." },
+        { id: 25, name: "Ford Ranger", category: "5", price: 1400000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=800", desc: "Bán tải đa dụng." }
     ]
 };
 
