@@ -566,8 +566,8 @@ updateAdminStats: function() {
 
         <div style="margin-top: 25px;">
             <p><strong>BÊN A (Bên cho thuê):</strong> TRANGHY AUTOCAR</p>
-            <p>Đại diện: <strong>Ông Bùi Văn Trang</strong></p>
-            <p>Địa chỉ: Quảng Ngãi / Hạ Long</p>
+            <p>Đại diện: <strong>Ông Bùi Văn Tráng</strong></p>
+            <p>Địa chỉ: tp Hưng Yên/ tỉnh Hưng Yên</p>
             
             <p style="margin-top: 15px;"><strong>BÊN B (Bên thuê):</strong> ${name.toUpperCase()}</p>
             <p>Số điện thoại: ${phone}</p>
