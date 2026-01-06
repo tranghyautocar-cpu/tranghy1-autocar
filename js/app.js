@@ -2,6 +2,7 @@ const app = {
     state: {
         cars: [],
         drivers: [],
+        bookings: [],
         filteredCars: [],
         selectedCar: null,
         selectedDriver: null,
@@ -18,8 +19,6 @@ const app = {
         ACCOUNT_NO: "0353979614",
         ACCOUNT_NAME: "BUI VAN TRANG",
         DRIVER_PRICE_PER_DAY: 500000,
-        TELEGRAM_TOKEN: "8376675819:AAEa5I1_vdfytpIuUOjYAkSr2NeZZChKLWs",
-        TELEGRAM_CHAT_ID: "5758212428",
         SCRIPT_URL: 'https://script.google.com/macros/s/AKfycby_iypBShENktKrM_K25bLQDlE_SfUQBQ9AKkvaZIXVuOuzsQGvi5RBFmYBssYwhWo-/exec'
     },
 
@@ -607,9 +606,9 @@ updateAdminStats: function() {
             </div>
         </div>
     </div>`;
-    document.getElementById('pdf-template').innerHTML = contractHtml;
-        document.body.appendChild(element);
-
+   const element = document.createElement('div');
+   element.innerHTML = contractHtml;
+   document.body.appendChild(element);
   try {
     // 1. Kiểm tra xem thư viện đã sẵn sàng chưa
     if (typeof html2canvas === 'undefined') {
@@ -666,27 +665,40 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         emailInput.value = "";
     },
 
-    async fetchInitialData() {
-        try {
-            const savedCars = localStorage.getItem('tranghy_cars');
-            const savedDrivers = localStorage.getItem('drivers_data');
-            const [carsRes, driversRes] = await Promise.all([
-                fetch('/api/cars').catch(() => null),
-                fetch('/api/drivers').catch(() => null)
-            ]);
+  async fetchInitialData() {
+    try {
+        // 1. Lấy dữ liệu từ LocalStorage (Đảm bảo đúng tên key)
+        const savedCars = localStorage.getItem('tranghy_cars');
+        const savedDrivers = localStorage.getItem('tranghy_drivers'); // Sửa từ drivers_data thành tranghy_drivers
+        const savedOrders = localStorage.getItem('tranghy_orders');   // Thêm dòng lấy đơn hàng
 
-            this.state.cars = carsRes ? await carsRes.json() : (savedCars ? JSON.parse(savedCars) : this.getFallbackCars());
-            this.state.drivers = driversRes ? await driversRes.json() : (savedDrivers ? JSON.parse(savedDrivers) : this.getFallbackDrivers());
+        // 2. Gán dữ liệu vào state (Ưu tiên dữ liệu đã lưu, nếu không có thì lấy Fallback)
+        this.state.cars = savedCars ? JSON.parse(savedCars) : this.getFallbackCars();
+        this.state.drivers = savedDrivers ? JSON.parse(savedDrivers) : this.getFallbackDrivers();
+        this.state.bookings = savedOrders ? JSON.parse(savedOrders) : []; // Khởi tạo mảng đơn hàng
 
-            this.state.filteredCars = [...this.state.cars];
-            this.renderAll();
-        } catch (error) {
-            this.state.cars = this.getFallbackCars();
-            this.state.drivers = this.getFallbackDrivers();
-            this.renderAll();
-        }
-    },
+        // 3. Đồng bộ hóa dữ liệu lọc và hiển thị
+        this.state.filteredCars = [...this.state.cars];
+        
+        // 4. Lưu ngược lại vào localStorage để đảm bảo dữ liệu fallback được đồng bộ
+        if (!savedCars) localStorage.setItem('tranghy_cars', JSON.stringify(this.state.cars));
+        if (!savedDrivers) localStorage.setItem('tranghy_drivers', JSON.stringify(this.state.drivers));
 
+        console.log("📊 Data Loaded:", {
+            cars: this.state.cars.length,
+            drivers: this.state.drivers.length,
+            orders: this.state.bookings.length
+        });
+
+        this.renderAll();
+    } catch (error) {
+        console.error("❌ Lỗi nạp dữ liệu:", error);
+        this.state.cars = this.getFallbackCars();
+        this.state.drivers = this.getFallbackDrivers();
+        this.state.bookings = [];
+        this.renderAll();
+    }
+},
     renderAll() {
         const dash = document.getElementById('admin-dashboard');
         if (dash) {
