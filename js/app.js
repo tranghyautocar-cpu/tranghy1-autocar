@@ -99,8 +99,8 @@ const app = {
         // ----------------------------------------
         
         this.renderAdminOrders();
-        this.renderAdminCars();    // Đảm bảo danh sách xe admin cũng hiện đủ 25
-        this.renderAdminDrivers(); // Đảm bảo danh sá
+        this.renderAdminCars();    
+        this.renderAdminDrivers(); 
         } else {
             roleText.innerText = "GIAO DIỆN TÀI XẾ";
             driverView.classList.remove('hidden');
@@ -550,45 +550,63 @@ updateAdminStats: function() {
         if (!name || !phone) return;
 
         // HTML Hợp đồng
-        const contractHtml = `
-            <div id="pdf-template" style="width: 794px; padding: 60px; background: white; font-family: 'Arial', sans-serif; color: #333; position: relative;">
-                <div style="text-align: center; margin-bottom: 20px;">
-                    <h4 style="margin: 0; text-transform: uppercase;">Cộng hòa xã hội chủ nghĩa Việt Nam</h4>
-                    <p style="margin: 5px 0;">Độc lập - Tự do - Hạnh phúc</p>
-                    <div style="width: 150px; height: 1px; background: black; margin: 0 auto;"></div>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 40px;">
-                    <div>
-                        <h2 style="color: #1e40af; margin: 0;">TRANGHY AUTOCAR</h2>
-                        <p style="font-size: 12px;">Số: ${Date.now()}/HĐ-TH</p>
-                    </div>
-                </div>
-                <h1 style="text-align: center; color: #1e40af; font-size: 24px;">HỢP ĐỒNG ĐIỆN TỬ</h1>
-                <div style="margin-top: 30px;">
-                    <p><strong>BÊN A:</strong> TRANGHY AUTOCAR (Ông Bùi Văn Trang)</p>
-                    <p><strong>BÊN B:</strong> ${name.toUpperCase()} - SĐT: ${phone}</p>
-                </div>
-                <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                    <tr style="background: #f3f4f6;">
-                        <th style="border: 1px solid #ddd; padding: 12px;">Nội dung</th>
-                        <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Thành tiền</th>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #ddd; padding: 12px;">${type === 'xe' ? 'Thuê phương tiện' : 'Thuê tài xế'}</td>
-                        <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #1e40af;">${total}</td>
-                    </tr>
-                </table>
-                <div style="margin-top: 40px; text-align: center; width: 200px; margin-left: auto;">
-                    <p><strong>ĐÃ THANH TOÁN</strong></p>
-                    <div style="margin-top: 10px; border: 2px dashed #059669; color: #059669; padding: 5px; font-weight: bold;">XÁC NHẬN</div>
-                </div>
-            </div>`;
+      const contractHtml = `
+    <div id="pdf-template" style="width: 794px; padding: 60px; background: white; font-family: 'Times New Roman', serif; color: #333; line-height: 1.5;">
+        <div style="text-align: center; margin-bottom: 10px;">
+            <h4 style="margin: 0; text-transform: uppercase; font-size: 14px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+            <p style="margin: 5px 0; font-weight: bold;">Độc lập - Tự do - Hạnh phúc</p>
+            <div style="width: 150px; height: 1px; background: black; margin: 0 auto;"></div>
+        </div>
 
-        // Render PDF
-        const element = document.createElement('div');
-        element.innerHTML = contractHtml;
-        element.style.position = 'fixed';
-        element.style.left = '-9999px';
+        <div style="margin-bottom: 30px;">
+            <h2 style="color: #1e40af; margin: 0;">TRANGHY AUTOCAR</h2>
+            <p style="font-size: 12px;">Số: ${Date.now()}/HĐTX-TH</p>
+        </div>
+
+        <h1 style="text-align: center; color: #1e40af; font-size: 22px; text-transform: uppercase;">HỢP ĐỒNG CHO THUÊ XE VÀ DỊCH VỤ</h1>
+
+        <div style="margin-top: 25px;">
+            <p><strong>BÊN A (Bên cho thuê):</strong> TRANGHY AUTOCAR</p>
+            <p>Đại diện: <strong>Ông Bùi Văn Trang</strong></p>
+            <p>Địa chỉ: Quảng Ngãi / Hạ Long</p>
+            
+            <p style="margin-top: 15px;"><strong>BÊN B (Bên thuê):</strong> ${name.toUpperCase()}</p>
+            <p>Số điện thoại: ${phone}</p>
+            <p>Nội dung thuê: ${type === 'xe' ? 'Thuê phương tiện tự lái' : 'Thuê tài xế chuyên nghiệp'}</p>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+            <tr style="background: #f3f4f6;">
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Mô tả dịch vụ</th>
+                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Thành tiền</th>
+            </tr>
+            <tr>
+                <td style="border: 1px solid #ddd; padding: 12px;">Thanh toán phí dịch vụ cho hệ thống Tranghy Autocar</td>
+                <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #1e40af; font-size: 16px;">${total}</td>
+            </tr>
+        </table>
+
+        <div style="margin-top: 25px; font-size: 13px; border: 1px solid #eee; padding: 15px; border-radius: 5px;">
+            <p style="font-weight: bold; text-decoration: underline; margin-bottom: 10px;">ĐIỀU KHOẢN CAM KẾT:</p>
+            <ol style="padding-left: 20px;">
+                <li>Bên B cam kết sử dụng dịch vụ đúng mục đích, không vi phạm pháp luật Việt Nam.</li>
+                <li>Bên A có trách nhiệm đảm bảo chất lượng xe và tài xế như đã thỏa thuận.</li>
+                <li>Hợp đồng điện tử này có giá trị xác nhận thanh toán và thực hiện nghĩa vụ giữa hai bên.</li>
+            </ol>
+        </div>
+
+        <div style="margin-top: 40px; display: flex; justify-content: space-between;">
+            <div style="text-align: center; width: 200px;">
+                <p style="font-size: 12px;"><strong>ĐẠI DIỆN BÊN B</strong></p>
+                <p style="margin-top: 50px; font-size: 12px; color: #666;">(Đã xác thực qua OTP/Phone)</p>
+            </div>
+            <div style="text-align: center; width: 200px;">
+                <p style="font-size: 12px;"><strong>ĐẠI DIỆN BÊN A</strong></p>
+                <div style="margin: 10px auto; border: 2px solid #059669; color: #059669; padding: 5px; font-weight: bold; transform: rotate(-5deg); width: fit-content;">ĐÃ THANH TOÁN</div>
+                <p style="font-size: 12px; color: #1e40af; font-weight: bold;">TRANGHY AUTOCAR</p>
+            </div>
+        </div>
+    </div>`;
         document.body.appendChild(element);
 
         try {
