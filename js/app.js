@@ -609,22 +609,43 @@ updateAdminStats: function() {
     </div>`;
         document.body.appendChild(element);
 
-        try {
-            // Quan trọng: useCORS để load ảnh
-            const canvas = await html2canvas(element.querySelector('#pdf-template'), { scale: 2, useCORS: true });
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jspdf.jsPDF('p', 'mm', 'a4');
-            const imgProps = pdf.getImageProperties(imgData);
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+  try {
+    // 1. Kiểm tra xem thư viện đã sẵn sàng chưa
+    if (typeof html2canvas === 'undefined') {
+        throw new Error("Thiếu thư viện html2canvas. Hãy thêm vào file HTML.");
+    }
 
-            pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-            pdf.save(`HopDong_TrangHy_${phone}.pdf`);
-        } catch (e) {
-            console.error("PDF Error:", e);
-        } finally {
-            document.body.removeChild(element);
-        }
+    const template = element.querySelector('#pdf-template');
+    if (!template) throw new Error("Không tìm thấy mẫu hợp đồng");
+
+    // 2. Chụp ảnh vùng hợp đồng
+    const canvas = await html2canvas(template, { 
+        scale: 2, 
+        useCORS: true,
+        logging: false 
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    
+    // 3. Khởi tạo PDF (Sửa lỗi jspdf ở đây)
+    const { jsPDF } = window.jspdf; 
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    
+    const imgProps = pdf.getImageProperties(imgData);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`HopDong_TrangHy_${phone}.pdf`);
+    
+} catch (e) {
+    console.error("PDF Error chi tiết:", e);
+    alert("Lỗi: " + e.message); // Hiển thị lỗi thật để bạn dễ sửa
+} finally {
+    if (element && element.parentNode) {
+        document.body.removeChild(element);
+    }
+}
 
         // Mở Zalo
         window.open(`https://zalo.me/0353979614?text=Toi la ${name}, da thanh toan ${total} va nhan Hop dong dien tu.`, '_blank');
