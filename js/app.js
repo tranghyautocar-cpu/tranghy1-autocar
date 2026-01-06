@@ -607,6 +607,7 @@ updateAdminStats: function() {
             </div>
         </div>
     </div>`;
+    document.getElementById('pdf-template').innerHTML = contractHtml;
         document.body.appendChild(element);
 
   try {
