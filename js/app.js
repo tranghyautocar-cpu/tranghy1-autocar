@@ -667,40 +667,51 @@ const pdf = new jsPDF('p', 'mm', 'a4');
 
    async fetchInitialData() {
     try {
-        let savedCars = JSON.parse(localStorage.getItem('tranghy_cars'));
-        let savedDrivers = JSON.parse(localStorage.getItem('tranghy_drivers'));
-        let savedOrders = JSON.parse(localStorage.getItem('tranghy_orders'));
+        // 1. Lấy dữ liệu thô từ LocalStorage
+        const rawCars = localStorage.getItem('tranghy_cars');
+        const rawDrivers = localStorage.getItem('tranghy_drivers'); // Đồng bộ lại tên key
+        const rawOrders = localStorage.getItem('tranghy_orders');
 
-        // ÉP BUỘC: Nếu dữ liệu cũ chỉ có 5 xe (hoặc ít hơn 10), xóa đi để lấy 25 xe mới
-        if (!savedCars || savedCars.length < 10) {
-            console.log("🔄 Phát hiện dữ liệu cũ, đang nạp lại 25 xe mới...");
+        let cars = rawCars ? JSON.parse(rawCars) : [];
+        let drivers = rawDrivers ? JSON.parse(rawDrivers) : [];
+
+        // 2. Kiểm tra: Nếu là bản cũ (dưới 20 xe), ép nạp lại bản mới 25 xe
+        if (cars.length < 20) {
+            console.log("🔄 Nạp lại 25 xe mới để tránh lỗi dữ liệu cũ...");
             this.state.cars = this.getFallbackCars();
             localStorage.setItem('tranghy_cars', JSON.stringify(this.state.cars));
         } else {
-            this.state.cars = savedCars;
+            this.state.cars = cars;
         }
 
-        // Tương tự với tài xế
-        if (!savedDrivers || savedDrivers.length < 5) {
+        // 3. Tương tự với tài xế (Nạp lại 20 tài xế nếu dữ liệu cũ bị thiếu)
+        if (drivers.length < 15) {
             this.state.drivers = this.getFallbackDrivers();
             localStorage.setItem('tranghy_drivers', JSON.stringify(this.state.drivers));
         } else {
-            this.state.drivers = savedDrivers;
+            this.state.drivers = drivers;
         }
 
-        this.state.bookings = savedOrders || [];
+        // 4. Nạp đơn hàng và chuẩn bị hiển thị
+        this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
         this.state.filteredCars = [...this.state.cars];
 
+        console.log("✅ Hệ thống đã sẵn sàng:", { 
+            xe: this.state.cars.length, 
+            tai_xe: this.state.drivers.length, 
+            don_hang: this.state.bookings.length 
+        });
+
         this.renderAll();
-        // Cập nhật con số Admin ngay khi nạp xong
-        this.updateAdminStats(); 
+        this.updateAdminStats(); // Cập nhật ngay các con số Dashboard
     } catch (error) {
-        console.error("❌ Lỗi nạp dữ community:", error);
+        console.error("❌ Lỗi nạp dữ liệu:", error);
         this.state.cars = this.getFallbackCars();
         this.state.drivers = this.getFallbackDrivers();
         this.renderAll();
     }
 },
+
     renderAll() {
         const dash = document.getElementById('admin-dashboard');
         if (dash) {
