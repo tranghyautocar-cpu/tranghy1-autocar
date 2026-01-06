@@ -665,37 +665,39 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         emailInput.value = "";
     },
 
-  async fetchInitialData() {
+   async fetchInitialData() {
     try {
-        // 1. Lấy dữ liệu từ LocalStorage (Đảm bảo đúng tên key)
-        const savedCars = localStorage.getItem('tranghy_cars');
-        const savedDrivers = localStorage.getItem('tranghy_drivers'); // Sửa từ drivers_data thành tranghy_drivers
-        const savedOrders = localStorage.getItem('tranghy_orders');   // Thêm dòng lấy đơn hàng
+        let savedCars = JSON.parse(localStorage.getItem('tranghy_cars'));
+        let savedDrivers = JSON.parse(localStorage.getItem('tranghy_drivers'));
+        let savedOrders = JSON.parse(localStorage.getItem('tranghy_orders'));
 
-        // 2. Gán dữ liệu vào state (Ưu tiên dữ liệu đã lưu, nếu không có thì lấy Fallback)
-        this.state.cars = savedCars ? JSON.parse(savedCars) : this.getFallbackCars();
-        this.state.drivers = savedDrivers ? JSON.parse(savedDrivers) : this.getFallbackDrivers();
-        this.state.bookings = savedOrders ? JSON.parse(savedOrders) : []; // Khởi tạo mảng đơn hàng
+        // ÉP BUỘC: Nếu dữ liệu cũ chỉ có 5 xe (hoặc ít hơn 10), xóa đi để lấy 25 xe mới
+        if (!savedCars || savedCars.length < 10) {
+            console.log("🔄 Phát hiện dữ liệu cũ, đang nạp lại 25 xe mới...");
+            this.state.cars = this.getFallbackCars();
+            localStorage.setItem('tranghy_cars', JSON.stringify(this.state.cars));
+        } else {
+            this.state.cars = savedCars;
+        }
 
-        // 3. Đồng bộ hóa dữ liệu lọc và hiển thị
+        // Tương tự với tài xế
+        if (!savedDrivers || savedDrivers.length < 5) {
+            this.state.drivers = this.getFallbackDrivers();
+            localStorage.setItem('tranghy_drivers', JSON.stringify(this.state.drivers));
+        } else {
+            this.state.drivers = savedDrivers;
+        }
+
+        this.state.bookings = savedOrders || [];
         this.state.filteredCars = [...this.state.cars];
-        
-        // 4. Lưu ngược lại vào localStorage để đảm bảo dữ liệu fallback được đồng bộ
-        if (!savedCars) localStorage.setItem('tranghy_cars', JSON.stringify(this.state.cars));
-        if (!savedDrivers) localStorage.setItem('tranghy_drivers', JSON.stringify(this.state.drivers));
-
-        console.log("📊 Data Loaded:", {
-            cars: this.state.cars.length,
-            drivers: this.state.drivers.length,
-            orders: this.state.bookings.length
-        });
 
         this.renderAll();
+        // Cập nhật con số Admin ngay khi nạp xong
+        this.updateAdminStats(); 
     } catch (error) {
-        console.error("❌ Lỗi nạp dữ liệu:", error);
+        console.error("❌ Lỗi nạp dữ community:", error);
         this.state.cars = this.getFallbackCars();
         this.state.drivers = this.getFallbackDrivers();
-        this.state.bookings = [];
         this.renderAll();
     }
 },
