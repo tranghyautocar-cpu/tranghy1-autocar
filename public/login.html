@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng nhập - TrangHy Autocar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+    
+    <style>
+        body { font-family: 'Montserrat', sans-serif; }
+        
+        /* Hình nền động */
+        .animated-bg {
+            background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+            background-size: 400% 400%;
+            animation: gradient 15s ease infinite;
+        }
+        @keyframes gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Hiệu ứng Toast thông báo */
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8px;
+            padding: 16px;
+            position: fixed;
+            z-index: 100;
+            right: 30px;
+            top: 30px;
+            font-size: 14px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transform: translateX(100%);
+            transition: transform 0.3s ease-in-out, visibility 0.3s;
+        }
+        .toast.show {
+            visibility: visible;
+            transform: translateX(0);
+        }
+        .toast.success { background-color: #10B981; border-left: 5px solid #065F46; }
+        .toast.error { background-color: #EF4444; border-left: 5px solid #7F1D1D; }
+        .toast.warning { background-color: #F59E0B; border-left: 5px solid #78350F; }
+    </style>
+</head>
+<body class="h-screen w-full flex items-center justify-center p-4 bg-slate-100 overflow-hidden relative">
+
+    <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
+    <div class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+    <div class="absolute bottom-[-20%] left-[20%] w-[500px] h-[500px] bg-pink-400 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+
+    <div class="bg-white/80 backdrop-blur-xl w-full max-w-5xl h-[650px] rounded-[2.5rem] shadow-2xl overflow-hidden flex relative border border-white/50 animate__animated animate__fadeInUp">
+        
+        <a href="index.html" class="absolute top-8 left-8 z-20 w-12 h-12 bg-white/60 backdrop-blur rounded-full flex items-center justify-center text-slate-600 hover:bg-slate-900 hover:text-white transition-all shadow-lg group border border-white/50">
+            <i class="fas fa-arrow-left group-hover:-translate-x-1 transition-transform"></i>
+        </a>
+
+        <div class="hidden md:block w-5/12 relative bg-slate-900 overflow-hidden">
+            <img src="https://images.unsplash.com/photo-1503376763036-066120622c74?q=80&w=1920&auto=format&fit=crop" class="w-full h-full object-cover opacity-80 scale-105 hover:scale-110 transition-transform duration-[10s]">
+            <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent"></div>
+            
+            <div class="absolute bottom-12 left-10 text-white pr-8 z-10">
+                <div class="w-14 h-14 bg-white/20 backdrop-blur-md border border-white/30 rounded-2xl flex items-center justify-center text-3xl font-black italic mb-6 shadow-lg">T</div>
+                <h1 class="text-4xl font-black italic mb-3 tracking-tighter leading-tight">TRANGHY <br><span class="text-blue-400">AUTOCAR</span></h1>
+                <p class="text-slate-200 text-sm font-medium leading-relaxed opacity-90 border-l-2 border-blue-400 pl-4">
+                    Kết nối hành trình, trọn vẹn niềm vui. Hệ thống quản lý vận tải số 1 dành cho bạn.
+                </p>
+            </div>
+        </div>
+
+        <div class="w-full md:w-7/12 flex flex-col justify-center px-8 md:px-24 relative">
+            
+            <div class="mb-10">
+                <h2 class="text-4xl font-black text-slate-800 mb-2 tracking-tight">Xin chào! 👋</h2>
+                <p class="text-slate-500 font-medium">Đăng nhập để quản lý chuyến đi của bạn.</p>
+            </div>
+
+            <div class="space-y-6">
+                <div class="group relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-user text-slate-400 group-focus-within:text-blue-600 transition-colors"></i>
+                    </div>
+                    <input type="text" id="login-user" 
+                        class="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 placeholder-slate-400 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 outline-none transition-all duration-300" 
+                        placeholder="Tài khoản Admin hoặc Email">
+                    <label class="absolute -top-2.5 left-4 bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">Tài khoản</label>
+                </div>
+
+                <div class="group relative">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fas fa-lock text-slate-400 group-focus-within:text-blue-600 transition-colors"></i>
+                    </div>
+                    <input type="password" id="login-pass" 
+                        class="w-full pl-12 pr-4 py-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold text-slate-700 placeholder-slate-400 focus:bg-white focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 outline-none transition-all duration-300" 
+                        placeholder="••••••">
+                    <label class="absolute -top-2.5 left-4 bg-white px-2 text-[10px] font-bold text-slate-400 uppercase tracking-wider group-focus-within:text-blue-600 transition-colors">Mật khẩu</label>
+                </div>
+
+                <button id="btn-login" onclick="handleLogin()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-slate-900/20 hover:bg-blue-600 hover:shadow-blue-600/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 flex items-center justify-center gap-3">
+                    <span id="btn-text">Đăng nhập ngay</span>
+                    <i id="btn-icon" class="fas fa-arrow-right"></i>
+                    <svg id="btn-spinner" class="animate-spin h-5 w-5 text-white hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                </button>
+                
+                <div class="flex items-center justify-between pt-4">
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" class="w-4 h-4 rounded text-blue-600 border-gray-300 focus:ring-blue-500">
+                        <span class="text-xs font-bold text-slate-500">Ghi nhớ tôi</span>
+                    </label>
+                    <a href="#" onclick="showToast('Vui lòng liên hệ Admin: 0353979614', 'warning')" class="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline">Quên mật khẩu?</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-box" class="toast">
+        <div class="flex items-center gap-3">
+            <i id="toast-icon" class="fas fa-check-circle text-lg"></i>
+            <span id="toast-message" class="font-bold">Nội dung thông báo</span>
+        </div>
+    </div>
+
+    <script>
+        // Lắng nghe phím Enter
+        document.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') handleLogin();
+        });
+
+        async function handleLogin() {
+            const userInp = document.getElementById('login-user');
+            const passInp = document.getElementById('login-pass');
+            const user = userInp.value.trim();
+            const pass = passInp.value.trim();
+
+            // Hiệu ứng Loading
+            setLoading(true);
+
+            // Giả lập độ trễ mạng (cho nó nguy hiểm :D)
+            await new Promise(r => setTimeout(r, 800));
+
+            if (!user || !pass) {
+                showToast("Vui lòng nhập đầy đủ thông tin!", "warning");
+                setLoading(false);
+                return;
+            }
+
+            // 1. Check Admin
+            if (user === 'trangadmin' && pass === '2005') {
+                showToast("Đăng nhập Admin thành công!", "success");
+                setTimeout(() => saveAndRedirect({ role: 'ADMIN', name: 'Admin Trang' }), 1000);
+                return;
+            }
+
+            // 2. Check Tài xế
+            const savedDrivers = localStorage.getItem('drivers_data');
+            if (savedDrivers) {
+                const drivers = JSON.parse(savedDrivers);
+                const driver = drivers.find(d => d.email === user && d.password === pass);
+                
+                if (driver) {
+                    showToast(`Xin chào tài xế ${driver.name}!`, "success");
+                    setTimeout(() => saveAndRedirect({ role: 'DRIVER', ...driver }), 1000);
+                    return;
+                }
+            } else {
+                showToast("Dữ liệu chưa tải xong. Quay lại trang chủ!", "error");
+                setLoading(false);
+                return;
+            }
+
+            // 3. Nếu sai
+            showToast("Sai tài khoản hoặc mật khẩu!", "error");
+            setLoading(false);
+            
+            // Rung lắc input để báo sai
+            userInp.classList.add('animate__animated', 'animate__shakeX');
+            passInp.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                userInp.classList.remove('animate__animated', 'animate__shakeX');
+                passInp.classList.remove('animate__animated', 'animate__shakeX');
+            }, 500);
+        }
+// Thay thế hàm cũ bằng hàm này
+function saveAndRedirect(userData) {
+    // 1. Lưu thông tin vào bộ nhớ
+    localStorage.setItem('tranghy_user', JSON.stringify(userData));
+    
+    // 2. Phân quyền chuyển hướng
+    if (userData.role === 'ADMIN') {
+        // Nếu là Admin -> Vào trang quản trị
+        window.location.href = 'admin.html';
+    } else if (userData.role === 'DRIVER') {
+        // Nếu là Tài xế -> Vào trang dành cho tài xế (MỚI)
+        window.location.href = 'driver.html';
+    } else {
+        // Khách hàng thường -> Về trang chủ
+        window.location.href = 'index.html';
+    }
+}
+        // Hàm hiệu ứng nút bấm
+        function setLoading(isLoading) {
+            const btn = document.getElementById('btn-login');
+            const txt = document.getElementById('btn-text');
+            const icon = document.getElementById('btn-icon');
+            const spinner = document.getElementById('btn-spinner');
+
+            if (isLoading) {
+                btn.disabled = true;
+                btn.classList.add('opacity-80', 'cursor-not-allowed');
+                txt.innerText = "Đang xử lý...";
+                icon.classList.add('hidden');
+                spinner.classList.remove('hidden');
+            } else {
+                btn.disabled = false;
+                btn.classList.remove('opacity-80', 'cursor-not-allowed');
+                txt.innerText = "Đăng nhập ngay";
+                icon.classList.remove('hidden');
+                spinner.classList.add('hidden');
+            }
+        }
+
+        // Hàm hiện thông báo Toast đẹp
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast-box');
+            const msgEl = document.getElementById('toast-message');
+            const iconEl = document.getElementById('toast-icon');
+
+            // Reset class cũ
+            toast.className = 'toast show animate__animated animate__fadeInRight';
+            
+            if (type === 'success') {
+                toast.classList.add('success');
+                iconEl.className = 'fas fa-check-circle';
+            } else if (type === 'error') {
+                toast.classList.add('error');
+                iconEl.className = 'fas fa-exclamation-circle';
+            } else {
+                toast.classList.add('warning');
+                iconEl.className = 'fas fa-exclamation-triangle';
+            }
+
+            msgEl.innerText = message;
+
+            // Tự ẩn sau 3 giây
+            setTimeout(() => {
+                toast.classList.remove('show', 'animate__fadeInRight');
+                toast.classList.add('animate__fadeOutRight');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TrangHy Autocar - Hệ Thống Cho Thuê Xe & Tài Xế Chuyên Nghiệp</title>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() {
+            emailjs.init("s8mToEhBNaMyjjVQc"); 
+        })();
+    </script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-dark: #1a4bd3;
+            --dark: #0f172a; 
+            --bg: #fdfdfe; 
+            --accent: #3b82f6;
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark);
+            scroll-behavior: smooth;
+            padding-top: 80px; /* Tránh nội dung bị đè bởi Header cố định */
+        }
+
+        nav {
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000; /* Nên để thấp hơn Modal (Modal thường là 9999) */
+        background: rgba(255, 255, 255, 0.8) !important;
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
+
+        /* FIX MODAL: Ẩn triệt để khi không sử dụng */
+        #modal-car, #modal-driver, #payment-modal {
+            display: none; /* Ẩn mặc định */
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        /* Class để JS gọi hiện modal */
+        .modal-active {
+            display: flex !important;
+        }
+
+        /* Card thiết kế Luxury */
+        .car-card, .driver-card { 
+            background: white;
+            border-radius: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .car-card:hover { 
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.08);
+            border-color: var(--accent);
+        }
+
+        /* Nút bấm hiệu ứng Premium */
+        .btn-gradient-blue {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+            cursor: pointer;
+        }
+
+        .btn-gradient-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.4);
+        }
+
+        /* Trạng thái bận */
+        .is-busy {
+            filter: grayscale(0.9) opacity(0.5) !important;
+            pointer-events: none !important;
+            position: relative;
+        }
+       
+        .is-busy::after {
+            content: 'ĐÃ ĐƯỢC ĐẶT LỊCH';
+            position: absolute;
+            top: 25px; right: 25px;
+            background: #ef4444;
+            color: #fff;
+            padding: 6px 14px;
+            font-weight: 800;
+            font-size: 9px;
+            border-radius: 99px;
+            letter-spacing: 1px;
+            z-index: 20;
+        }
+
+        /* Tiêu đề Gradient */
+        .text-luxury {
+            background: linear-gradient(to right, #0f172a, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Custom Scroll cho điều khoản trong Modal */
+        .terms-scroll::-webkit-scrollbar { width: 4px; }
+        .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    </style>
+ <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body class="antialiased">
+  <nav class="fixed w-full z-40 top-0 transition-all duration-300 p-4">
+    <div class="max-w-7xl mx-auto bg-white/90 backdrop-blur-xl border border-white/40 rounded-full shadow-2xl p-2 pl-6 flex justify-between items-center ring-1 ring-slate-900/5">
+        
+        <a href="#" class="flex items-center gap-3 group" onclick="location.reload()">
+            <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xl italic group-hover:rotate-12 transition-transform shadow-lg shadow-slate-900/30">T</div>
+            <div class="flex flex-col">
+                <span class="font-black text-lg leading-none italic text-slate-900">TRANGHY</span>
+                <span class="text-[8px] font-bold text-blue-600 tracking-[0.3em] uppercase">Autocar</span>
+            </div>
+        </a>
+
+        <div class="hidden md:flex items-center bg-slate-100/80 rounded-full p-1 border border-slate-200/50">
+            <a href="#" class="px-6 py-2 rounded-full bg-white text-slate-900 font-bold text-xs uppercase shadow-sm">Trang chủ</a>
+            <a href="#car-list" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Xe</a>
+            <a href="#display-drivers" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Tài xế</a>
+        </div>
+
+<div class="flex items-center gap-2 pr-2">
+    
+    <button id="btn-login-nav" onclick="window.location.href='login.html'" class="flex items-center gap-2 bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase hover:bg-blue-600 transition-all shadow-lg hover:shadow-blue-500/30">
+        <i class="fas fa-user-circle text-lg"></i> 
+        <span>Đăng nhập</span>
+    </button>
+
+    <div id="user-menu-nav" class="hidden flex items-center gap-3">
+        <div class="text-right hidden sm:block">
+            <p id="user-name-display" class="text-xs font-black text-slate-900">User</p>
+            <p id="user-role-display" class="text-[9px] font-bold text-blue-600 uppercase">Vai trò</p>
+        </div>
+        
+        <button onclick="app.showDashboard()" class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all shadow-md relative group">
+            <i class="fas fa-th-large"></i>
+            <span class="absolute top-12 right-0 bg-slate-800 text-white text-[10px] py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">Vào Dashboard</span>
+        </button>
+        
+        <button onclick="app.logout()" class="w-10 h-10 bg-red-50 text-red-500 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all shadow-md" title="Đăng xuất">
+            <i class="fas fa-power-off"></i>
+        </button>
+    </div>
+
+</div>
+</nav>
+<div id="toast-container" class="fixed top-24 right-5 z-[110] space-y-3 pointer-events-none"></div>
+
+    <header class="relative min-h-[90vh] flex items-center overflow-hidden bg-white">
+        <div class="absolute inset-0 z-0">
+            <div class="absolute top-[-10%] right-[-5%] w-[600px] h-[600px] bg-blue-100/50 rounded-full blur-[120px]"></div>
+            <div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-slate-100 rounded-full blur-[100px]"></div>
+        </div>
+
+        <div class="max-w-7xl mx-auto px-6 w-full relative z-10 py-20">
+            <div class="flex flex-col lg:flex-row items-center gap-16 lg:gap-24">
+                <div class="lg:w-1/2 space-y-8 fade-in">
+                    <div class="inline-flex items-center gap-2 bg-slate-900 text-white px-5 py-2 rounded-full shadow-lg shadow-blue-200/50">
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
+                        </span>
+                        <span class="text-[10px] font-bold uppercase tracking-[0.2em]">Hệ thống vận tải số 1 Hưng Yên</span>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h2 class="text-6xl lg:text-8xl font-black leading-[0.85] text-slate-900 tracking-tighter">
+                            Lái phong cách<br>
+                            <span class="text-blue-600 italic shiny-text">Sống đam mê.</span>
+                        </h2>
+                        <p class="text-slate-500 text-lg md:text-xl font-medium leading-relaxed max-w-lg border-l-4 border-blue-600 pl-6 italic">
+                            TrangHy Autocar định nghĩa lại tiêu chuẩn di chuyển. Sở hữu hành trình riêng với dàn xe đời mới và đội ngũ tài xế chuyên nghiệp.
+                        </p>
+                    </div>
+
+                    <div class="flex flex-col sm:row-row gap-5 pt-4">
+                        <div class="flex flex-wrap gap-4">
+                            <a href="#inventory" class="btn-gradient px-10 py-5 rounded-2xl font-black text-xs uppercase tracking-widest shadow-2xl flex items-center gap-3">
+                                Khám phá đội xe <i class="fas fa-arrow-right text-[10px]"></i>
+                            </a>
+                        </div>
+                        <div class="flex items-center gap-6 p-4 bg-slate-50/50 rounded-3xl w-fit backdrop-blur-sm border border-white">
+                            <div class="flex -space-x-3">
+                                <img src="https://i.pravatar.cc/100?u=a1" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                                <img src="https://i.pravatar.cc/100?u=a2" class="w-10 h-10 rounded-full border-2 border-white object-cover">
+                                <div class="w-10 h-10 rounded-full border-2 border-white bg-blue-600 flex items-center justify-center text-[10px] text-white font-bold">+2k</div>
+                            </div>
+                            <div>
+                                <div class="flex text-yellow-400 text-[8px] mb-1">
+                                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                                </div>
+                                <p class="text-[10px] font-black text-slate-900 uppercase">Khách hàng hài lòng</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="lg:w-1/2 relative hero-visual-container fade-in" style="animation-delay: 0.3s;">
+                    <div class="absolute -top-10 -right-10 z-20 bg-white p-6 rounded-[2.5rem] shadow-2xl floating-element hidden md:block border border-slate-50">
+                        <div class="flex items-center gap-4">
+                            <div class="w-12 h-12 bg-green-500/10 rounded-2xl flex items-center justify-center text-green-600">
+                                <i class="fas fa-check-circle text-xl"></i>
+                            </div>
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Trạng thái</p>
+                                <p class="text-sm font-black text-slate-900">Sẵn sàng giao xe</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="relative z-10">
+                        <div class="absolute inset-0 bg-blue-600 rounded-[4rem] rotate-6 scale-95 opacity-10"></div>
+                        <div class="relative overflow-hidden rounded-[4rem] shadow-2xl border-[12px] border-white">
+                            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" class="w-full h-[550px] object-cover">
+                        </div>
+                    </div>
+                    <div class="absolute -bottom-6 -left-6 z-20 bg-slate-900 p-8 rounded-[3rem] shadow-2xl border-4 border-white animate-bounce">
+                        <p class="text-[9px] font-black text-blue-400 uppercase mb-1 tracking-widest">Giá chỉ từ</p>
+                        <p class="text-3xl font-black text-white italic">500k<span class="text-xs text-slate-400">/ngày</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="inventory" class="max-w-7xl mx-auto px-6 py-24">
+       <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
+    <button onclick="app.filterCars('All')" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest bg-white shadow-lg text-blue-600">
+        TẤT CẢ XE
+    </button>
+    
+    <button onclick="app.filterCars('4 chỗ')" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+        4 CHỖ
+    </button>
+    
+    <button onclick="app.filterCars('5 chỗ')" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+        5 CHỖ
+    </button>
+    
+    <button onclick="app.filterCars('7 chỗ')" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+        7 CHỖ
+    </button>
+</div>
+            <div class="relative w-full lg:w-[400px] group">
+                <i class="fas fa-search absolute left-7 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-600 transition-colors"></i>
+                <input type="text" id="carSearch" onkeyup="app.searchCar()" placeholder="Tìm kiếm mẫu xe yêu thích..." class="w-full pl-16 pr-8 py-5 rounded-[2rem] bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold text-sm shadow-inner transition-all">
+            </div>
+        </div>
+        <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 min-h-[400px]"></div>
+    </main>
+
+    <section id="drivers-section" class="py-32 bg-slate-50 border-y border-slate-100">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-24 gap-10">
+                <div class="space-y-6">
+                    <div class="flex items-center gap-4">
+                        <span class="w-12 h-[2px] bg-blue-600"></span>
+                        <span class="text-blue-600 font-black text-[11px] uppercase tracking-[0.5em]">Tài xế chuyên nghiệp</span>
+                    </div>
+                    <h2 class="text-6xl font-black text-slate-900 tracking-tighter italic leading-none">P.S.P <span class="text-blue-600">Elite Team</span></h2>
+                    <p class="text-slate-400 max-w-lg font-medium text-lg leading-relaxed italic">Mỗi tài xế là một đại sứ dịch vụ - Lái xe bằng cả trái tim.</p>
+                </div>
+                <div class="flex bg-white p-3 rounded-[2.5rem] shadow-xl border border-slate-100">
+                    <div class="px-10 py-6 text-center">
+                      <p id="total-drivers-count" class="text-4xl font-black text-slate-900 leading-none">40</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase mt-3 tracking-widest">Đang sẵn sàng</p>
+                    </div>
+                    <div class="w-[1px] bg-slate-100 h-12 self-center"></div>
+                    <div class="px-10 py-6 text-center">
+                        <p class="text-4xl font-black text-blue-600 leading-none">10Y</p>
+                        <p class="text-[10px] font-black text-slate-400 uppercase mt-3 tracking-widest">KN Trung bình</p>
+                    </div>
+                </div>
+            </div>
+            <div id="display-drivers" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"></div>
+        </div>
+    </section>
+
+ <div id="modal-car" class="hidden fixed inset-0 z-[110] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onclick="app.closeCar()"></div>
+    
+    <div class="bg-white w-full max-w-6xl rounded-[3rem] overflow-hidden relative shadow-2xl flex flex-col md:flex-row modal-anim max-h-[95vh] z-10">
+        <div class="md:w-5/12 bg-slate-100 relative h-64 md:h-auto">
+            <img id="d-img" src="" class="w-full h-full object-cover">
+            <span id="d-cat" class="absolute top-8 left-8 bg-blue-600 text-white px-5 py-2 rounded-full text-[10px] font-black uppercase italic shadow-xl">Hạng xe</span>
+        </div>
+
+        <div class="md:w-7/12 p-8 md:p-12 space-y-6 overflow-y-auto custom-scroll bg-white">
+            <div class="flex justify-between items-start">
+                <div class="space-y-1">
+                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-[0.3em]">Hệ thống TrangHy</span>
+                    <h3 id="d-name" class="text-3xl md:text-4xl font-black text-slate-900 tracking-tight leading-none">Tên xe</h3>
+                </div>
+                <button onclick="app.closeCar()" class="w-12 h-12 flex items-center justify-center bg-slate-50 rounded-2xl text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all shadow-sm">
+                    <i class="fas fa-times text-lg"></i>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="space-y-5">
+                    <h4 class="text-[11px] font-black text-slate-900 uppercase border-l-4 border-blue-600 pl-3 italic">1. Lịch trình & Dịch vụ</h4>
+                    
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Nhận xe</label>
+                            <input type="date" id="modal-start-date" onchange="app.updateTotal()" class="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-600 transition-all">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Trả xe</label>
+                            <input type="date" id="modal-end-date" onchange="app.updateTotal()" class="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-600 transition-all">
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3">
+                        <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Hình thức nhận xe</label>
+                        <div class="grid grid-cols-2 gap-2">
+                            <button id="btn-at-gara" onclick="selectDelivery('gara')" class="p-3 rounded-xl border-2 border-blue-600 bg-blue-50 text-blue-600 font-bold text-[10px] transition-all uppercase">Tại Gara</button>
+                            <button id="btn-at-home" onclick="selectDelivery('home')" class="p-3 rounded-xl border-2 border-slate-100 text-slate-400 font-bold text-[10px] transition-all uppercase">Tại Nhà</button>
+                        </div>
+                        <div id="home-address-input" class="hidden">
+                            <input type="text" id="cust-location" placeholder="Nhập địa chỉ giao xe tận nhà..." class="w-full bg-blue-50/50 p-4 rounded-xl border border-blue-100 font-bold text-xs outline-none focus:border-blue-600">
+                        </div>
+                    </div>
+
+                    <div class="p-5 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-4 shadow-inner">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <i class="fas fa-user-tie text-blue-600 text-xs"></i>
+                                <span class="font-black text-slate-900 text-[10px] uppercase italic tracking-widest">Thuê kèm tài xế</span>
+                            </div>
+                            <input type="checkbox" id="driver-toggle" onchange="app.handleDriverSelection()" class="w-5 h-5 rounded-lg border-blue-200 text-blue-600 focus:ring-blue-500">
+                        </div>
+                        <div id="driver-list-container" class="hidden space-y-2 max-h-48 overflow-y-auto pr-2 custom-scroll border-t border-slate-200 pt-3">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <h4 class="text-[11px] font-black text-slate-900 uppercase border-l-4 border-blue-600 pl-3 italic">2. Thông tin khách hàng</h4>
+                    <div class="space-y-3">
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Họ và tên</label>
+                            <input type="text" id="cust-fullname" placeholder="Nguyễn Văn A" class="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-600 transition-all uppercase">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Số điện thoại</label>
+                            <input type="tel" id="cust-phone" placeholder="09xx xxx xxx" class="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-600 transition-all">
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[9px] font-black text-slate-400 uppercase ml-2">Số CCCD</label>
+                            <input type="text" id="cust-cccd" placeholder="Số căn cước công dân" class="w-full bg-slate-50 p-3 rounded-xl border border-slate-100 font-bold text-xs outline-none focus:ring-2 focus:ring-blue-600 transition-all">
+                        </div>
+                    </div>
+                    
+                    <div class="p-6 bg-slate-900 rounded-[2rem] text-white shadow-xl">
+                        <p class="text-[9px] font-black text-blue-400 uppercase tracking-widest mb-2">Tổng cộng dự tính</p>
+                        
+                        <div class="flex items-baseline gap-2">
+                            <span id="modal-total-price" class="text-3xl font-black text-white italic">0đ</span>
+                            <span class="text-[9px] text-slate-400 uppercase italic">/ <span id="calc-days-text">1</span> ngày</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3 mt-4">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest ml-2">Điều khoản hợp đồng</label>
+                <div class="h-32 overflow-y-auto p-5 bg-slate-50 rounded-3xl border border-slate-100 text-[11px] text-slate-600 leading-relaxed custom-scroll text-justify">
+                    <p class="font-bold text-slate-900 mb-2 text-center border-b pb-2 uppercase">Hợp đồng thuê xe TrangHy</p>
+                    <p class="font-bold text-blue-600 mb-1 uppercase italic text-[10px]">1. Trách nhiệm bên thuê</p>
+                    <p class="mb-3 italic opacity-80">Sử dụng xe đúng mục đích, không vi phạm pháp luật và hoàn trả xe đúng thời hạn. Mọi hư hỏng do lỗi bên thuê sẽ được bồi thường theo giá trị thực tế.</p>
+                    <p class="font-bold text-blue-600 mb-1 uppercase italic text-[10px]">2. Cam kết TrangHy Autocar</p>
+                    <p class="italic opacity-80">Cung cấp xe đúng chất lượng, đã được kiểm tra an toàn và hỗ trợ kỹ thuật 24/7.</p>
+                </div>
+
+                <label class="flex items-center space-x-3 cursor-pointer p-3 hover:bg-slate-50 rounded-2xl transition-all border border-transparent hover:border-slate-100">
+                    <input type="checkbox" id="agree-contract" class="w-5 h-5 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-xs font-bold text-slate-700 uppercase tracking-tighter italic">Tôi đồng ý với tất cả điều khoản hợp đồng trên</span>
+                </label>
+            </div>
+
+            <div class="flex gap-4 pt-2">
+                <button onclick="app.closeCar()" class="flex-1 bg-slate-100 text-slate-500 py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest hover:bg-slate-200 transition-all">
+                    Quay lại
+                </button>
+                <button onclick="app.handleBooking()" class="flex-[2] bg-blue-600 text-white py-5 rounded-[1.5rem] font-black uppercase text-[10px] tracking-widest hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/20 active:scale-95">
+                    Tiến hành thanh toán
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div id="payment-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+    <div class="bg-slate-900 border border-white/10 p-8 rounded-[3rem] max-w-md w-full shadow-2xl text-center animate-zoom-in relative">
+        <h3 id="payment-title" class="text-blue-500 font-black text-xl mb-4 uppercase italic tracking-tighter">Thanh toán đặt chỗ</h3>
+        
+        <div class="bg-white p-4 rounded-3xl mb-6 inline-block shadow-2xl">
+            <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRANGHYAUTOCAR" class="w-48 h-48 object-contain">
+        </div>
+        
+        <div class="text-slate-300 text-[11px] mb-8 space-y-3 text-left bg-white/5 p-6 rounded-3xl border border-white/5">
+            <p class="flex justify-between border-b border-white/5 pb-2"><span>Chủ tài khoản:</span> <span class="text-white font-black uppercase">Bui Van Trang</span></p>
+            <p class="flex justify-between border-b border-white/5 pb-2"><span>Số tài khoản:</span> <span class="text-blue-400 font-black text-sm">0353979614</span></p>
+            <p class="flex justify-between"><span>Ngân hàng:</span> <span class="text-white font-bold uppercase">MB BANK</span></p>
+            
+            <div class="pt-4 space-y-3">
+                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Số tiền thanh toán</p>
+                <p id="payment-final-amount" class="text-3xl font-black text-white italic tracking-tighter">0đ</p>
+                <p class="text-[9px] text-slate-500 uppercase font-black mb-1 pt-2 border-t border-white/5">Nội dung chuyển khoản</p>
+                <p id="payment-description" class="text-[11px] text-blue-400 font-bold uppercase italic tracking-tight">THUE XE/TAI XE</p>
+            </div>
+        </div>
+
+        <div class="flex gap-4">
+            <button onclick="document.getElementById('payment-modal').classList.add('hidden')" 
+                    class="flex-1 bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all">HỦY</button>
+            <button id="btn-confirm-payment" onclick="showSuccessBooking('xe')"
+                    class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30 uppercase text-[10px] tracking-widest">
+                XÁC NHẬN CHUYỂN
+            </button>
+        </div>
+    </div>
+</div>
+<div id="modal-driver" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md z-[110] hidden flex items-center justify-center p-4">
+    <div class="bg-white w-full max-w-lg rounded-[3rem] overflow-hidden shadow-2xl animate-zoom-in flex flex-col max-h-[95vh] relative">
+        
+        <div class="relative h-36 bg-slate-950 flex items-center justify-center shrink-0">
+            <button onclick="app.closeDriver()" class="absolute top-6 right-6 w-10 h-10 bg-white/10 hover:bg-red-500 hover:rotate-90 text-white rounded-full transition-all duration-300 z-20 flex items-center justify-center">
+                <i class="fas fa-times"></i>
+            </button>
+            <div id="dr-avatar" class="w-24 h-24 bg-gradient-to-br from-blue-600 to-blue-800 rounded-[2rem] flex items-center justify-center text-4xl font-black text-white italic shadow-2xl border-4 border-white/10 relative z-10">
+                </div>
+            <div class="absolute inset-0 opacity-20" style="background-image: radial-gradient(#ffffff 1px, transparent 1px); background-size: 20px 20px;"></div>
+        </div>
+
+        <div class="p-8 space-y-6 overflow-y-auto custom-scrollbar bg-white">
+            <div class="text-center">
+                <h2 id="dr-name" class="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Tên Tài Xế</h2>
+                <div class="flex items-center justify-center gap-2 mt-2">
+                    <span class="h-[1px] w-8 bg-blue-200"></span>
+                    <p id="dr-exp" class="text-blue-600 font-black text-[10px] uppercase tracking-[0.2em]">10 Năm Kinh Nghiệm</p>
+                    <span class="h-[1px] w-8 bg-blue-200"></span>
+                </div>
+            </div>
+
+            <div class="space-y-4 bg-slate-50 p-6 rounded-[2.5rem] border border-slate-100 shadow-inner">
+                <div class="space-y-2">
+                    <label class="text-[10px] font-black text-slate-400 uppercase ml-1 flex items-center gap-2">
+                        <i class="fas fa-user text-[8px]"></i> Họ và Tên người thuê
+                    </label>
+                    <input type="text" id="dr-cust-fullname" placeholder="Nhập đầy đủ họ tên" class="w-full bg-white px-4 py-3 rounded-xl font-bold text-slate-900 outline-none text-sm border border-slate-200 focus:border-blue-500 transition-all">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1 flex items-center gap-2">
+                            <i class="fas fa-phone text-[8px]"></i> Số điện thoại
+                        </label>
+                        <input type="tel" id="dr-cust-phone" placeholder="0353..." class="w-full bg-white px-4 py-3 rounded-xl font-bold text-slate-900 outline-none text-sm border border-slate-200 focus:border-blue-500 transition-all">
+                    </div>
+                    <div class="space-y-2">
+                        <label class="text-[10px] font-black text-slate-400 uppercase ml-1 flex items-center gap-2">
+                            <i class="fas fa-id-card text-[8px]"></i> Số CCCD
+                        </label>
+                        <input type="text" id="dr-cust-cccd" placeholder="033..." class="w-full bg-white px-4 py-3 rounded-xl font-bold text-slate-900 outline-none text-sm border border-slate-200 focus:border-blue-500 transition-all">
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100">
+                    <span class="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1 tracking-widest">Ngày bắt đầu</span>
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-calendar-alt text-blue-500 text-xs"></i>
+                        <input type="date" id="dr-start-date" class="bg-transparent w-full font-black text-slate-900 outline-none text-sm">
+                    </div>
+                </div>
+                <div class="p-4 bg-slate-50 rounded-[1.5rem] border border-slate-100">
+                    <span class="block text-[9px] font-black text-slate-400 uppercase mb-1 ml-1 tracking-widest">Ngày kết thúc</span>
+                    <div class="flex items-center gap-2">
+                        <i class="far fa-calendar-check text-blue-500 text-xs"></i>
+                        <input type="date" id="dr-end-date" class="bg-transparent w-full font-black text-slate-900 outline-none text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-blue-600 p-6 rounded-[2.5rem] flex justify-between items-center shadow-xl shadow-blue-200">
+                <div>
+                    <span class="block text-[10px] font-black text-blue-200 uppercase tracking-widest mb-1">Tổng phí dịch vụ</span>
+                    <span id="dr-total" class="text-3xl font-black text-white italic tracking-tighter">0đ</span>
+                </div>
+                <div class="text-right bg-white/10 px-4 py-2 rounded-2xl backdrop-blur-sm">
+                    <span class="block text-[9px] font-black text-blue-100 uppercase tracking-widest">Thời gian</span>
+                    <span class="text-lg font-black text-white italic"><span id="dr-days-text">1</span> Ngày</span>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <label class="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">
+                    <i class="fas fa-file-contract"></i> Điều khoản hợp đồng
+                </label>
+                
+                <div class="h-40 overflow-y-auto p-5 bg-slate-50 rounded-3xl border border-slate-100 text-[11px] text-slate-600 custom-scrollbar text-justify shadow-inner leading-relaxed">
+                    <div class="space-y-4">
+                        <div class="text-center border-b border-slate-200 pb-2">
+                            <p class="font-black text-slate-900 uppercase">Hợp đồng tài xế TrangHy</p>
+                        </div>
+                        <p class="font-black text-blue-600 uppercase text-[9px] tracking-widest">1. Trách nhiệm Bên Thuê</p>
+                        <p class="italic opacity-80">Cung cấp chính xác CCCD và thông tin liên lạc. Thanh toán 100% trước khi hành trình bắt đầu.</p>
+                        <p class="font-black text-blue-600 uppercase text-[9px] tracking-widest">2. Phụ phí ngoài giờ</p>
+                        <p class="italic opacity-80">Phụ phí sau 10 tiếng làm việc: 100.000đ/giờ. Đảm bảo nơi nghỉ nếu đi tỉnh.</p>
+                    </div>
+                </div>
+
+                <label class="flex items-center space-x-3 cursor-pointer p-4 bg-slate-50 hover:bg-blue-50 rounded-2xl transition-all group">
+                    <input type="checkbox" id="agree-contract-driver" class="w-6 h-6 rounded-md border-slate-300 text-blue-600 focus:ring-blue-500">
+                    <span class="text-[11px] font-black text-slate-700 uppercase tracking-tighter italic">Tôi đã đọc và đồng ý với điều khoản trên</span>
+                </label>
+            </div>
+ <div class="flex gap-4 pt-4">
+    <button onclick="app.closeCar()" 
+        class="group flex-1 flex items-center justify-center gap-2 bg-slate-50 text-slate-400 py-5 rounded-[1.8rem] font-bold uppercase text-[10px] tracking-[0.15em] hover:bg-slate-100 hover:text-slate-600 transition-all duration-300 border border-slate-100">
+        <i class="fas fa-chevron-left text-[8px] group-hover:-translate-x-1 transition-transform"></i>
+        Quay lại
+    </button>
+
+    <button onclick="app.handleDriverBooking()" 
+        class="flex-[2.5] flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-5 rounded-[1.8rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-[0_15px_30px_-5px_rgba(37,99,235,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-300">
+        <span>Xác nhận & Thanh toán ngay</span>
+        <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+            <i class="fas fa-arrow-right text-[9px]"></i>
+        </div>
+    </button>
+</div>
+                 <i class="fas fa-chevron-right text-[10px]"></i>
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+// Sửa hàm selectDelivery
+function selectDelivery(type) {
+    const btnGara = document.getElementById('btn-at-gara');
+    const btnHome = document.getElementById('btn-at-home');
+    const addressInput = document.getElementById('home-address-input');
+    
+    if (type === 'home') {
+        btnHome.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
+        btnHome.classList.remove('border-slate-100', 'text-slate-400');
+        btnGara.classList.add('border-slate-100', 'text-slate-400');
+        btnGara.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-600');
+        addressInput.classList.remove('hidden');
+    } else {
+        btnGara.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
+        btnGara.classList.remove('border-slate-100', 'text-slate-400');
+        btnHome.classList.add('border-slate-100', 'text-slate-400');
+        btnHome.classList.remove('border-blue-600', 'bg-blue-50', 'text-blue-600');
+        addressInput.classList.add('hidden');
+        if(document.getElementById('cust-location')) document.getElementById('cust-location').value = '';
+    }
+}
+
+// Quan trọng: Định nghĩa hàm này TRONG app object hoặc gọi đúng tên
+// Ở đây tôi sửa lại logic onclick trong HTML để khớp với script này
+app.handleDriverBooking = function() {
+    const isAgreed = document.getElementById('agree-contract-driver').checked;
+    if (!isAgreed) {
+        alert("Vui lòng đọc và đồng ý với điều khoản hợp đồng trước khi tiếp tục!");
+        return;
+    }
+    // Thu thập dữ liệu tài xế và mở thanh toán
+    this.openDriverPayment(); 
+}
+</script>
+
+    <div id="modal-pay" class="hidden fixed inset-0 z-[120] flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-xl" onclick="app.closePay()"></div>
+        <div class="bg-white rounded-[3.5rem] w-full max-w-md relative z-10 overflow-hidden modal-anim shadow-2xl">
+            <div class="bg-slate-900 p-8 text-center text-white space-y-2">
+                <div class="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-4 rotate-12 shadow-xl">
+                    <i class="fas fa-qrcode text-2xl"></i>
+                </div>
+                <button id="btn-confirm-payment" onclick="processContractAndZalo('xe'); showSuccessBooking('xe')"
+        class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black ...">
+    XÁC NHẬN CHUYỂN
+</button>
+                <h3 class="text-2xl font-black uppercase tracking-tight">Thanh Toán Đặt Cọc</h3>
+            </div>
+            <div class="p-8 space-y-6 max-h-[70vh] overflow-y-auto custom-scroll">
+                <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-inner relative">
+                    <img id="qr-image" src="" alt="VietQR" class="mx-auto w-full aspect-square object-contain">
+                </div>
+                <div class="space-y-3">
+                    <div class="flex justify-between items-center bg-slate-50 p-4 rounded-2xl">
+                        <span class="text-[10px] font-black text-slate-400 uppercase">Số tiền:</span>
+                        <span id="qr-amount" class="text-2xl font-black text-blue-600">0đ</span>
+                    </div>
+                    <div class="bg-blue-50 p-4 rounded-2xl space-y-2 border border-blue-100">
+                        <span class="text-[10px] font-black text-blue-400 uppercase">Nội dung:</span>
+                        <div class="flex justify-between items-center">
+                            <span id="qr-memo" class="text-xs font-black text-slate-700 tracking-wider"></span>
+                            <button onclick="navigator.clipboard.writeText(document.getElementById('qr-memo').innerText)" class="text-blue-600 hover:scale-110 transition-transform"><i class="far fa-copy"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="location.reload()" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">Hoàn tất</button>
+                <button onclick="app.closePay()" class="w-full text-slate-400 text-[10px] font-black uppercase tracking-widest hover:text-red-500">Hủy</button>
+            </div>
+        </div>
+    </div>
+    <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="js/app.js"></script>
+    <script>
+    // 1. DANH SÁCH 25 XE (Đầy đủ phân khúc từ 4-7 chỗ)
+    const cars = [
+        { id: 1, name: "Toyota Camry 2024", category: "5", price: "1.200.000đ", img: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=800", desc: "Sedan hạng D sang trọng." },
+        { id: 2, name: "VinFast VF8", category: "5", price: "1.500.000đ", img: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?q=80&w=800", desc: "Xe điện thông minh." },
+        { id: 3, name: "Hyundai SantaFe", category: "7", price: "1.800.000đ", img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=800", desc: "SUV 7 chỗ gia đình." },
+        { id: 4, name: "Kia Morning", category: "4", price: "600.000đ", img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=800", desc: "Nhỏ gọn, tiết kiệm." },
+        { id: 5, name: "Mazda 3", category: "5", price: "950.000đ", img: "https://images.unsplash.com/photo-1532581133564-9ca29e9e72fc?q=80&w=800", desc: "Thiết kế trẻ trung." },
+        { id: 6, name: "Mitsubishi Xpander", category: "7", price: "1.000.000đ", img: "https://images.unsplash.com/photo-1645731504300-726da6844903?q=80&w=800", desc: "Xe 7 chỗ quốc dân." },
+        { id: 7, name: "Mercedes C200", category: "5", price: "2.800.000đ", img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?q=80&w=800", desc: "Xe sang đi sự kiện." },
+        { id: 8, name: "Ford Everest", category: "7", price: "2.200.000đ", img: "https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=800", desc: "SUV mạnh mẽ." },
+        { id: 9, name: "Honda City", category: "5", price: "800.000đ", img: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?q=80&w=800", desc: "Bền bỉ, rộng rãi." },
+        { id: 10, name: "Kia Carnival", category: "7", price: "3.500.000đ", img: "https://images.unsplash.com/photo-1632245889029-e406fbdd3997?q=80&w=800", desc: "Chuyên cơ mặt đất." },
+        { id: 11, name: "Hyundai Accent", category: "5", price: "750.000đ", img: "https://images.unsplash.com/photo-1605559424843-9e4c228bf1c2?q=80&w=800", desc: "Lựa chọn kinh tế." },
+        { id: 12, name: "BMW 320i", category: "5", price: "3.200.000đ", img: "https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=800", desc: "Đẳng cấp thể thao." },
+        { id: 13, name: "Toyota Fortuner", category: "7", price: "1.700.000đ", img: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=800", desc: " SUV đa dụng." },
+        { id: 14, name: "VinFast VF9", category: "7", price: "2.500.000đ", img: "https://images.unsplash.com/photo-1662546411505-f938c5b967ec?q=80&w=800", desc: "SUV điện hạng sang." },
+        { id: 15, name: "Kia Soluto", category: "4", price: "550.000đ", img: "https://images.unsplash.com/photo-1619682817481-e994891cd1f5?q=80&w=800", desc: "Giá rẻ bất ngờ." },
+        { id: 16, name: "Toyota Vios", category: "5", price: "700.000đ", img: "https://images.unsplash.com/photo-1606148047425-460436894560?q=80&w=800", desc: "Xe chạy phố bền bỉ." },
+        { id: 17, name: "Mazda CX-5", category: "5", price: "1.300.000đ", img: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?q=80&w=800", desc: "SUV 5 chỗ thời thượng." },
+        { id: 18, name: "Hyundai Tucson", category: "5", price: "1.250.000đ", img: "https://images.unsplash.com/photo-1631836310116-3e8f81005a92?q=80&w=800", desc: "Thiết kế phá cách." },
+        { id: 19, name: "Toyota Innova", category: "7", price: "1.100.000đ", img: "https://images.unsplash.com/photo-1620301131707-33e3a4e9081e?q=80&w=800", desc: "Dòng xe 7 chỗ huyền thoại." },
+        { id: 20, name: "VinFast VF6", category: "5", price: "1.000.000đ", img: "https://images.unsplash.com/photo-1688649474929-37f2ca299066?q=80&w=800", desc: "Xe điện trẻ trung, năng động." },
+        { id: 21, name: "Kia K3", category: "5", price: "900.000đ", img: "https://images.unsplash.com/photo-1628519592419-f28666804153?q=80&w=800", desc: "Sedan công nghệ ngập tràn." },
+        { id: 22, name: "Honda CR-V", category: "7", price: "1.600.000đ", img: "https://images.unsplash.com/photo-1606611013016-969c19ba27bb?q=80&w=800", desc: "An toàn tuyệt đối." },
+        { id: 23, name: "Hyundai i10", category: "4", price: "500.000đ", img: "https://images.unsplash.com/photo-1582234032432-8495f57f5c76?q=80&w=800", desc: "Giá thuê tối ưu nhất." },
+        { id: 24, name: "Mercedes E300", category: "5", price: "4.500.000đ", img: "https://images.unsplash.com/photo-1616455579100-2ceaa4eb2837?q=80&w=800", desc: "Đỉnh cao xe hạng sang." },
+        { id: 25, name: "Ford Ranger", category: "5", price: "1.400.000đ", img: "https://images.unsplash.com/photo-1583121274602-3e2820c69888?q=80&w=800", desc: "Bán tải đa dụng." }
+    ];
+
+    // 2. DANH SÁCH 20 TÀI XẾ
+    const drivers = Array.from({ length: 20 }, (_, i) => ({
+        id: i + 1,
+        name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
+        exp: `${5 + (i % 15)} năm`,
+        rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
+        status: i % 4 === 0 ? "Đang đi tour" : "Sẵn sàng"
+    }));
+
+    // 3. CẬP NHẬT CON SỐ DASHBOARD
+    function updateDashboard() {
+        const fleetBtn = document.querySelector('.bg-blue-50 .text-blue-600.font-black.text-xl');
+        const driverBtn = document.querySelectorAll('.bg-slate-50 .font-black.text-xl');
+        
+        // Tìm và gán số lượng vào đúng vị trí UI của bạn
+        document.querySelectorAll('.font-black.text-xl').forEach(el => {
+            if(el.innerText.includes('XE')) el.innerText = `${cars.length} XE`;
+            if(el.innerText.includes('TÀI XẾ')) el.innerText = `${drivers.length} TÀI XẾ`;
+        });
+
+        console.log(`✅ Đã tải ${cars.length} xe và ${drivers.length} tài xế vào hệ thống.`);
+    }
+
+    // 4. HIỂN THỊ DANH SÁCH XE
+ function displayCars(data) {
+    const list = document.getElementById('car-list');
+    if(!list) return;
+
+    list.innerHTML = data.map(car => {
+        // Kiểm tra xem xe có đang bận (đã được thuê) không
+        const isBusy = car.status === 'busy';
+
+        return `
+            <div class="car-card p-4 fade-in relative ${isBusy ? 'opacity-75' : 'cursor-pointer'}" 
+                 ${isBusy ? '' : `onclick="app.openBooking(${car.id})"`}>
+                
+                <div class="relative rounded-[1.5rem] overflow-hidden mb-6 h-48">
+                    <img src="${car.image_url || car.img}" class="w-full h-full object-cover ${isBusy ? 'grayscale' : ''}">
+                    
+                    <span class="absolute top-4 right-4 bg-white/90 backdrop-blur px-4 py-1 rounded-full text-[10px] font-bold text-blue-600">
+                        ${car.category}
+                    </span>
+
+                    ${isBusy ? `
+                    <div class="absolute inset-0 bg-black/50 flex items-center justify-center">
+                        <div class="bg-red-600 text-white text-[10px] font-black px-4 py-2 rounded-lg uppercase tracking-widest border border-white/20 shadow-lg">
+                            Đã được thuê
+                        </div>
+                    </div>
+                    ` : ''}
+                </div>
+
+                <div class="${isBusy ? 'pointer-events-none' : ''}">
+                    <h3 class="text-xl font-bold text-slate-900 mb-2">${car.name}</h3>
+                    <div class="flex justify-between items-center">
+                        <p class="text-blue-600 font-black text-lg">
+                            ${typeof car.price_per_day === 'number' ? car.price_per_day.toLocaleString() : car.price}
+                            <span class="text-xs text-slate-400 font-medium">/ngày</span>
+                        </p>
+                        ${isBusy ? 
+                            `<span class="text-[10px] font-bold text-slate-400 italic">Tạm hết xe</span>` : 
+                            `<span class="text-[10px] font-bold text-green-600 italic">Sẵn sàng</span>`
+                        }
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+    // 5. LOGIC BỘ LỌC VÀ TÌM KIẾM
+    function filterCars(cat, btn) {
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.remove('bg-white', 'shadow-lg', 'text-blue-600');
+            b.classList.add('text-slate-500');
+        });
+        btn.classList.add('bg-white', 'shadow-lg', 'text-blue-600');
+        btn.classList.remove('text-slate-500');
+
+        const filtered = (cat === 'All') ? cars : cars.filter(c => c.category === cat);
+        displayCars(filtered);
+    }
+
+    function searchCar() {
+        const query = document.getElementById('carSearch').value.toLowerCase();
+        const filtered = cars.filter(c => c.name.toLowerCase().includes(query));
+        displayCars(filtered);
+    }
+
+    function openCar(id) {
+    // 1. Tìm xe trong danh sách cars của state
+    const car = this.state.cars.find(c => c.id === id);
+    if (!car) return;
+
+    // 2. LƯU XE ĐANG CHỌN VÀO STATE (Đây là bước quan trọng nhất để hết lỗi NaN)
+    this.state.selectedCar = car;
+
+    // 3. Đổ dữ liệu vào các thẻ HTML (Lưu ý: dùng đúng ID từ file HTML của bạn)
+    document.getElementById('d-name').innerText = car.name;
+    document.getElementById('d-img').src = car.image_url;
+    document.getElementById('d-cat').innerText = car.category;
+    
+    // 4. Reset các ô nhập liệu và số tiền về mặc định mỗi khi mở xe mới
+    document.getElementById('modal-start-date').value = "";
+    document.getElementById('modal-end-date').value = "";
+    document.getElementById('modal-total-price').innerText = "0đ";
+    if (document.getElementById('calc-days-text')) {
+        document.getElementById('calc-days-text').innerText = "0";
+    }
+    
+    // Reset giá trị tiền trong state về 0
+    this.state.totalPrice = 0;
+
+    // 5. Hiển thị Modal
+    document.getElementById('modal-car').classList.remove('hidden');
+    
+    // Mẹo: Đặt ngày tối thiểu là hôm nay để khách không chọn ngày trong quá khứ
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('modal-start-date').setAttribute('min', today);
+    document.getElementById('modal-end-date').setAttribute('min', today);
+}
+
+    function closeCar() {
+        document.getElementById('modal-car').classList.add('hidden');
+    }
+
+    // CHẠY KHI TRANG SẴN SÀNG
+    window.addEventListener('DOMContentLoaded', () => {
+        updateDashboard();
+        displayCars(cars);
+    });
+</script>
+<div id="payment-modal" class="hidden fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
+    <div class="bg-slate-900 border border-white/10 p-8 rounded-[2rem] max-w-md w-full shadow-2xl text-center">
+        <h3 class="text-blue-500 font-black text-xl mb-4 uppercase italic">Thanh toán đặt chỗ</h3>
+        
+        <div class="bg-white p-4 rounded-2xl mb-6 inline-block">
+            <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRANGHYAUTOCAR" alt="QR Thanh toán" class="w-48 h-48">
+        </div>
+        
+        <div class="text-slate-300 text-sm mb-8 space-y-2">
+            <p>Chủ tài khoản: <span class="text-white font-bold">Bui Van Trang</span></p>
+            <p>Số tài khoản: <span class="text-white font-bold">0353979614</span></p>
+            <p>Ngân hàng: <span class="text-white font-bold">MB</span></p>
+            <p class="text-xs italic text-blue-400 font-bold uppercase mt-4">Nội dung: THUE XE [TÊN XE] - [SĐT]</p>
+        </div>
+<button id="btn-confirm-payment" onclick="processContractAndZalo('xe'); showSuccessBooking('xe')"
+        class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black ...">
+    XÁC NHẬN CHUYỂN
+</button>
+        <div class="flex gap-4">
+            <button onclick="document.getElementById('payment-modal').classList.add('hidden')" 
+                    class="flex-1 bg-slate-800 text-slate-400 py-4 rounded-2xl font-bold">HỦY</button>
+            
+            <button onclick="showSuccessBooking('xe')" 
+                    class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:bg-blue-500 transition-all shadow-lg shadow-blue-600/20">
+                HOÀN TẤT
+            </button>
+        </div>
+    </div>
+</div>
+<div id="footer-placeholder"></div>
+
+<div id="modal-car" class="hidden">...</div>
+<div id="payment-modal" class="hidden">...</div>
+
+<script>
+    function loadFooter() {
+        fetch('footer.html')
+            .then(response => {
+                if (!response.ok) throw new Error('Không tìm thấy file footer.html');
+                return response.text();
+            })
+            .then(data => {
+                document.getElementById('footer-placeholder').innerHTML = data;
+            })
+            .catch(error => console.error('Lỗi:', error));
+    }
+</script>
+<div id="dashboard-container" class="fixed inset-0 z-[60] bg-slate-100 hidden overflow-y-auto">
+    <div class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
+                <i class="fas fa-chart-pie"></i>
+            </div>
+            <div>
+                <h1 class="text-lg font-black italic text-slate-900 leading-none">QUẢN TRỊ</h1>
+                <p id="dash-role" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Loading...</p>
+            </div>
+        </div>
+        <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors">
+            <i class="fas fa-sign-out-alt mr-1"></i> Đăng xuất
+        </button>
+    </div>
+
+    <div class="max-w-7xl mx-auto p-6 space-y-8">
+        
+        <div id="admin-view" class="hidden space-y-8">
+            <div id="admin-stats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-black text-lg text-slate-800 uppercase flex items-center gap-2">
+                            <i class="fas fa-car text-blue-600"></i> Trạng thái Xe
+                        </h3>
+                        <span class="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-500">Real-time</span>
+                    </div>
+                    <div id="admin-car-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="font-black text-lg text-slate-800 uppercase flex items-center gap-2">
+                            <i class="fas fa-user-tie text-green-600"></i> Trạng thái Tài xế
+                        </h3>
+                        <span class="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-500">Real-time</span>
+                    </div>
+                    <div id="admin-driver-status-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                        </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-[2rem] shadow-lg shadow-blue-100/50 border border-slate-100">
+                <h3 class="font-black text-lg text-slate-800 uppercase mb-6 flex items-center gap-2">
+                    <i class="fas fa-file-invoice-dollar text-orange-500"></i> Quản lý Đơn hàng
+                </h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-100">
+                                <th class="pb-3 pl-4">Khách hàng</th>
+                                <th class="pb-3">Dịch vụ</th>
+                                <th class="pb-3">Thời gian</th>
+                                <th class="pb-3">Tổng tiền</th>
+                                <th class="pb-3">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-order-list" class="text-sm font-bold text-slate-700 divide-y divide-slate-50">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="driver-view" class="hidden space-y-6">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl">
+                <div class="relative z-10">
+                    <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase backdrop-blur">Driver App</span>
+                    <h2 class="text-3xl font-black italic mt-2 mb-1">CHÀO BẠN!</h2>
+                    <p class="text-blue-100 text-sm font-medium">Kiểm tra lịch trình và đón khách đúng giờ nhé.</p>
+                </div>
+                <i class="fas fa-map-marked-alt absolute -right-6 -bottom-6 text-[10rem] opacity-20 rotate-12"></i>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <h3 class="font-black text-xl text-slate-900 uppercase italic">Lịch trình của tôi</h3>
+                <span class="bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm border">Hôm nay</span>
+            </div>
+
+            <div id="driver-order-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

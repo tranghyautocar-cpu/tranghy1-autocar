@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài xế - TrangHy Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background: #f8fafc; padding-bottom: 80px; }
+        .glass-card { background: white; border-radius: 1.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.05); border: 1px solid #f1f5f9; }
+    </style>
+</head>
+<body class="bg-slate-50">
+
+    <header class="bg-slate-900 text-white p-6 rounded-b-[2.5rem] shadow-xl relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500 rounded-full blur-3xl opacity-20 -mr-10 -mt-10"></div>
+        
+        <div class="flex justify-between items-center relative z-10">
+            <div class="flex items-center gap-3">
+                <div class="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center border border-white/20">
+                    <i class="fas fa-steering-wheel text-xl"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-slate-400 font-bold uppercase tracking-wider">Xin chào,</p>
+                    <h2 class="text-xl font-black" id="driver-name">Bác tài</h2>
+                </div>
+            </div>
+            <button onclick="logout()" class="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all">
+                <i class="fas fa-power-off"></i>
+            </button>
+        </div>
+
+        <div class="mt-6 bg-white/10 backdrop-blur-md rounded-2xl p-4 flex items-center justify-between border border-white/10">
+            <div class="flex items-center gap-3">
+                <div id="status-dot" class="w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]"></div>
+                <span class="font-bold text-sm" id="status-text">Đang trực tuyến</span>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" checked class="sr-only peer" onchange="toggleStatus(this)">
+                <div class="w-11 h-6 bg-slate-700 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+            </label>
+        </div>
+    </header>
+
+    <div class="px-6 -mt-8 relative z-20">
+        <div class="glass-card p-5 flex justify-between items-center">
+            <div class="text-center w-1/3 border-r border-slate-100">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Hôm nay</p>
+                <p class="text-lg font-black text-slate-900">2 <span class="text-[10px] font-normal">chuyến</span></p>
+            </div>
+            <div class="text-center w-1/3 border-r border-slate-100">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Thu nhập</p>
+                <p class="text-lg font-black text-blue-600">850k</p>
+            </div>
+            <div class="text-center w-1/3">
+                <p class="text-[10px] font-bold text-slate-400 uppercase">Đánh giá</p>
+                <p class="text-lg font-black text-yellow-500"><i class="fas fa-star text-xs"></i> 4.9</p>
+            </div>
+        </div>
+    </div>
+
+    <main class="px-6 py-6 space-y-6">
+        
+        <div>
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <i class="fas fa-bell text-blue-500 animate-bounce"></i> Nhiệm vụ mới
+            </h3>
+            
+            <div class="glass-card p-0 overflow-hidden border-l-4 border-l-blue-600">
+                <div class="p-5">
+                    <div class="flex justify-between items-start mb-4">
+                        <span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-1 rounded uppercase">Đón khách</span>
+                        <span class="text-xs font-bold text-slate-900">08:30 - Hôm nay</span>
+                    </div>
+                    
+                    <div class="flex items-center gap-4 mb-4">
+                        <div class="w-12 h-12 bg-slate-100 rounded-xl overflow-hidden">
+                            <img src="https://images.unsplash.com/photo-1503376763036-066120622c74" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <h4 class="font-black text-slate-900">Porsche Panamera</h4>
+                            <p class="text-xs text-slate-500">Khách: Anh Tuấn (VIP)</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 relative pl-4 border-l border-dashed border-slate-300 ml-1">
+                        <div class="relative">
+                            <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white"></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Điểm đón</p>
+                            <p class="text-sm font-bold text-slate-800">Vinhome Ocean Park 2</p>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-orange-500 ring-4 ring-white"></div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Điểm đến</p>
+                            <p class="text-sm font-bold text-slate-800">Sân bay Nội Bài (Sảnh T1)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-slate-50 p-3 flex gap-3">
+                    <button class="flex-1 bg-white border border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs shadow-sm">Từ chối</button>
+                    <button class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-blue-900/20">Nhận chuyến ngay</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <h3 class="text-sm font-black text-slate-800 uppercase tracking-widest mb-3">Lịch sử hôm qua</h3>
+            <div class="space-y-3">
+                <div class="glass-card p-4 flex items-center justify-between opacity-70 grayscale hover:grayscale-0 transition-all">
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">VinFast VF9</p>
+                        <p class="text-[10px] text-slate-400">14:00 • Ecopark -> Hà Nội</p>
+                    </div>
+                    <span class="text-green-600 font-black text-sm">+ 450.000đ</span>
+                </div>
+                <div class="glass-card p-4 flex items-center justify-between opacity-70 grayscale hover:grayscale-0 transition-all">
+                    <div>
+                        <p class="text-xs font-bold text-slate-900">Mercedes S450</p>
+                        <p class="text-[10px] text-slate-400">09:00 • Đám cưới</p>
+                    </div>
+                    <span class="text-green-600 font-black text-sm">+ 1.200.000đ</span>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-100 px-6 py-3 flex justify-between items-center z-50 pb-6">
+        <button class="flex flex-col items-center gap-1 text-blue-600">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-[10px] font-bold">Trang chủ</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+            <i class="fas fa-calendar-alt text-xl"></i>
+            <span class="text-[10px] font-bold">Lịch chạy</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+            <i class="fas fa-wallet text-xl"></i>
+            <span class="text-[10px] font-bold">Thu nhập</span>
+        </button>
+        <button class="flex flex-col items-center gap-1 text-slate-400 hover:text-slate-900">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-[10px] font-bold">Tài khoản</span>
+        </button>
+    </nav>
+
+    <script>
+        // 1. Kiểm tra đăng nhập
+        const user = JSON.parse(localStorage.getItem('tranghy_user'));
+        
+        if (!user || user.role !== 'DRIVER') {
+            alert("Vui lòng đăng nhập tài khoản Tài xế!");
+            window.location.href = 'login.html';
+        } else {
+            // Hiển thị tên tài xế
+            document.getElementById('driver-name').innerText = user.name;
+        }
+
+        // 2. Hàm Toggle trạng thái
+        function toggleStatus(checkbox) {
+            const statusText = document.getElementById('status-text');
+            const statusDot = document.getElementById('status-dot');
+            
+            if(checkbox.checked) {
+                statusText.innerText = "Đang trực tuyến";
+                statusText.className = "font-bold text-sm text-white";
+                statusDot.className = "w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]";
+            } else {
+                statusText.innerText = "Đang ngoại tuyến";
+                statusText.className = "font-bold text-sm text-slate-400";
+                statusDot.className = "w-3 h-3 rounded-full bg-slate-500";
+            }
+        }
+
+        // 3. Đăng xuất
+        function logout() {
+            if(confirm("Bác tài muốn nghỉ ca và đăng xuất?")) {
+                localStorage.removeItem('tranghy_user');
+                window.location.href = 'login.html';
+            }
+        }
+    </script>
+</body>
+</html>
