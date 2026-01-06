@@ -136,21 +136,32 @@ const app = {
     // ============================================================
     // 5. RENDER XE VÀ TÀI XẾ
     // ============================================================
-    renderCars(data = this.state.filteredCars) {
+  renderCars(data = null) {
         const container = document.getElementById('car-list');
         if (!container) return;
 
-        container.innerHTML = data.map(car => {
-            const isBusy = car.status === 'busy';
+        // Nếu không truyền data, ưu tiên lấy filteredCars, nếu filteredCars rỗng thì lấy toàn bộ cars
+        const displayData = data || (this.state.filteredCars.length > 0 ? this.state.filteredCars : this.state.cars);
+
+        if (displayData.length === 0) {
+            container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400'>Không tìm thấy xe nào...</p>";
+            return;
+        }
+
+        container.innerHTML = displayData.map(car => {
+            // Chỉnh lại để nhận diện cả 'busy' hoặc 'Đang bận'
+            const isBusy = car.status === 'busy' || car.status === 'Đang bận';
             const price = car.price_per_day || car.price || 0;
+            const img = car.image_url || car.image || car.img; // Nhận diện mọi kiểu đặt tên ảnh
+
             return `
             <div onclick="${isBusy ? '' : `app.openCar(${car.id})`}" 
                  class="car-card bg-white p-5 group relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
                 
                 <div class="relative overflow-hidden h-56 rounded-[2rem] mb-4">
-                    <img src="${car.image_url || car.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
+                    <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700">
                     <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold">
-                        ${car.seats || 4} Chỗ
+                        ${car.seats || car.category || 4} Chỗ
                     </div>
                     ${isBusy ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold uppercase">ĐÃ ĐƯỢC THUÊ</div>' : ''}
                 </div>
@@ -171,24 +182,29 @@ const app = {
         }).join('');
     },
 
-    renderDriversHome() {
+   renderDriversHome() {
         const container = document.getElementById('display-drivers');
         if (!container) return;
 
-        container.innerHTML = this.state.drivers.map(d => {
-            const isBusy = d.status === 'busy';
+        // Đảm bảo lấy đúng mảng drivers từ state
+        const driversData = this.state.drivers || [];
+
+        container.innerHTML = driversData.map(d => {
+            const isBusy = d.status === 'busy' || d.status === 'Đang bận';
+            const avatarChar = d.name ? d.name.split(' ').pop().charAt(0) : '?';
+            
             return `
             <div class="driver-card bg-white p-8 relative ${isBusy ? 'opacity-60 grayscale' : ''}">
                 <div class="flex items-center gap-4 mb-6">
                     <div class="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-black italic">
-                        ${d.name.split(' ').pop().charAt(0)}
+                        ${avatarChar}
                     </div>
                     <div>
                         <h4 class="text-lg font-black italic">${d.name}</h4>
-                        <p class="text-xs font-bold text-blue-600">${d.experience}+ Năm kinh nghiệm</p>
+                        <p class="text-xs font-bold text-blue-600">${d.experience || d.exp || 0}+ Năm kinh nghiệm</p>
                     </div>
                 </div>
-                <p class="text-slate-500 text-xs font-medium mb-6 line-clamp-2">${d.bio}</p>
+                <p class="text-slate-500 text-xs font-medium mb-6 line-clamp-2">${d.bio || 'Tài xế chuyên nghiệp'}</p>
                 <button ${isBusy ? 'disabled' : `onclick="app.openDriverBooking(${d.id})"`} 
                     class="w-full py-4 rounded-xl bg-slate-100 text-slate-900 font-black text-[10px] uppercase hover:bg-slate-900 hover:text-white transition-all">
                     ${isBusy ? 'Đang bận' : 'Liên hệ thuê'}
@@ -196,7 +212,6 @@ const app = {
             </div>`;
         }).join('');
     },
-
     // ============================================================
     // 6. XỬ LÝ MỞ FORM ĐẶT (OPEN MODALS)
     // ============================================================
@@ -622,11 +637,17 @@ const app = {
         this.renderDriversHome();
     },
 
-   getFallbackDrivers: () => [
-        { id: 101, name: "Nguyễn Văn Long", experience: 10, status: 'Sẵn sàng', bio: "Tài xế điềm đạm, rành đường đi tỉnh." },
-        { id: 102, name: "Trần Thế Vinh", experience: 8, status: 'Sẵn sàng', bio: "Vui vẻ, nhiệt tình, hỗ trợ bê đồ." },
-        { id: 103, name: "Lê Minh Tú", experience: 5, status: 'Đang bận', bio: "Chuyên chạy xe 7 chỗ gia đình." }
-    ],
+  getFallbackDrivers: () => {
+        return Array.from({ length: 20 }, (_, i) => ({
+            id: 100 + i, // ID bắt đầu từ 100 để tránh trùng với xe
+            name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
+            experience: 5 + (i % 15), // Để dạng số để dễ so sánh
+            rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
+            status: i % 4 === 0 ? "Đang bận" : "Sẵn sàng", // Đổi "Đang đi tour" thành "Đang bận" để khớp logic Admin
+            image_url: `https://i.pravatar.cc/150?u=${i}`, // Tự động tạo ảnh đại diện giả lập
+            bio: "Tài xế chuyên nghiệp, tận tâm, rành đường đi tỉnh và nội thành."
+        }));
+    },
    getFallbackCars: () => [
         { id: 1, name: "Toyota Camry 2024", category: "5", price: 1200000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?q=80&w=800", desc: "Sedan hạng D sang trọng." },
         { id: 2, name: "VinFast VF8", category: "5", price: 1500000, status: "Sẵn sàng", image_url: "https://images.unsplash.com/photo-1678911820864-e2c567c655d7?q=80&w=800", desc: "Xe điện thông minh." },
