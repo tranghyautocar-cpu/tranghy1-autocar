@@ -840,20 +840,6 @@ app.handleDriverBooking = function() {
 
 <div id="modal-car" class="hidden">...</div>
 <div id="payment-modal" class="hidden">...</div>
-
-<script>
-    function loadFooter() {
-        fetch('footer.html')
-            .then(response => {
-                if (!response.ok) throw new Error('Không tìm thấy file footer.html');
-                return response.text();
-            })
-            .then(data => {
-                document.getElementById('footer-placeholder').innerHTML = data;
-            })
-            .catch(error => console.error('Lỗi:', error));
-    }
-</script>
 <div id="dashboard-container" class="fixed inset-0 z-[60] bg-slate-100 hidden overflow-y-auto">
     <div class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
         <div class="flex items-center gap-3">
