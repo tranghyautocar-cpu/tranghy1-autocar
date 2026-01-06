@@ -82,18 +82,25 @@ const app = {
         }
     },
 
-    showDashboard: function(role) {
-        this.closeLogin();
-        document.getElementById('dashboard-container').classList.remove('hidden');
-        const adminView = document.getElementById('admin-view');
-        const driverView = document.getElementById('driver-view');
-        const roleText = document.getElementById('dash-role');
+   showDashboard: function(role) {
+    this.closeLogin();
+    document.getElementById('dashboard-container').classList.remove('hidden');
+    const adminView = document.getElementById('admin-view');
+    const driverView = document.getElementById('driver-view');
+    const roleText = document.getElementById('dash-role');
 
-        if (role === 'ADMIN') {
-            roleText.innerText = "HỆ THỐNG QUẢN TRỊ";
-            adminView.classList.remove('hidden');
-            driverView.classList.add('hidden');
-            this.renderAdminOrders();
+    if (role === 'ADMIN') {
+        roleText.innerText = "HỆ THỐNG QUẢN TRỊ";
+        adminView.classList.remove('hidden');
+        driverView.classList.add('hidden');
+        
+        // --- THÊM DÒNG NÀY ĐỂ CẬP NHẬT CON SỐ ---
+        this.updateAdminStats(); 
+        // ----------------------------------------
+        
+        this.renderAdminOrders();
+        this.renderAdminCars();    // Đảm bảo danh sách xe admin cũng hiện đủ 25
+        this.renderAdminDrivers(); // Đảm bảo danh sá
         } else {
             roleText.innerText = "GIAO DIỆN TÀI XẾ";
             driverView.classList.remove('hidden');
@@ -101,7 +108,21 @@ const app = {
             this.renderDriverOrders();
         }
     },
+updateAdminStats: function() {
+    // Đếm số lượng từ mảng dữ liệu hiện tại trong state
+    const carCount = this.state.cars.length;
+    const driverCount = this.state.drivers.length;
+    const orderCount = this.state.bookings.length;
 
+    // Cập nhật số liệu vào các thẻ (Đảm bảo ID trùng với HTML của bạn)
+    const carElem = document.getElementById('total-cars-count');
+    const driverElem = document.getElementById('total-drivers-count');
+    const orderElem = document.getElementById('total-bookings-count');
+
+    if(carElem) carElem.innerText = carCount;
+    if(driverElem) driverElem.innerText = driverCount;
+    if(orderElem) orderElem.innerText = orderCount;
+},
     // ============================================================
     // 4. HIỂN THỊ DỮ LIỆU
     // ============================================================
