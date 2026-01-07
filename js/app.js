@@ -341,6 +341,19 @@ updateAdminStats: function() {
     // 8. XỬ LÝ BOOKING (Gửi Sheet & Mở QR)
     // ============================================================
  // 1. XỬ LÝ ĐẶT XE (Đã sửa để Admin nhận được đơn)
+  saveBookingToLocal(carId) {
+        // Lấy danh sách ID đang có trong bộ nhớ
+        let bookedIDs = JSON.parse(localStorage.getItem('booked_car_ids')) || [];
+        
+        // Nếu ID xe này chưa có thì thêm vào
+        if (!bookedIDs.includes(carId)) {
+            bookedIDs.push(carId);
+            // Lưu ngược lại vào LocalStorage
+            localStorage.setItem('booked_car_ids', JSON.stringify(bookedIDs));
+        }
+    },
+
+    // --- 2. HÀM XỬ LÝ ĐẶT XE (ĐÃ CẬP NHẬT) ---
     async handleBooking() {
         // Kiểm tra điều khoản
         if (!document.getElementById('agree-contract')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
@@ -356,7 +369,7 @@ updateAdminStats: function() {
         // Validate
         if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng điền đầy đủ thông tin!");
 
-        // Dữ liệu dùng cho Google Sheet (Giữ nguyên cấu trúc cũ của bạn)
+        // Dữ liệu dùng cho Google Sheet
         const orderData = {
             carName: this.state.selectedCar.name,
             custName: fullname,
@@ -369,28 +382,31 @@ updateAdminStats: function() {
             location: location
         };
 
-        // --- [QUAN TRỌNG] THÊM ĐOẠN NÀY ĐỂ GỬI VỀ ADMIN ---
+        // --- GỬI VỀ ADMIN (Code cũ của bạn) ---
         const adminOrder = {
             id: 'DH' + Math.floor(Math.random() * 10000),
-            customerName: fullname,   // Admin cần key là customerName
+            customerName: fullname,
             customerPhone: phone,
             carName: this.state.selectedCar.name,
             date: `${startDate} -> ${endDate}`,
             totalPrice: this.formatMoney(this.state.totalPrice),
-            status: 'pending',        // Trạng thái chờ duyệt
+            status: 'pending',
             createdAt: new Date().toISOString()
         };
 
-        // Lưu vào LocalStorage cho Admin thấy
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
         currentOrders.push(adminOrder);
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
-        // ----------------------------------------------------
+        // ----------------------------------------
 
-        // Gửi Google Sheet (Giữ nguyên)
+        // --- [MỚI] LƯU XE NÀY LÀ "ĐÃ THUÊ" ĐỂ F5 KHÔNG BỊ MẤT ---
+        this.saveBookingToLocal(this.state.selectedCar.id);
+        // --------------------------------------------------------
+
+        // Gửi Google Sheet
         this.sendToSheet(orderData);
         
-        // Cập nhật giao diện tạm thời (Nếu bạn vẫn muốn dùng hàm cũ này)
+        // Cập nhật giao diện tạm thời
         if(typeof this.addOrderToLocal === 'function') {
              this.addOrderToLocal({
                 customer: fullname,
@@ -400,7 +416,7 @@ updateAdminStats: function() {
             });
         }
 
-        // Mở QR Thanh toán (Giữ nguyên)
+        // Mở QR Thanh toán
         const memo = `THUE ${this.state.selectedCar.name.substring(0,10)} ${phone}`;
         this.generatePaymentQR(this.state.totalPrice, memo, 'xe');
 
@@ -408,7 +424,7 @@ updateAdminStats: function() {
     },
 
   // 2. XỬ LÝ ĐẶT TÀI XẾ (Đã sửa để Admin nhận được đơn)
-    async handleDriverBooking() {
+ async handleDriverBooking() {
         if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
         const fullname = document.getElementById('dr-cust-fullname').value.trim();
@@ -419,7 +435,7 @@ updateAdminStats: function() {
 
         if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
 
-        // Dữ liệu Google Sheet (Giữ nguyên)
+        // Dữ liệu Google Sheet
         const orderData = {
             carName: "TÀI XẾ: " + this.state.selectedDriver.name,
             custName: fullname,
@@ -431,9 +447,9 @@ updateAdminStats: function() {
             location: "Dịch vụ Tài xế riêng"
         };
 
-        // --- [QUAN TRỌNG] THÊM ĐOẠN NÀY ĐỂ GỬI VỀ ADMIN ---
+        // Gửi về Admin Dashboard
         const adminOrder = {
-            id: 'TX' + Math.floor(Math.random() * 10000), // Mã đơn TX
+            id: 'TX' + Math.floor(Math.random() * 10000),
             customerName: fullname,
             customerPhone: phone,
             carName: "Tài xế: " + this.state.selectedDriver.name,
@@ -446,12 +462,16 @@ updateAdminStats: function() {
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
         currentOrders.push(adminOrder);
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
-        // -----------------------------------------------------------
 
-        // Gửi Sheet (Giữ nguyên)
+        // --- [MỚI] LƯU TRẠNG THÁI TÀI XẾ "ĐANG BẬN" VÀO BỘ NHỚ ---
+        // Tham số thứ 2 là 'driver' để báo hiệu đây là đặt tài xế
+        this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
+        // ---------------------------------------------------------
+
+        // Gửi Sheet
         this.sendToSheet(orderData);
         
-        // Cập nhật giao diện tạm (Giữ nguyên nếu bạn dùng)
+        // Cập nhật giao diện
         if(typeof this.addOrderToLocal === 'function') {
             this.addOrderToLocal({
                 customer: fullname,
@@ -461,48 +481,12 @@ updateAdminStats: function() {
             });
         }
 
-        // Mở QR Thanh toán (Giữ nguyên)
+        // Mở QR Thanh toán
         const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
         this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
 
         this.closeDriver();
     },
-    sendToSheet(data) {
-        fetch(this.CONFIG.SCRIPT_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }).catch(err => console.error("Lỗi gửi đơn:", err));
-    },
-
-    addOrderToLocal(data) {
-        const adminList = document.getElementById('admin-order-list');
-        const driverList = document.getElementById('driver-order-list');
-
-        if (adminList) {
-            const adminRow = `
-                <tr class="hover:bg-blue-50/50 border-b border-slate-50 animate-pulse">
-                    <td class="px-8 py-5"><p class="font-black text-slate-900 text-sm italic">${data.customer}</p></td>
-                    <td class="px-8 py-5 font-black text-blue-600 text-xs uppercase italic">${data.product}</td>
-                    <td class="px-8 py-5 text-xs font-black text-slate-500 italic">${data.range}</td>
-                    <td class="px-8 py-4"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">${data.status}</span></td>
-                </tr>`;
-            adminList.insertAdjacentHTML('afterbegin', adminRow);
-        }
-
-        if (driverList) {
-            const driverCard = `
-                <div class="p-6 bg-white rounded-3xl border-2 border-orange-400 shadow-xl animate-bounce">
-                    <div class="flex justify-between mb-2"><span class="bg-orange-400 text-white px-2 py-1 rounded text-[9px] font-black uppercase">Đơn mới phân công</span></div>
-                    <h5 class="text-lg font-black text-slate-900 uppercase italic leading-tight">${data.product}</h5>
-                    <p class="text-[11px] text-slate-500 font-bold uppercase mt-2">Khách: ${data.customer}</p>
-                    <p class="text-[10px] text-blue-600 font-black italic mt-1">Lịch: ${data.range}</p>
-                </div>`;
-            driverList.insertAdjacentHTML('afterbegin', driverCard);
-        }
-    },
-
     // ============================================================
     // 9. THANH TOÁN & HỢP ĐỒNG (Đã tích hợp Logic)
     // ============================================================
@@ -730,21 +714,50 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         try {
             console.log("📂 Đang tải dữ liệu từ cars.json...");
 
-            // 1. Đọc file cars.json (File này nằm ngang hàng với index.html)
+            // 1. Đọc file cars.json
             const response = await fetch('cars.json');
             
             if (!response.ok) {
                 throw new Error("Không tìm thấy file cars.json!");
             }
 
-            // 2. Lưu dữ liệu xe vào state
-            this.state.cars = await response.json();
+            // --- A. XỬ LÝ KHÓA XE (Logic cũ) ---
+            let carsData = await response.json();
+            
+            // Lấy danh sách ID xe đã thuê từ LocalStorage
+            const bookedIDs = JSON.parse(localStorage.getItem('booked_car_ids')) || [];
+
+            // Duyệt và khóa xe
+            carsData = carsData.map(car => {
+                if (bookedIDs.includes(car.id)) {
+                    car.status = 'busy'; 
+                }
+                return car;
+            });
+
+            this.state.cars = carsData;
             this.state.filteredCars = [...this.state.cars];
 
-            // 3. Tạo dữ liệu Tài xế giả (Vì chúng ta không có file drivers.json)
-            this.state.drivers = this.createMockDrivers();
+            // --- B. XỬ LÝ KHÓA TÀI XẾ (PHẦN MỚI THÊM VÀO) ---
+            // 1. Tạo dữ liệu Tài xế giả
+            let driversData = this.createMockDrivers();
 
-            // 4. Lấy đơn hàng cũ từ LocalStorage (Để Admin xem lại đơn đã đặt)
+            // 2. Lấy danh sách ID tài xế đã thuê từ LocalStorage
+            // (Danh sách này được tạo ra nhờ hàm saveBookingToLocal bạn vừa sửa)
+            const bookedDriverIDs = JSON.parse(localStorage.getItem('booked_driver_ids')) || [];
+
+            // 3. Duyệt và khóa tài xế
+            driversData = driversData.map(drv => {
+                if (bookedDriverIDs.includes(drv.id)) {
+                    drv.status = 'busy'; // Chuyển trạng thái sang bận
+                }
+                return drv;
+            });
+
+            this.state.drivers = driversData;
+            // ------------------------------------------------
+
+            // 4. Lấy đơn hàng cũ từ LocalStorage
             const rawOrders = localStorage.getItem('tranghy_orders');
             this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
 
@@ -758,7 +771,6 @@ const pdf = new jsPDF('p', 'mm', 'a4');
             console.error("❌ Lỗi tải dữ liệu:", error);
             alert("⚠️ Lỗi: Không đọc được file cars.json. Hãy kiểm tra lại file!");
             
-            // Nếu lỗi thì dùng tạm mảng rỗng để web không bị trắng trơn
             this.state.cars = [];
             this.state.drivers = [];
             this.renderAll();
