@@ -127,6 +127,7 @@
         .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         /* Định vị bộ nút */
 /* Container cố định bên phải */
+/* Container tổng */
 .vip-contact-container {
     position: fixed !important;
     bottom: 30px !important;
@@ -138,16 +139,18 @@
     align-items: flex-end !important;
 }
 
+/* Nút bấm chính - Phải là khối vuông để Pulse chuẩn */
 .vip-btn {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important; /* Căn giữa theo chiều ngang */
-    position: relative !important;
     width: 60px !important;
     height: 60px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    position: relative !important;
+    text-decoration: none !important;
 }
 
-/* Hộp icon tròn - Đảm bảo là trung tâm */
+/* Hộp icon tròn - Luôn ở trung tâm */
 .icon-box {
     width: 60px !important;
     height: 60px !important;
@@ -155,52 +158,65 @@
     display: flex !important;
     justify-content: center !important;
     align-items: center !important;
-    position: relative !important; /* Để Pulse bám theo */
-    z-index: 2 !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+    position: relative !important;
+    z-index: 5 !important; /* Nằm trên cùng */
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+    transition: all 0.3s ease !important;
 }
 
-/* Màu sắc icon */
 .fb-vip .icon-box { background: #1877F2 !important; color: white !important; font-size: 26px !important; }
 .zalo-vip .icon-box { background: #0068ff !important; color: white !important; font-size: 26px !important; }
 
-/* Vòng tròn nhấp nháy - Ép căn giữa vào icon-box */
+/* Vòng tròn nhấp nháy - Căn giữa tuyệt đối 100% */
 .vip-pulse {
     position: absolute !important;
     top: 50% !important;
     left: 50% !important;
-    transform: translate(-50%, -50%) !important; /* Kỹ thuật căn giữa tuyệt đối */
     width: 60px !important;
     height: 60px !important;
+    margin-top: -30px !important; /* Một nửa chiều cao */
+    margin-left: -30px !important; /* Một nửa chiều rộng */
     border-radius: 50% !important;
     z-index: 1 !important;
     pointer-events: none !important;
-    animation: vip-pulse-ring 2s infinite !important;
+    animation: vip-pulse-ring-new 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite !important;
 }
 
-.fb-vip .vip-pulse { background: #1877F2 !important; }
-.zalo-vip .vip-pulse { background: #0068ff !important; }
+.fb-vip .vip-pulse { background: rgba(24, 119, 242, 0.7) !important; }
+.zalo-vip .vip-pulse { background: rgba(0, 104, 255, 0.7) !important; }
 
-@keyframes vip-pulse-ring {
-    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
-    100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
+/* Hiệu ứng nhấp nháy mượt mà hơn */
+@keyframes vip-pulse-ring-new {
+    0% { transform: scale(1); opacity: 0.8; }
+    100% { transform: scale(2.2); opacity: 0; }
 }
 
 /* Nhãn chữ (Label) */
 .btn-label {
     position: absolute !important;
-    right: 75px !important; /* Đẩy sang bên trái của nút */
+    right: 75px !important;
     background: rgba(0, 0, 0, 0.8) !important;
     color: white !important;
     padding: 8px 15px !important;
     border-radius: 20px !important;
     font-size: 13px !important;
+    font-weight: bold !important;
     opacity: 0 !important;
+    visibility: hidden !important;
     white-space: nowrap !important;
-    transition: 0.3s !important;
-    pointer-events: none !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
 }
-.vip-btn:hover .btn-label { opacity: 1 !important; }
+
+.vip-btn:hover .btn-label {
+    opacity: 1 !important;
+    visibility: visible !important;
+    right: 80px !important;
+}
+
+.vip-btn:hover .icon-box {
+    transform: scale(1.1) rotate(360deg) !important;
+}
     </style>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
