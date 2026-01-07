@@ -798,21 +798,21 @@ const pdf = new jsPDF('p', 'mm', 'a4');
     { id: 7, name: "Mercedes C200", category: "5", price: 2800000, status: "Sẵn sàng", image_url: "images/e200.jpg", desc: "Xe sang đi sự kiện." },
     { id: 8, name: "Ford Everest", category: "7", price: 2200000, status: "Sẵn sàng", image_url: "images/foreverret.jpg", desc: "SUV mạnh mẽ." },
     { id: 9, name: "Honda City", category: "5", price: 800000, status: "Sẵn sàng", image_url: "images/hondaciti.jpg", desc: "Bền bỉ, rộng rãi." },
-    { id: 10, name: "Kia Carnival", category: "7", price: 3500000, status: "Sẵn sàng", image_url: "images/kia carnival.jpg", desc: "Chuyên cơ mặt đất." },
-    { id: 11, name: "Hyundai Accent", category: "5", price: 750000, status: "Sẵn sàng", image_url: "images/huyndai acen.jpg", desc: "Lựa chọn kinh tế." },
-    { id: 12, name: "BMW 320i", category: "5", price: 3200000, status: "Sẵn sàng", image_url: "images/bmw 320i.jpg", desc: "Đẳng cấp thể thao." },
-    { id: 13, name: "Toyota Fortuner", category: "7", price: 1700000, status: "Sẵn sàng", image_url: "images/toyota fortune.jpg", desc: "SUV đa dụng." },
-    { id: 14, name: "VinFast VF9", category: "7", price: 2500000, status: "Sẵn sàng", image_url: "images/vin vf9.jpg", desc: "SUV điện hạng sang." },
-    { id: 15, name: "Kia Soluto", category: "4", price: 550000, status: "Sẵn sàng", image_url: "images/kia soluto.jpg", desc: "Giá rẻ bất ngờ." },
-    { id: 16, name: "Toyota Vios", category: "5", price: 700000, status: "Sẵn sàng", image_url: "images/vios 2025.jpg", desc: "Xe chạy phố bền bỉ." },
+    { id: 10, name: "Kia Carnival", category: "7", price: 3500000, status: "Sẵn sàng", image_url: "images/kia_carnival.jpg", desc: "Chuyên cơ mặt đất." },
+    { id: 11, name: "Hyundai Accent", category: "5", price: 750000, status: "Sẵn sàng", image_url: "images/huyndai_acen.jpg", desc: "Lựa chọn kinh tế." },
+    { id: 12, name: "BMW 320i", category: "5", price: 3200000, status: "Sẵn sàng", image_url: "images/bmw_320i.jpg", desc: "Đẳng cấp thể thao." },
+    { id: 13, name: "Toyota Fortuner", category: "7", price: 1700000, status: "Sẵn sàng", image_url: "images/toyota_fortune.jpg", desc: "SUV đa dụng." },
+    { id: 14, name: "VinFast VF9", category: "7", price: 2500000, status: "Sẵn sàng", image_url: "images/vin_vf9.jpg", desc: "SUV điện hạng sang." },
+    { id: 15, name: "Kia Soluto", category: "4", price: 550000, status: "Sẵn sàng", image_url: "images/kia_soluto.jpg", desc: "Giá rẻ bất ngờ." },
+    { id: 16, name: "Toyota Vios", category: "5", price: 700000, status: "Sẵn sàng", image_url: "images/vios_2025.jpg", desc: "Xe chạy phố bền bỉ." },
     { id: 17, name: "Mazda CX-5", category: "5", price: 1300000, status: "Sẵn sàng", image_url: "images/cx5.jpg", desc: "SUV 5 chỗ thời thượng." },
     { id: 18, name: "Hyundai Tucson", category: "5", price: 1250000, status: "Sẵn sàng", image_url: "images/tucson.jpg", desc: "Thiết kế phá cách." },
-    { id: 19, name: "Toyota Innova", category: "7", price: 1100000, status: "Sẵn sàng", image_url: "images/toyota 2024.jpg", desc: "Xe điện trẻ trung, năng động." },
-    { id: 21, name: "Kia K3", category: "5", price: 900000, status: "Sẵn sàng", image_url: "images/kia k3.jpg", desc: "Sedan công nghệ ngập tràn." },
+    { id: 19, name: "Toyota Innova", category: "7", price: 1100000, status: "Sẵn sàng", image_url: "images/toyota_2024.jpg", desc: "Xe điện trẻ trung, năng động." },
+    { id: 21, name: "Kia K3", category: "5", price: 900000, status: "Sẵn sàng", image_url: "images/kia_k3.jpg", desc: "Sedan công nghệ ngập tràn." },
     { id: 22, name: "Honda CR-V", category: "7", price: 1600000, status: "Sẵn sàng", image_url: "images/cr-v.jpg", desc: "An toàn tuyệt đối." },
-    { id: 23, name: "Hyundai i10", category: "4", price: 500000, status: "Sẵn sàng", image_url: "images/hyun i10.jpg", desc: "Giá thuê tối ưu nhất." },
-    { id: 24, name: "Mercedes E300", category: "5", price: 4500000, status: "Sẵn sàng", image_url: "images/mercedes e300.jpg", desc: "Đỉnh cao xe hạng sang." },
-    { id: 25, name: "Ford Ranger", category: "5", price: 1400000, status: "Sẵn sàng", image_url: "images/foer ranger.jpg", desc: "Bán tải đa dụng." }
+    { id: 23, name: "Hyundai i10", category: "4", price: 500000, status: "Sẵn sàng", image_url: "images/hyun_i10.jpg", desc: "Giá thuê tối ưu nhất." },
+    { id: 24, name: "Mercedes E300", category: "5", price: 4500000, status: "Sẵn sàng", image_url: "images/mercedes_e300.jpg", desc: "Đỉnh cao xe hạng sang." },
+    { id: 25, name: "Ford Ranger", category: "5", price: 1400000, status: "Sẵn sàng", image_url: "images/foer_ranger.jpg", desc: "Bán tải đa dụng." }
 ]
 };
 
