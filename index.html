@@ -130,8 +130,8 @@
 .vip-contact-container {
     position: fixed;
     bottom: 40px;
-    right: 30px; /* Đưa sang bên phải */
-    z-index: 99999;
+    right: 30px; /* Đảm bảo nằm bên phải */
+    z-index: 999999; /* Ưu tiên hiển thị cao nhất */
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -145,6 +145,7 @@
     position: relative;
 }
 
+/* Hộp chứa Icon tròn */
 .icon-box {
     width: 60px;
     height: 60px;
@@ -167,6 +168,7 @@
     padding: 8px 20px;
     border-radius: 30px;
     font-size: 14px;
+    font-weight: bold;
     margin-right: 15px;
     opacity: 0;
     transition: 0.3s;
