@@ -354,221 +354,213 @@ updateAdminStats: function() {
     },
 
     // --- 2. HÀM XỬ LÝ ĐẶT XE (ĐÃ CẬP NHẬT) ---
- // ============================================================
-    // 1. HÀM PHỤ TRỢ: LƯU TRẠNG THÁI (Bắt buộc phải có hàm này)
-    // ============================================================
-    saveBookingToLocal(id, type = 'car') {
-        // Xác định lưu vào kho xe hay kho tài xế
+  saveBookingToLocal(id, type = 'car') {
         const key = type === 'driver' ? 'booked_driver_ids' : 'booked_car_ids';
-        
         let bookedIDs = JSON.parse(localStorage.getItem(key)) || [];
-        
-        // Nếu chưa có ID này thì thêm vào
         if (!bookedIDs.includes(id)) {
             bookedIDs.push(id);
             localStorage.setItem(key, JSON.stringify(bookedIDs));
         }
     },
 
-    // ============================================================
-    // 2. HÀM XỬ LÝ ĐẶT XE (ĐÃ SỬA LỖI)
-    // ============================================================
-    async handleBooking() {
-        try {
-            // Kiểm tra điều khoản
-            const checkbox = document.getElementById('agree-contract');
-            if (!checkbox || !checkbox.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
+    // Hàm in hợp đồng Tài xế (PDF)
+    printDriverContract() {
+        const data = this.state.tempOrderData;
+        if (!data) return alert("⚠️ Không tìm thấy dữ liệu hợp đồng!");
 
-            // Kiểm tra xe đã chọn chưa
-            if (!this.state.selectedCar) return alert("⚠️ Lỗi: Chưa chọn xe nào!");
-
-            // Lấy thông tin từ form
-            const fullname = document.getElementById('cust-fullname').value.trim();
-            const phone = document.getElementById('cust-phone').value.trim();
-            const cccd = document.getElementById('cust-cccd').value.trim();
-            const location = document.getElementById('cust-location')?.value || "Tại Gara";
-            const startDate = document.getElementById('modal-start-date')?.value;
-            const endDate = document.getElementById('modal-end-date')?.value;
-
-            // Validate dữ liệu
-            if (!fullname || !phone || !cccd || !startDate || !endDate) {
-                return alert("⚠️ Vui lòng điền đầy đủ thông tin!");
-            }
-
-            // Dữ liệu dùng cho Google Sheet
-            const orderData = {
-                carName: this.state.selectedCar.name,
-                custName: fullname,
-                phone: phone,
-                cccd: cccd,
-                startDate: startDate,
-                endDate: endDate,
-                duration: this.state.days + " ngày",
-                totalPrice: this.formatMoney(this.state.totalPrice),
-                location: location
-            };
-
-            // --- GỬI VỀ ADMIN ---
-            const adminOrder = {
-                id: 'DH' + Math.floor(Math.random() * 10000),
-                customerName: fullname,
-                customerPhone: phone,
-                carName: this.state.selectedCar.name,
-                date: `${startDate} -> ${endDate}`,
-                totalPrice: this.formatMoney(this.state.totalPrice),
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
-
-            const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
-            currentOrders.push(adminOrder);
-            localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
-
-            // --- QUAN TRỌNG: GỌI HÀM LƯU TRẠNG THÁI ---
-            // Nếu thiếu hàm này ở trên là code sẽ chết ngay tại đây
-            if (typeof this.saveBookingToLocal === 'function') {
-                this.saveBookingToLocal(this.state.selectedCar.id, 'car');
-            } else {
-                console.error("❌ Lỗi: Không tìm thấy hàm saveBookingToLocal");
-            }
-
-            // Gửi Google Sheet
-            this.sendToSheet(orderData);
+        const content = `
+            <html>
+            <head><title>HỢP ĐỒNG THUÊ TÀI XẾ</title></head>
+            <body style="font-family: Arial, sans-serif; padding: 40px; line-height: 1.6;">
+                <div style="text-align: center; border-bottom: 2px solid #333; padding-bottom: 20px;">
+                    <h2 style="margin: 0;">HỢP ĐỒNG THUÊ TÀI XẾ RIÊNG</h2>
+                    <p style="margin: 5px 0;">Mã đơn: #TX${Math.floor(Math.random()*10000)}</p>
+                </div>
+                <div style="margin-top: 30px;">
+                    <p><strong>BÊN A (KHÁCH HÀNG):</strong> ${data.custName}</p>
+                    <p>Số điện thoại: ${data.phone}</p>
+                    <p>CCCD/CMND: ${data.cccd}</p>
+                    <hr style="border-top: 1px dashed #ccc;">
+                    <p><strong>BÊN B (DỊCH VỤ):</strong> TrangHy Autocar</p>
+                    <p>Tài xế phụ trách: <strong>${data.carName.replace('TÀI XẾ: ', '')}</strong></p>
+                </div>
+                <div style="background: #f9f9f9; padding: 15px; margin: 20px 0; border: 1px solid #ddd;">
+                    <p>Thời gian bắt đầu: ${data.startDate}</p>
+                    <p>Thời gian kết thúc: ${data.endDate}</p>
+                    <p style="font-size: 18px; color: #d32f2f; font-weight: bold;">TỔNG CHI PHÍ: ${data.totalPrice}</p>
+                </div>
+                <div style="margin-top: 50px; text-align: right;">
+                    <p><i>Ngày......tháng......năm......</i></p>
+                    <p><strong>ĐẠI DIỆN TRANGHY AUTOCAR</strong></p>
+                    <p style="color: red; margin-top: 40px;">[Đã Ký Duyệt Điện Tử]</p>
+                </div>
+            </body>
+            </html>`;
             
-            // Cập nhật giao diện tạm thời
-            if(typeof this.addOrderToLocal === 'function') {
-                 this.addOrderToLocal({
-                    customer: fullname,
-                    product: orderData.carName,
-                    range: `${startDate} ➔ ${endDate}`,
-                    status: "Chờ duyệt"
-                });
-            }
-
-            // Mở QR Thanh toán
-            const memo = `THUE ${this.state.selectedCar.name.substring(0,10)} ${phone}`;
-            this.generatePaymentQR(this.state.totalPrice, memo, 'xe');
-
-            this.closeCar();
-
-        } catch (err) {
-            console.error("❌ Lỗi trong handleBooking:", err);
-            alert("Có lỗi xảy ra, vui lòng nhấn F12 và chụp màn hình Console gửi cho Admin.");
-        }
+        const printWindow = window.open('', '', 'height=800,width=800');
+        printWindow.document.write(content);
+        printWindow.document.close();
+        setTimeout(() => printWindow.print(), 500);
     },
 
-  // 2. XỬ LÝ ĐẶT TÀI XẾ (Đã sửa để Admin nhận được đơn)
- saveBookingToLocal(id, type = 'car') {
-        const key = type === 'driver' ? 'booked_driver_ids' : 'booked_car_ids';
-        let bookedIDs = JSON.parse(localStorage.getItem(key)) || [];
-        if (!bookedIDs.includes(id)) {
-            bookedIDs.push(id);
-            localStorage.setItem(key, JSON.stringify(bookedIDs));
+    // Hàm Xác nhận thanh toán (Cầu nối để hiện PDF)
+    verifyPayment() {
+        alert("✅ Xác nhận thanh toán thành công! Đang xuất hợp đồng...");
+        const modal = document.getElementById('payment-modal');
+        if (modal) modal.classList.add('hidden');
+        
+        // Kiểm tra xem là in hợp đồng xe hay tài xế
+        if (this.state.paymentType === 'taixe') {
+            this.printDriverContract();
+        } else if (typeof this.printContract === 'function') {
+            this.printContract(); // Hàm in xe cũ (nếu có)
         }
     },
 
     // ============================================================
-    // 2. HÀM XỬ LÝ ĐẶT TÀI XẾ (Đã sửa lỗi crash & Lưu dữ liệu in)
+    // 2. HÀM XỬ LÝ ĐẶT TÀI XẾ (ĐÃ NÂNG CẤP & SỬA LỖI)
     // ============================================================
     async handleDriverBooking() {
-        try {
-            // 1. Kiểm tra điều khoản
-            const checkbox = document.getElementById('agree-contract-driver');
-            if (!checkbox || !checkbox.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
+        // 1. Kiểm tra điều khoản
+        if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
-            // 2. Lấy thông tin
-            const fullname = document.getElementById('dr-cust-fullname').value.trim();
-            const phone = document.getElementById('dr-cust-phone').value.trim();
-            const cccd = document.getElementById('dr-cust-cccd').value.trim();
-            const startDate = document.getElementById('dr-start-date').value;
-            const endDate = document.getElementById('dr-end-date').value;
+        // 2. Lấy thông tin
+        const fullname = document.getElementById('dr-cust-fullname').value.trim();
+        const phone = document.getElementById('dr-cust-phone').value.trim();
+        const cccd = document.getElementById('dr-cust-cccd').value.trim();
+        const startDate = document.getElementById('dr-start-date').value;
+        const endDate = document.getElementById('dr-end-date').value;
 
-            if (!fullname || !phone || !cccd || !startDate || !endDate) {
-                return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
-            }
+        if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
 
-            // 3. Chuẩn bị dữ liệu
-            const orderData = {
-                carName: "TÀI XẾ: " + this.state.selectedDriver.name,
-                custName: fullname,
-                phone: phone,
-                cccd: cccd,
-                startDate: startDate,
-                endDate: endDate,
-                totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-                location: "Dịch vụ Tài xế riêng"
-            };
+        // 3. Chuẩn bị dữ liệu
+        const orderData = {
+            carName: "TÀI XẾ: " + this.state.selectedDriver.name,
+            custName: fullname,
+            phone: phone,
+            cccd: cccd,
+            startDate: startDate,
+            endDate: endDate,
+            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+            location: "Dịch vụ Tài xế riêng"
+        };
 
-            // --- [QUAN TRỌNG] LƯU DỮ LIỆU ĐỂ TÍ NỮA IN PDF KHÔNG BỊ LỖI ---
-            this.state.tempOrderData = orderData; 
-            // -----------------------------------------------------------
+        // --- [QUAN TRỌNG] LƯU DỮ LIỆU ĐỂ IN PDF ---
+        this.state.tempOrderData = orderData;
+        // -----------------------------------------
 
-            // 4. Lưu vào Admin Dashboard & LocalStorage
-            const adminOrder = {
-                id: 'TX' + Math.floor(Math.random() * 10000),
-                customerName: fullname,
-                customerPhone: phone,
-                carName: "Tài xế: " + this.state.selectedDriver.name,
-                date: `${startDate} -> ${endDate}`,
-                totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-                status: 'pending',
-                createdAt: new Date().toISOString()
-            };
+        // 4. Gửi về Admin Dashboard
+        const adminOrder = {
+            id: 'TX' + Math.floor(Math.random() * 10000),
+            customerName: fullname,
+            customerPhone: phone,
+            carName: "Tài xế: " + this.state.selectedDriver.name,
+            date: `${startDate} -> ${endDate}`,
+            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
 
-            const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
-            currentOrders.push(adminOrder);
-            localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
+        const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
+        currentOrders.push(adminOrder);
+        localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
 
-            // 5. Khóa tài xế (Lưu vào bộ nhớ)
-            if (typeof this.saveBookingToLocal === 'function') {
-                this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
-            }
-
-            // 6. Gửi Google Sheet
-            this.sendToSheet(orderData);
-
-            // 7. Cập nhật giao diện Admin giả lập
-            if(typeof this.addOrderToLocal === 'function') {
-                this.addOrderToLocal({
-                    customer: fullname,
-                    product: orderData.carName,
-                    range: `${startDate} ➔ ${endDate}`,
-                    status: "Chờ duyệt"
-                });
-            }
-
-            // 8. Mở QR Thanh toán
-            const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
-            // Tham số thứ 3 là 'taixe' để tí nữa hàm verifyPayment biết mà in hợp đồng tài xế
-            this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
-
-            // 9. Đóng form nhập liệu
-            this.closeDriver();
-
-        } catch (e) {
-            console.error(e);
-            alert("Lỗi xử lý đặt tài xế. Vui lòng thử lại.");
+        // 5. Lưu trạng thái "Đang bận" (Gọi hàm đã khai báo ở trên)
+        if (typeof this.saveBookingToLocal === 'function') {
+            this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
         }
-    },
 
-    // ============================================================
-    // 3. HÀM XÁC NHẬN THANH TOÁN (CẦU NỐI ĐỂ HIỆN PDF)
-    // ============================================================
-    // Hàm này chạy khi bạn ấn nút "Đã thanh toán" trên Modal QR
-    verifyPayment() {
-        alert("✅ Xác nhận thanh toán thành công! Hệ thống đang xuất hợp đồng...");
+        // 6. Gửi Sheet
+        this.sendToSheet(orderData);
         
-        // Ẩn QR modal
-        const paymentModal = document.getElementById('payment-modal');
-        if (paymentModal) paymentModal.classList.add('hidden');
-
-        // KIỂM TRA LOẠI ĐƠN ĐỂ IN HỢP ĐỒNG TƯƠNG ỨNG
-        // this.state.paymentType được gán lúc gọi generatePaymentQR
-        if (this.state.paymentType === 'taixe') {
-            this.printDriverContract(); // In hợp đồng tài xế
-        } else {
-            this.printContract(); // In hợp đồng thuê xe (mặc định)
+        // 7. Cập nhật giao diện Admin (nếu có)
+        if(typeof this.addOrderToLocal === 'function') {
+            this.addOrderToLocal({
+                customer: fullname,
+                product: orderData.carName,
+                range: `${startDate} ➔ ${endDate}`,
+                status: "Chờ duyệt"
+            });
         }
+
+        // 8. Mở QR Thanh toán
+        const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
+        // Tham số 'taixe' giúp verifyPayment biết cần in hợp đồng tài xế
+        this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
+
+        this.closeDriver();
+    },
+  // 2. XỬ LÝ ĐẶT TÀI XẾ (Đã sửa để Admin nhận được đơn)
+ async handleDriverBooking() {
+        // 1. Kiểm tra điều khoản
+        if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
+
+        // 2. Lấy thông tin
+        const fullname = document.getElementById('dr-cust-fullname').value.trim();
+        const phone = document.getElementById('dr-cust-phone').value.trim();
+        const cccd = document.getElementById('dr-cust-cccd').value.trim();
+        const startDate = document.getElementById('dr-start-date').value;
+        const endDate = document.getElementById('dr-end-date').value;
+
+        if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
+
+        // 3. Chuẩn bị dữ liệu
+        const orderData = {
+            carName: "TÀI XẾ: " + this.state.selectedDriver.name,
+            custName: fullname,
+            phone: phone,
+            cccd: cccd,
+            startDate: startDate,
+            endDate: endDate,
+            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+            location: "Dịch vụ Tài xế riêng"
+        };
+
+        // --- [MỚI] THÊM ĐÚNG DÒNG NÀY ĐỂ IN ĐƯỢC PDF ---
+        this.state.tempOrderData = orderData; 
+        // -----------------------------------------------
+
+        // 4. Gửi về Admin Dashboard
+        const adminOrder = {
+            id: 'TX' + Math.floor(Math.random() * 10000),
+            customerName: fullname,
+            customerPhone: phone,
+            carName: "Tài xế: " + this.state.selectedDriver.name,
+            date: `${startDate} -> ${endDate}`,
+            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+            status: 'pending',
+            createdAt: new Date().toISOString()
+        };
+
+        const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
+        currentOrders.push(adminOrder);
+        localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
+
+        // 5. Lưu trạng thái "Đang bận" (Khóa tài xế)
+        // Kiểm tra xem hàm có tồn tại không để tránh lỗi liệt nút bấm
+        if (typeof this.saveBookingToLocal === 'function') {
+            this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
+        }
+
+        // 6. Gửi Sheet
+        this.sendToSheet(orderData);
+        
+        // 7. Cập nhật giao diện Admin giả lập
+        if(typeof this.addOrderToLocal === 'function') {
+            this.addOrderToLocal({
+                customer: fullname,
+                product: orderData.carName,
+                range: `${startDate} ➔ ${endDate}`,
+                status: "Chờ duyệt"
+            });
+        }
+
+        // 8. Mở QR Thanh toán
+        const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
+        // Tham số 'taixe' để báo cho hàm in biết là in hợp đồng tài xế
+        this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
+
+        this.closeDriver();
     },
     // ============================================================
     // 9. THANH TOÁN & HỢP ĐỒNG (Đã tích hợp Logic)
@@ -793,7 +785,7 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         emailInput.value = "";
     },
 
- async fetchInitialData() {
+  async fetchInitialData() {
         try {
             console.log("📂 Đang tải dữ liệu từ cars.json...");
 
@@ -804,41 +796,29 @@ const pdf = new jsPDF('p', 'mm', 'a4');
                 throw new Error("Không tìm thấy file cars.json!");
             }
 
-            // --- A. XỬ LÝ KHÓA XE (Logic cũ) ---
+            // --- [ĐOẠN CODE MỚI THÊM VÀO] ---
             let carsData = await response.json();
-            
-            // Lấy danh sách ID xe đã thuê từ LocalStorage
+
+            // A. Lấy danh sách ID các xe đã đặt từ bộ nhớ trình duyệt (LocalStorage)
             const bookedIDs = JSON.parse(localStorage.getItem('booked_car_ids')) || [];
 
-            // Duyệt và khóa xe
+            // B. Duyệt qua từng xe, nếu ID nằm trong "sổ đen" thì đổi status thành 'busy'
             carsData = carsData.map(car => {
+                // Kiểm tra xem ID xe này có trong danh sách đã đặt không
                 if (bookedIDs.includes(car.id)) {
-                    car.status = 'busy'; 
+                    car.status = 'busy'; // Khóa xe lại
                 }
                 return car;
             });
 
+            // C. Lưu dữ liệu đã xử lý vào state
             this.state.cars = carsData;
+            // -------------------------------
+
             this.state.filteredCars = [...this.state.cars];
 
-            // --- B. XỬ LÝ KHÓA TÀI XẾ (PHẦN MỚI THÊM VÀO) ---
-            // 1. Tạo dữ liệu Tài xế giả
-            let driversData = this.createMockDrivers();
-
-            // 2. Lấy danh sách ID tài xế đã thuê từ LocalStorage
-            // (Danh sách này được tạo ra nhờ hàm saveBookingToLocal bạn vừa sửa)
-            const bookedDriverIDs = JSON.parse(localStorage.getItem('booked_driver_ids')) || [];
-
-            // 3. Duyệt và khóa tài xế
-            driversData = driversData.map(drv => {
-                if (bookedDriverIDs.includes(drv.id)) {
-                    drv.status = 'busy'; // Chuyển trạng thái sang bận
-                }
-                return drv;
-            });
-
-            this.state.drivers = driversData;
-            // ------------------------------------------------
+            // 3. Tạo dữ liệu Tài xế giả
+            this.state.drivers = this.createMockDrivers();
 
             // 4. Lấy đơn hàng cũ từ LocalStorage
             const rawOrders = localStorage.getItem('tranghy_orders');
