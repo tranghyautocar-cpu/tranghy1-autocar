@@ -1,5 +1,5 @@
 [
-    { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota2024.jpg", "transmission": "Tự động" },
+    { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động" },
     { "id": 2, "name": "VinFast VF8", "category": "5 chỗ", "price": 1500000, "image_url": "images/vinvf8.jpg", "transmission": "Tự động" },
     { "id": 3, "name": "Hyundai SantaFe", "category": "7 chỗ", "price": 1800000, "image_url": "images/santafe.jpg", "transmission": "Tự động" },
     { "id": 4, "name": "Kia Morning", "category": "4 chỗ", "price": 600000, "image_url": "images/kiamoning.jpg", "transmission": "Số sàn" },
@@ -7,7 +7,7 @@
     { "id": 6, "name": "Mitsubishi Xpander", "category": "7 chỗ", "price": 1000000, "image_url": "images/xpander.jpg", "transmission": "Tự động" },
     { "id": 7, "name": "Mercedes C200", "category": "5 chỗ", "price": 2800000, "image_url": "images/e200.jpg", "transmission": "Tự động" },
     { "id": 8, "name": "Ford Everest", "category": "7 chỗ", "price": 2200000, "image_url": "images/foreverret.jpg", "transmission": "Tự động" },
-    { "id": 9, "name": "Honda City", "category": "5 chỗ", "price": 800000, "image_url": "images/hondaciti.jpg", "transmission": "Tự động" },
+    { "id": 9, "name": "Honda City", "category": "5 chỗ", "price": 800000, "image_url": "images/honda_citi.jpg", "transmission": "Tự động" },
     { "id": 10, "name": "Kia Carnival", "category": "7 chỗ", "price": 3500000, "image_url": "images/kia_carnival.jpg", "transmission": "Tự động" },
     { "id": 11, "name": "Hyundai Accent", "category": "5 chỗ", "price": 750000, "image_url": "images/huyndai_acen.jpg", "transmission": "Số sàn" },
     { "id": 12, "name": "BMW 320i", "category": "5 chỗ", "price": 3200000, "image_url": "images/bmw_320i.jpg", "transmission": "Tự động" },
