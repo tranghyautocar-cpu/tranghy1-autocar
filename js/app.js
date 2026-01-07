@@ -669,7 +669,7 @@ const pdf = new jsPDF('p', 'mm', 'a4');
     try {
         // 1. Lấy dữ liệu thô từ LocalStorage
         const rawCars = localStorage.getItem('tranghy_cars');
-        const rawDrivers = localStorage.getItem('tranghy_drivers'); // Đồng bộ lại tên key
+        const rawDrivers = localStorage.getItem('tranghy_drivers'); 
         const rawOrders = localStorage.getItem('tranghy_orders');
 
         let cars = rawCars ? JSON.parse(rawCars) : [];
@@ -712,17 +712,19 @@ const pdf = new jsPDF('p', 'mm', 'a4');
     }
 },
 
-    renderAll() {
-        const dash = document.getElementById('admin-dashboard');
-        if (dash) {
-            dash.innerHTML = `
-                <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-bold">${this.state.cars.filter(c => c.status !== 'busy').length} XE SẴN SÀNG</span>
-                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-bold">${this.state.drivers.filter(d => d.status !== 'busy').length} TÀI XẾ</span>`;
-        }
-        this.renderCars();
-        this.renderDriversHome();
-    },
-
+ renderAll() {
+    const dash = document.getElementById('admin-dashboard');
+    if (dash) {
+        dash.innerHTML = `
+            <span class="bg-blue-100 text-blue-600 px-3 py-1 rounded-lg text-[10px] font-bold">${this.state.cars.filter(c => c.status !== 'busy').length} XE SẴN SÀNG</span>
+            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-lg text-[10px] font-bold">${this.state.drivers.filter(d => d.status !== 'busy').length} TÀI XẾ</span>`;
+    }
+    this.renderCars();
+    this.renderDriversHome();
+    if (typeof this.updateAdminStats === 'function') {
+        this.updateAdminStats();
+    }
+},
  getFallbackDrivers: () => {
     return Array.from({ length: 20 }, (_, i) => ({
         id: 100 + i,
