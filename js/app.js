@@ -536,74 +536,125 @@ updateAdminStats: function() {
     },
 
     // HÀM TẠO HỢP ĐỒNG PDF & ZALO (Nâng cấp CORS & Scope)
-    async processContractAndZalo(type) {
-        // Lấy dữ liệu tùy theo loại (Xe hay Tài xế)
-        const nameId = type === 'xe' ? 'cust-fullname' : 'dr-cust-fullname';
-        const phoneId = type === 'xe' ? 'cust-phone' : 'dr-cust-phone';
-        const totalId = type === 'xe' ? 'modal-total-price' : 'dr-total';
+  async processContractAndZalo(type) {
+    // 1. Lấy dữ liệu tùy theo loại (Xe hay Tài xế)
+    const nameId = type === 'xe' ? 'cust-fullname' : 'dr-cust-fullname';
+    const phoneId = type === 'xe' ? 'cust-phone' : 'dr-cust-phone';
+    const totalId = type === 'xe' ? 'modal-total-price' : 'dr-total';
+    const startId = type === 'xe' ? 'modal-start-date' : 'dr-start-date';
+    const endId = type === 'xe' ? 'modal-end-date' : 'dr-end-date';
 
-        const name = document.getElementById(nameId).value;
-        const phone = document.getElementById(phoneId).value;
-        const total = document.getElementById(totalId).innerText;
+    const name = document.getElementById(nameId).value;
+    const phone = document.getElementById(phoneId).value;
+    const total = document.getElementById(totalId).innerText;
+    const startDate = document.getElementById(startId).value;
+    const endDate = document.getElementById(endId).value;
+    const carName = type === 'xe' ? (this.state.selectedCar?.name || "Phương tiện tự lái") : "Dịch vụ Tài xế";
 
-        if (!name || !phone) return;
+    if (!name || !phone || !startDate || !endDate) {
+        alert("Thiếu thông tin để tạo hợp đồng!");
+        return;
+    }
 
         // HTML Hợp đồng
-      const contractHtml = `
-    <div id="pdf-template" style="width: 794px; padding: 60px; background: white; font-family: 'Times New Roman', serif; color: #333; line-height: 1.5;">
-        <div style="text-align: center; margin-bottom: 10px;">
-            <h4 style="margin: 0; text-transform: uppercase; font-size: 14px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
-            <p style="margin: 5px 0; font-weight: bold;">Độc lập - Tự do - Hạnh phúc</p>
-            <div style="width: 150px; height: 1px; background: black; margin: 0 auto;"></div>
+   const contractHtml = `
+    <div id="pdf-template" style="width: 794px; padding: 50px 60px; background: white; font-family: 'Times New Roman', serif; color: #1a1a1a; line-height: 1.6; position: relative;">
+        <div style="text-align: center; margin-bottom: 20px;">
+            <h4 style="margin: 0; text-transform: uppercase; font-size: 13px; letter-spacing: 1px;">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</h4>
+            <p style="margin: 5px 0; font-weight: bold; font-size: 14px;">Độc lập - Tự do - Hạnh phúc</p>
+            <div style="width: 160px; height: 1.5px; background: #000; margin: 5px auto;"></div>
         </div>
 
-        <div style="margin-bottom: 30px;">
-            <h2 style="color: #1e40af; margin: 0;">TRANGHY AUTOCAR</h2>
-            <p style="font-size: 12px;">Số: ${Date.now()}/HĐTX-TH</p>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 30px; border-bottom: 2px solid #1e40af; padding-bottom: 10px;">
+            <div>
+                <h2 style="color: #1e40af; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">TRANGHY AUTOCAR</h2>
+                <p style="font-size: 11px; margin: 2px 0; color: #666;">Dịch vụ cho thuê xe chuyên nghiệp & Uy tín</p>
+            </div>
+            <div style="text-align: right;">
+                <p style="font-size: 12px; margin: 0;">Số: <strong>${Date.now()}/HĐTX-TH</strong></p>
+                <p style="font-size: 12px; margin: 0;">Ngày lập: ${new Date().toLocaleDateString('vi-VN')}</p>
+            </div>
         </div>
 
-        <h1 style="text-align: center; color: #1e40af; font-size: 22px; text-transform: uppercase;">HỢP ĐỒNG CHO THUÊ XE VÀ DỊCH VỤ</h1>
+        <h1 style="text-align: center; color: #1e40af; font-size: 20px; text-transform: uppercase; margin-bottom: 30px; letter-spacing: 1px;">HỢP ĐỒNG CHO THUÊ DỊCH VỤ VẬN TẢI ĐIỆN TỬ</h1>
 
-        <div style="margin-top: 25px;">
-            <p><strong>BÊN A (Bên cho thuê):</strong> TRANGHY AUTOCAR</p>
-            <p>Đại diện: <strong>Ông Bùi Văn Tráng</strong></p>
-            <p>Địa chỉ: tp Hưng Yên/ tỉnh Hưng Yên</p>
-            
-            <p style="margin-top: 15px;"><strong>BÊN B (Bên thuê):</strong> ${name.toUpperCase()}</p>
-            <p>Số điện thoại: ${phone}</p>
-            <p>Nội dung thuê: ${type === 'xe' ? 'Thuê phương tiện tự lái' : 'Thuê tài xế chuyên nghiệp'}</p>
+        <div style="font-style: italic; font-size: 12px; margin-bottom: 20px; color: #444;">
+            <p style="margin: 2px 0;">- Căn cứ Bộ luật Dân sự số 91/2015/QH13 và các văn bản hướng dẫn thi hành;</p>
+            <p style="margin: 2px 0;">- Căn cứ Luật Thương mại số 36/2005/QH11;</p>
+            <p style="margin: 2px 0;">- Căn cứ nhu cầu và khả năng của hai bên.</p>
         </div>
 
-        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-            <tr style="background: #f3f4f6;">
-                <th style="border: 1px solid #ddd; padding: 12px; text-align: left;">Mô tả dịch vụ</th>
-                <th style="border: 1px solid #ddd; padding: 12px; text-align: right;">Thành tiền</th>
-            </tr>
-            <tr>
-                <td style="border: 1px solid #ddd; padding: 12px;">Thanh toán phí dịch vụ cho hệ thống Tranghy Autocar</td>
-                <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #1e40af; font-size: 16px;">${total}</td>
-            </tr>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
+            <div style="border-left: 3px solid #1e40af; padding-left: 15px;">
+                <p style="font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #1e40af;">BÊN A (Bên cho thuê)</p>
+                <p style="margin: 3px 0; font-size: 13px;">Đại diện: <strong>Ông Bùi Văn Tráng</strong></p>
+                <p style="margin: 3px 0; font-size: 13px;">Địa chỉ: TP Hưng Yên, Tỉnh Hưng Yên</p>
+                <p style="margin: 3px 0; font-size: 13px;">Hotline: 0353.979.614</p>
+            </div>
+            <div style="border-left: 3px solid #059669; padding-left: 15px;">
+                <p style="font-weight: bold; text-transform: uppercase; margin-bottom: 5px; color: #059669;">BÊN B (Bên thuê)</p>
+                <p style="margin: 3px 0; font-size: 13px;">Khách hàng: <strong>${name.toUpperCase()}</strong></p>
+                <p style="margin: 3px 0; font-size: 13px;">Điện thoại: ${phone}</p>
+                <p style="margin: 3px 0; font-size: 13px;">Dịch vụ: ${type === 'xe' ? 'Thuê phương tiện tự lái' : 'Thuê tài xế chuyên nghiệp'}</p>
+            </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px;">
+            <thead>
+                <tr style="background: #1e40af; color: white;">
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: left;">Mô tả chi tiết</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Ngày nhận</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: center;">Ngày trả</th>
+                    <th style="border: 1px solid #ddd; padding: 10px; text-align: right;">Thành tiền</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="border: 1px solid #ddd; padding: 12px;">
+                        <strong>${type === 'xe' ? 'Phương tiện: ' + carName : 'Dịch vụ: Tài xế riêng'}</strong><br>
+                        <span style="font-size: 11px; color: #666;">Xác nhận qua hệ thống Tranghy Autocar</span>
+                    </td>
+                    <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">${startDate}</td>
+                    <td style="border: 1px solid #ddd; padding: 12px; text-align: center;">${endDate}</td>
+                    <td style="border: 1px solid #ddd; padding: 12px; text-align: right; font-weight: bold; color: #1e40af;">${total}</td>
+                </tr>
+                <tr style="background: #f9fafb;">
+                    <td colspan="3" style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold;">TỔNG THANH TOÁN:</td>
+                    <td style="border: 1px solid #ddd; padding: 10px; text-align: right; font-weight: bold; color: #b91c1c; font-size: 15px;">${total}</td>
+                </tr>
+            </tbody>
         </table>
 
-        <div style="margin-top: 25px; font-size: 13px; border: 1px solid #eee; padding: 15px; border-radius: 5px;">
-            <p style="font-weight: bold; text-decoration: underline; margin-bottom: 10px;">ĐIỀU KHOẢN CAM KẾT:</p>
-            <ol style="padding-left: 20px;">
-                <li>Bên B cam kết sử dụng dịch vụ đúng mục đích, không vi phạm pháp luật Việt Nam.</li>
-                <li>Bên A có trách nhiệm đảm bảo chất lượng xe và tài xế như đã thỏa thuận.</li>
-                <li>Hợp đồng điện tử này có giá trị xác nhận thanh toán và thực hiện nghĩa vụ giữa hai bên.</li>
+        <div style="margin-top: 25px; font-size: 12px; background: #f8fafc; padding: 15px; border: 1px solid #e2e8f0; border-radius: 8px;">
+            <p style="font-weight: bold; text-decoration: underline; margin-bottom: 8px; color: #1e40af;">ĐIỀU KHOẢN VÀ CAM KẾT CHUNG:</p>
+            <ol style="padding-left: 18px; margin: 0; space-y: 5px;">
+                <li><strong>Trách nhiệm Bên B:</strong> Đảm bảo sử dụng phương tiện đúng mục đích, tuân thủ Luật giao thông đường bộ. Chịu hoàn toàn trách nhiệm dân sự/hình sự nếu phát sinh vi phạm trong thời gian thuê.</li>
+                <li><strong>Trách nhiệm Bên A:</strong> Cung cấp phương tiện/dịch vụ đúng tiêu chuẩn chất lượng và thời gian đã thỏa thuận.</li>
+                <li><strong>Giá trị pháp lý:</strong> Hợp đồng này là hợp đồng điện tử có giá trị pháp lý tương đương văn bản giấy theo Luật Giao dịch điện tử. Dữ liệu thanh toán được lưu vết trên hệ thống ngân hàng và máy chủ Tranghy Autocar.</li>
             </ol>
         </div>
 
-        <div style="margin-top: 40px; display: flex; justify-content: space-between;">
-            <div style="text-align: center; width: 200px;">
-                <p style="font-size: 12px;"><strong>ĐẠI DIỆN BÊN B</strong></p>
-                <p style="margin-top: 50px; font-size: 12px; color: #666;">(Đã xác thực qua OTP/Phone)</p>
+        <div style="margin-top: 40px; display: flex; justify-content: space-between; align-items: flex-start;">
+            <div style="text-align: center; width: 220px;">
+                <p style="font-size: 12px; font-weight: bold; text-transform: uppercase;">ĐẠI DIỆN BÊN B</p>
+                <p style="margin-top: 50px; font-size: 13px; font-weight: bold;">${name.toUpperCase()}</p>
+                <p style="font-size: 11px; color: #059669; font-style: italic;">(Đã xác thực điện tử qua số điện thoại: ${phone})</p>
             </div>
-            <div style="text-align: center; width: 200px;">
-                <p style="font-size: 12px;"><strong>ĐẠI DIỆN BÊN A</strong></p>
-                <div style="margin: 10px auto; border: 2px solid #059669; color: #059669; padding: 5px; font-weight: bold; transform: rotate(-5deg); width: fit-content;">ĐÃ THANH TOÁN</div>
-                <p style="font-size: 12px; color: #1e40af; font-weight: bold;">TRANGHY AUTOCAR</p>
+            <div style="text-align: center; width: 220px; position: relative;">
+                <p style="font-size: 12px; font-weight: bold; text-transform: uppercase;">ĐẠI DIỆN BÊN A</p>
+                
+                <div style="margin: 10px auto; border: 3px double #b91c1c; color: #b91c1c; padding: 8px; font-weight: bold; transform: rotate(-10deg); width: fit-content; border-radius: 5px; background: rgba(185, 28, 28, 0.05);">
+                    <p style="margin: 0; font-size: 14px;">TRANGHY AUTOCAR</p>
+                    <p style="margin: 0; font-size: 12px;">ĐÃ THANH TOÁN</p>
+                    <p style="margin: 0; font-size: 9px;">${new Date().toLocaleTimeString('vi-VN')} - ${new Date().toLocaleDateString('vi-VN')}</p>
+                </div>
+                
+                <p style="font-size: 13px; font-weight: bold; color: #1e40af;">BÙI VĂN TRÁNG</p>
             </div>
+        </div>
+
+        <div style="position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px solid #f1f5f9; padding-top: 10px;">
+            Hợp đồng này được tạo tự động bởi hệ thống Tranghy Autocar - Bảo mật và an toàn 100%
         </div>
     </div>`;
    const element = document.createElement('div');
