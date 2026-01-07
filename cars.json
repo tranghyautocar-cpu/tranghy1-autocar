@@ -20,7 +20,7 @@
     { "id": 19, "name": "Toyota Innova", "category": "7 chỗ", "price": 1100000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động" },
     { "id": 20, "name": "Kia K3", "category": "5 chỗ", "price": 900000, "image_url": "images/kia_k3.jpg", "transmission": "Tự động" },
     { "id": 21, "name": "Honda CR-V", "category": "7 chỗ", "price": 1600000, "image_url": "images/cr-v.jpg", "transmission": "Tự động" },
-    { "id": 22, "name": "Hyundai i10", "category": "4 chỗ", "price": 500000, "image_url": "images/huyn_i10.jpg", "transmission": "Số sàn" },
+    { "id": 22, "name": "Huyndai i10", "category": "4 chỗ", "price": 500000, "image_url": "images/huyn_i10.jpg", "transmission": "Số sàn" },
     { "id": 23, "name": "Mercedes E300", "category": "5 chỗ", "price": 4500000, "image_url": "images/e300.jpg", "transmission": "Tự động" },
     { "id": 24, "name": "Ford Ranger", "category": "5 chỗ", "price": 1400000, "image_url": "images/foer_ranger.jpg", "transmission": "Tự động" }
 ]
