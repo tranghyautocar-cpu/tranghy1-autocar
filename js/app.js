@@ -817,3 +817,54 @@ const pdf = new jsPDF('p', 'mm', 'a4');
 };
 
 document.addEventListener('DOMContentLoaded', () => app.init());
+
+// --- THÊM ĐOẠN NÀY VÀO JS/APP.JS ---
+
+// 1. Cấu hình đường dẫn API (Trỏ đúng cổng 5000)
+const API_URL = 'http://localhost:5000/api/cars';
+const IMG_URL = 'http://localhost:5000/'; // Để load ảnh
+
+// 2. Hàm lấy dữ liệu và hiển thị
+async function loadCars() {
+    try {
+        console.log("⏳ Đang tải danh sách xe từ Server...");
+        const response = await fetch(API_URL);
+        const cars = await response.json();
+
+        console.log("✅ Đã lấy được:", cars.length, "xe");
+
+        // Tìm cái khung chứa xe bên HTML
+        const container = document.getElementById('car-list-container');
+        if (!container) return; 
+
+        container.innerHTML = ''; // Xóa sạch cũ
+
+        // Duyệt qua từng xe và tạo HTML
+        cars.forEach(car => {
+            const carHTML = `
+                <div class="col-md-4 car-item"> <div class="card">
+                        <img src="${IMG_URL}${car.image_url}" class="card-img-top" alt="${car.name}" 
+                             onerror="this.src='https://via.placeholder.com/300?text=No+Image'">
+                        <div class="card-body">
+                            <h5 class="card-title">${car.name}</h5>
+                            <p class="card-text">
+                                <strong>Loại:</strong> ${car.category} <br>
+                                <strong>Hộp số:</strong> ${car.transmission} <br>
+                                <span class="text-danger fw-bold">${Number(car.price_per_day).toLocaleString('vi-VN')}đ / ngày</span>
+                            </p>
+                            <button class="btn btn-primary" onclick="openBookingModal(${car.id}, '${car.name}')">Thuê Ngay</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            container.innerHTML += carHTML;
+        });
+
+    } catch (error) {
+        console.error("❌ Lỗi không lấy được xe:", error);
+        alert("Không thể kết nối tới Server Backend (Port 5000)!");
+    }
+}
+
+// 3. Chạy hàm này ngay khi web tải xong
+document.addEventListener('DOMContentLoaded', loadCars);
