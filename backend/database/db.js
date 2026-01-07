@@ -50,12 +50,13 @@ async function initDatabase() {
             )`);
 
             const carModels = [
-                { name: "Mercedes S450 Luxury", cat: "4 chỗ", price: 4000000, img: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800", seats: 4 },
-                { name: "Toyota Camry 2024", cat: "5 chỗ", price: 1200000, img: "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800", seats: 5 },
-                { name: "Ford Everest Bi-Turbo", cat: "7 chỗ", price: 1500000, img: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=800", seats: 7 },
-                { name: "Hyundai Accent", cat: "5 chỗ", price: 700000, img: "https://images.unsplash.com/photo-1590362891175-3794ec169ec5?w=800", seats: 5 },
-                { name: "VinFast VF9 Plus", cat: "7 chỗ", price: 2500000, img: "https://images.unsplash.com/photo-1662546411505-f938c5b967ec?w=800", seats: 7 }
-            ];
+    // Sửa lại property 'img' thành đường dẫn local: "images/ten_file.jpg"
+    { name: "Mercedes S450 Luxury", cat: "4 chỗ", price: 4000000, img: "images/e300.jpg", seats: 4 },
+    { name: "Toyota Camry 2024", cat: "5 chỗ", price: 1200000, img: "images/vios 2025", seats: 5 },
+    { name: "Ford Everest Bi-Turbo", cat: "7 chỗ", price: 1500000, img: "images/foreverret.jpg", seats: 7 },
+    { name: "Hyundai Accent", cat: "5 chỗ", price: 700000, img: "images/huyndai acen.jpg", seats: 5 },
+    { name: "VinFast VF9 Plus", cat: "7 chỗ", price: 2500000, img: "images/vin vf9.jpg", seats: 7 }
+];
 
             for (let i = 1; i <= 40; i++) {
                 const m = carModels[i % carModels.length];
