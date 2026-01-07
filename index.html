@@ -126,34 +126,41 @@
         .terms-scroll::-webkit-scrollbar { width: 4px; }
         .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         /* Định vị bộ nút */
+/* Định vị bộ nút bên phải */
 .fixed-contact-buttons {
     position: fixed;
     bottom: 30px;
-    left: 20px; /* Hoặc right: 20px tùy bạn thích */
+    right: 20px; /* Đã chuyển sang bên phải */
     z-index: 9999;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 12px;
 }
 
-/* Style chung cho nút */
 .contact-btn {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s;
+    transition: all 0.3s ease;
 }
 
-.call-btn { background: #0084ff; color: white; font-size: 24px; }
-.zalo-btn { background: #fff; }
-.zalo-btn img { width: 40px; }
+/* Nút Gọi: Màu xanh thương hiệu */
+.call-btn { background: #2563eb; color: white; font-size: 20px; }
 
-/* Hiệu ứng nhấp nháy (Pulse) */
+/* Nút Zalo: Sửa lỗi hiển thị ảnh */
+.zalo-btn { background: #0088ff; overflow: hidden; }
+.zalo-btn img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover;
+}
+
+/* Hiệu ứng nhấp nháy lan tỏa */
 .pulse {
     position: absolute;
     width: 100%;
@@ -161,15 +168,15 @@
     border-radius: 50%;
     background: inherit;
     z-index: -1;
-    animation: pulse-animation 1.5s infinite;
+    animation: pulse-animation 1.8s infinite;
 }
 
 @keyframes pulse-animation {
-    0% { transform: scale(1); opacity: 0.8; }
-    100% { transform: scale(1.6); opacity: 0; }
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(1.8); opacity: 0; }
 }
 
-.contact-btn:hover { transform: scale(1.1); }
+.contact-btn:hover { transform: scale(1.1) translateX(-5px); }
     </style>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
@@ -1121,13 +1128,13 @@ app.handleDriverBooking = function() {
 </footer>
 <div id="pdf-template" style="position: absolute; left: -9999px; top: -9999px;">
     </div>
-    <div class="fixed-contact-buttons">
-    <a href="tel:0353979614" class="contact-btn call-btn">
+ <div class="fixed-contact-buttons">
+    <a href="tel:0353979614" class="contact-btn call-btn" title="Gọi điện">
         <i class="fas fa-phone-alt"></i>
         <span class="pulse"></span>
     </a>
     
-    <a href="https://zalo.me/0353979614" target="_blank" class="contact-btn zalo-btn">
+    <a href="https://zalo.me/0353979614" target="_blank" class="contact-btn zalo-btn" title="Chat Zalo">
         <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_Zalo.svg" alt="Zalo">
         <span class="pulse"></span>
     </a>
