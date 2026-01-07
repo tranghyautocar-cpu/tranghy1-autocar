@@ -420,147 +420,322 @@ updateAdminStats: function() {
     // ============================================================
     // 2. HÀM XỬ LÝ ĐẶT TÀI XẾ (ĐÃ NÂNG CẤP & SỬA LỖI)
     // ============================================================
-    async handleDriverBooking() {
-        // 1. Kiểm tra điều khoản
-        if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
+   async handleBooking() {
 
-        // 2. Lấy thông tin
-        const fullname = document.getElementById('dr-cust-fullname').value.trim();
-        const phone = document.getElementById('dr-cust-phone').value.trim();
-        const cccd = document.getElementById('dr-cust-cccd').value.trim();
-        const startDate = document.getElementById('dr-start-date').value;
-        const endDate = document.getElementById('dr-end-date').value;
+        // Kiểm tra điều khoản
 
-        if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
+        if (!document.getElementById('agree-contract')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
-        // 3. Chuẩn bị dữ liệu
+
+
+        // Lấy thông tin từ form
+
+        const fullname = document.getElementById('cust-fullname').value.trim();
+
+        const phone = document.getElementById('cust-phone').value.trim();
+
+        const cccd = document.getElementById('cust-cccd').value.trim();
+
+        const location = document.getElementById('cust-location')?.value || "Tại Gara";
+
+        const startDate = document.getElementById('modal-start-date')?.value;
+
+        const endDate = document.getElementById('modal-end-date')?.value;
+
+
+
+        // Validate
+
+        if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng điền đầy đủ thông tin!");
+
+
+
+        // Dữ liệu dùng cho Google Sheet (Giữ nguyên cấu trúc cũ của bạn)
+
         const orderData = {
-            carName: "TÀI XẾ: " + this.state.selectedDriver.name,
+
+            carName: this.state.selectedCar.name,
+
             custName: fullname,
+
             phone: phone,
+
             cccd: cccd,
+
             startDate: startDate,
+
             endDate: endDate,
-            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-            location: "Dịch vụ Tài xế riêng"
+
+            duration: this.state.days + " ngày",
+
+            totalPrice: this.formatMoney(this.state.totalPrice),
+
+            location: location
+
         };
 
-        // --- [QUAN TRỌNG] LƯU DỮ LIỆU ĐỂ IN PDF ---
-        this.state.tempOrderData = orderData;
-        // -----------------------------------------
 
-        // 4. Gửi về Admin Dashboard
+
+        // --- [QUAN TRỌNG] THÊM ĐOẠN NÀY ĐỂ GỬI VỀ ADMIN ---
+
         const adminOrder = {
-            id: 'TX' + Math.floor(Math.random() * 10000),
-            customerName: fullname,
+
+            id: 'DH' + Math.floor(Math.random() * 10000),
+
+            customerName: fullname,   // Admin cần key là customerName
+
             customerPhone: phone,
-            carName: "Tài xế: " + this.state.selectedDriver.name,
+
+            carName: this.state.selectedCar.name,
+
             date: `${startDate} -> ${endDate}`,
-            totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-            status: 'pending',
+
+            totalPrice: this.formatMoney(this.state.totalPrice),
+
+            status: 'pending',        // Trạng thái chờ duyệt
+
             createdAt: new Date().toISOString()
+
         };
+
+
+
+        // Lưu vào LocalStorage cho Admin thấy
 
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
+
         currentOrders.push(adminOrder);
+
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
 
-        // 5. Lưu trạng thái "Đang bận" (Gọi hàm đã khai báo ở trên)
-        if (typeof this.saveBookingToLocal === 'function') {
-            this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
-        }
+        // ----------------------------------------------------
 
-        // 6. Gửi Sheet
+
+
+        // Gửi Google Sheet (Giữ nguyên)
+
         this.sendToSheet(orderData);
-        
-        // 7. Cập nhật giao diện Admin (nếu có)
+
+       
+
+        // Cập nhật giao diện tạm thời (Nếu bạn vẫn muốn dùng hàm cũ này)
+
         if(typeof this.addOrderToLocal === 'function') {
-            this.addOrderToLocal({
+
+             this.addOrderToLocal({
+
                 customer: fullname,
+
                 product: orderData.carName,
+
                 range: `${startDate} ➔ ${endDate}`,
+
                 status: "Chờ duyệt"
+
             });
+
         }
 
-        // 8. Mở QR Thanh toán
-        const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
-        // Tham số 'taixe' giúp verifyPayment biết cần in hợp đồng tài xế
-        this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
 
-        this.closeDriver();
+
+        // Mở QR Thanh toán (Giữ nguyên)
+
+        const memo = `THUE ${this.state.selectedCar.name.substring(0,10)} ${phone}`;
+
+        this.generatePaymentQR(this.state.totalPrice, memo, 'xe');
+
+
+
+        this.closeCar();
+
     },
   // 2. XỬ LÝ ĐẶT TÀI XẾ (Đã sửa để Admin nhận được đơn)
- async handleDriverBooking() {
-        // 1. Kiểm tra điều khoản
+    async handleDriverBooking() {
+
         if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
-        // 2. Lấy thông tin
+
+
         const fullname = document.getElementById('dr-cust-fullname').value.trim();
+
         const phone = document.getElementById('dr-cust-phone').value.trim();
+
         const cccd = document.getElementById('dr-cust-cccd').value.trim();
+
         const startDate = document.getElementById('dr-start-date').value;
+
         const endDate = document.getElementById('dr-end-date').value;
+
+
 
         if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
 
-        // 3. Chuẩn bị dữ liệu
+
+
+        // Dữ liệu Google Sheet (Giữ nguyên)
+
         const orderData = {
+
             carName: "TÀI XẾ: " + this.state.selectedDriver.name,
+
             custName: fullname,
+
             phone: phone,
+
             cccd: cccd,
+
             startDate: startDate,
+
             endDate: endDate,
+
             totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+
             location: "Dịch vụ Tài xế riêng"
+
         };
 
-        // --- [MỚI] THÊM ĐÚNG DÒNG NÀY ĐỂ IN ĐƯỢC PDF ---
-        this.state.tempOrderData = orderData; 
-        // -----------------------------------------------
 
-        // 4. Gửi về Admin Dashboard
+
+        // --- [QUAN TRỌNG] THÊM ĐOẠN NÀY ĐỂ GỬI VỀ ADMIN ---
+
         const adminOrder = {
-            id: 'TX' + Math.floor(Math.random() * 10000),
+
+            id: 'TX' + Math.floor(Math.random() * 10000), // Mã đơn TX
+
             customerName: fullname,
+
             customerPhone: phone,
+
             carName: "Tài xế: " + this.state.selectedDriver.name,
+
             date: `${startDate} -> ${endDate}`,
+
             totalPrice: this.formatMoney(this.state.currentPaymentAmount),
+
             status: 'pending',
+
             createdAt: new Date().toISOString()
+
         };
+
+
 
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
+
         currentOrders.push(adminOrder);
+
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
 
-        // 5. Lưu trạng thái "Đang bận" (Khóa tài xế)
-        // Kiểm tra xem hàm có tồn tại không để tránh lỗi liệt nút bấm
-        if (typeof this.saveBookingToLocal === 'function') {
-            this.saveBookingToLocal(this.state.selectedDriver.id, 'driver');
-        }
+        // -----------------------------------------------------------
 
-        // 6. Gửi Sheet
+
+
+        // Gửi Sheet (Giữ nguyên)
+
         this.sendToSheet(orderData);
-        
-        // 7. Cập nhật giao diện Admin giả lập
+
+       
+
+        // Cập nhật giao diện tạm (Giữ nguyên nếu bạn dùng)
+
         if(typeof this.addOrderToLocal === 'function') {
+
             this.addOrderToLocal({
+
                 customer: fullname,
+
                 product: orderData.carName,
+
                 range: `${startDate} ➔ ${endDate}`,
+
                 status: "Chờ duyệt"
+
             });
+
         }
 
-        // 8. Mở QR Thanh toán
+
+
+        // Mở QR Thanh toán (Giữ nguyên)
+
         const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
-        // Tham số 'taixe' để báo cho hàm in biết là in hợp đồng tài xế
+
         this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
 
+
+
         this.closeDriver();
+
+    },
+
+    sendToSheet(data) {
+
+        fetch(this.CONFIG.SCRIPT_URL, {
+
+            method: 'POST',
+
+            mode: 'no-cors',
+
+            headers: { 'Content-Type': 'application/json' },
+
+            body: JSON.stringify(data)
+
+        }).catch(err => console.error("Lỗi gửi đơn:", err));
+
+    },
+
+
+
+    addOrderToLocal(data) {
+
+        const adminList = document.getElementById('admin-order-list');
+
+        const driverList = document.getElementById('driver-order-list');
+
+
+
+        if (adminList) {
+
+            const adminRow = `
+
+                <tr class="hover:bg-blue-50/50 border-b border-slate-50 animate-pulse">
+
+                    <td class="px-8 py-5"><p class="font-black text-slate-900 text-sm italic">${data.customer}</p></td>
+
+                    <td class="px-8 py-5 font-black text-blue-600 text-xs uppercase italic">${data.product}</td>
+
+                    <td class="px-8 py-5 text-xs font-black text-slate-500 italic">${data.range}</td>
+
+                    <td class="px-8 py-4"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">${data.status}</span></td>
+
+                </tr>`;
+
+            adminList.insertAdjacentHTML('afterbegin', adminRow);
+
+        }
+
+
+
+        if (driverList) {
+
+            const driverCard = `
+
+                <div class="p-6 bg-white rounded-3xl border-2 border-orange-400 shadow-xl animate-bounce">
+
+                    <div class="flex justify-between mb-2"><span class="bg-orange-400 text-white px-2 py-1 rounded text-[9px] font-black uppercase">Đơn mới phân công</span></div>
+
+                    <h5 class="text-lg font-black text-slate-900 uppercase italic leading-tight">${data.product}</h5>
+
+                    <p class="text-[11px] text-slate-500 font-bold uppercase mt-2">Khách: ${data.customer}</p>
+
+                    <p class="text-[10px] text-blue-600 font-black italic mt-1">Lịch: ${data.range}</p>
+
+                </div>`;
+
+            driverList.insertAdjacentHTML('afterbegin', driverCard);
+
+        }
+
     },
     // ============================================================
     // 9. THANH TOÁN & HỢP ĐỒNG (Đã tích hợp Logic)
@@ -785,7 +960,7 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         emailInput.value = "";
     },
 
-  async fetchInitialData() {
+ async fetchInitialData() {
         try {
             console.log("📂 Đang tải dữ liệu từ cars.json...");
 
