@@ -128,75 +128,79 @@
         /* Định vị bộ nút */
 /* Container cố định bên phải */
 .vip-contact-container {
-    position: fixed;
-    bottom: 40px;
-    right: 30px; /* Đảm bảo nằm bên phải */
-    z-index: 999999; /* Ưu tiên hiển thị cao nhất */
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-    align-items: flex-end;
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    align-items: flex-end !important;
 }
 
 .vip-btn {
-    display: flex;
-    align-items: center;
-    text-decoration: none !important;
-    position: relative;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important; /* Căn giữa theo chiều ngang */
+    position: relative !important;
+    width: 60px !important;
+    height: 60px !important;
 }
 
-/* Hộp chứa Icon tròn */
+/* Hộp icon tròn - Đảm bảo là trung tâm */
 .icon-box {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 2;
-    transition: all 0.3s;
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important; /* Để Pulse bám theo */
+    z-index: 2 !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
 }
 
-.fb-vip .icon-box { background: #1877F2; color: white; font-size: 26px; }
-.zalo-vip .icon-box { background: #0068ff; color: white; font-size: 26px; }
+/* Màu sắc icon */
+.fb-vip .icon-box { background: #1877F2 !important; color: white !important; font-size: 26px !important; }
+.zalo-vip .icon-box { background: #0068ff !important; color: white !important; font-size: 26px !important; }
 
-/* Nhãn chữ hiện ra khi hover */
-.btn-label {
-    background: rgba(0, 0, 0, 0.8);
-    color: white;
-    padding: 8px 20px;
-    border-radius: 30px;
-    font-size: 14px;
-    font-weight: bold;
-    margin-right: 15px;
-    opacity: 0;
-    transition: 0.3s;
-    white-space: nowrap;
-    pointer-events: none;
-}
-
-.vip-btn:hover .btn-label { opacity: 1; transform: translateX(-10px); }
-.vip-btn:hover .icon-box { transform: scale(1.1) rotate(360deg); }
-
-/* Hiệu ứng nhấp nháy tỏa tròn */
+/* Vòng tròn nhấp nháy - Ép căn giữa vào icon-box */
 .vip-pulse {
-    position: absolute;
-    right: 0;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    z-index: 1;
-    animation: vip-pulse-ring 2s infinite;
+    position: absolute !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important; /* Kỹ thuật căn giữa tuyệt đối */
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    animation: vip-pulse-ring 2s infinite !important;
 }
-.fb-vip .vip-pulse { background: #1877F2; }
-.zalo-vip .vip-pulse { background: #0068ff; }
+
+.fb-vip .vip-pulse { background: #1877F2 !important; }
+.zalo-vip .vip-pulse { background: #0068ff !important; }
 
 @keyframes vip-pulse-ring {
-    0% { transform: scale(1); opacity: 0.6; }
-    100% { transform: scale(2.2); opacity: 0; }
+    0% { transform: translate(-50%, -50%) scale(1); opacity: 0.7; }
+    100% { transform: translate(-50%, -50%) scale(2.2); opacity: 0; }
 }
-.contact-btn:hover { transform: scale(1.1) translateX(-5px); }
+
+/* Nhãn chữ (Label) */
+.btn-label {
+    position: absolute !important;
+    right: 75px !important; /* Đẩy sang bên trái của nút */
+    background: rgba(0, 0, 0, 0.8) !important;
+    color: white !important;
+    padding: 8px 15px !important;
+    border-radius: 20px !important;
+    font-size: 13px !important;
+    opacity: 0 !important;
+    white-space: nowrap !important;
+    transition: 0.3s !important;
+    pointer-events: none !important;
+}
+.vip-btn:hover .btn-label { opacity: 1 !important; }
     </style>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
