@@ -34,44 +34,61 @@ const getQuery = (sql, params = []) => {
 };
 
 async function initDatabase() {
-    console.log("🛠️  Hệ thống TrangHy Autocar đang kiểm tra dữ liệu...");
+    console.log("🛠️  Hệ thống TrangHy Autocar đang nạp dữ liệu chuẩn...");
 
     try {
-        const TARGET_CAR_COUNT = 25; 
-        const shouldReset = true; // True = Luôn làm mới dữ liệu xe để cập nhật ảnh
+        // --- DANH SÁCH 24 XE CỤ THỂ (Theo yêu cầu của bạn) ---
+        const carList = [
+            { name: "Toyota Camry 2024", category: "5", price: 1200000, image_url: "images/toyota2024.jpg" },
+            { name: "VinFast VF8", category: "5", price: 1500000, image_url: "images/vinvf8.jpg" },
+            { name: "Hyundai SantaFe", category: "7", price: 1800000, image_url: "images/santafe.jpg" },
+            { name: "Kia Morning", category: "4", price: 600000, image_url: "images/kiamoning.jpg" },
+            { name: "Mazda 3", category: "5", price: 950000, image_url: "images/mazda3.jpg" },
+            { name: "Mitsubishi Xpander", category: "7", price: 1000000, image_url: "images/xpander.jpg" },
+            { name: "Mercedes C200", category: "5", price: 2800000, image_url: "images/e200.jpg" },
+            { name: "Ford Everest", category: "7", price: 2200000, image_url: "images/foreverret.jpg" },
+            { name: "Honda City", category: "5", price: 800000, image_url: "images/hondaciti.jpg" },
+            { name: "Kia Carnival", category: "7", price: 3500000, image_url: "images/kia_carnival.jpg" },
+            { name: "Hyundai Accent", category: "5", price: 750000, image_url: "images/huyndai_acen.jpg" },
+            { name: "BMW 320i", category: "5", price: 3200000, image_url: "images/bmw_320i.jpg" },
+            { name: "Toyota Fortuner", category: "7", price: 1700000, image_url: "images/toyota_fortune.jpg" },
+            { name: "VinFast VF9", category: "7", price: 2500000, image_url: "images/vin_vf9.jpg" },
+            { name: "Kia Soluto", category: "4", price: 550000, image_url: "images/kia_soluto.jpg" },
+            { name: "Toyota Vios", category: "5", price: 700000, image_url: "images/vios_2025.jpg" },
+            { name: "Mazda CX-5", category: "5", price: 1300000, image_url: "images/cx5.jpg" },
+            { name: "Hyundai Tucson", category: "5", price: 1250000, image_url: "images/tucson.jpg" },
+            { name: "Toyota Innova", category: "7", price: 1100000, image_url: "images/toyota_2024.jpg" },
+            { name: "Kia K3", category: "5", price: 900000, image_url: "images/kia_k3.jpg" },
+            { name: "Honda CR-V", category: "7", price: 1600000, image_url: "images/cr-v.jpg" },
+            { name: "Hyundai i10", category: "4", price: 500000, image_url: "images/hyun_i10.jpg" },
+            { name: "Mercedes E300", category: "5", price: 4500000, image_url: "images/mercedes_e300.jpg" },
+            { name: "Ford Ranger", category: "5", price: 1400000, image_url: "images/foer_ranger.jpg" }
+        ];
 
-        // --- BƯỚC 1: BẢNG XE (CARS) ---
-        if (shouldReset) {
-            await runQuery("DROP TABLE IF EXISTS cars");
-        }
+        // --- BƯỚC 1: XỬ LÝ BẢNG XE (Reset sạch sẽ để nạp list mới) ---
+        // Xóa bảng cũ đi để không bị trùng lặp với dữ liệu random trước đó
+        await runQuery("DROP TABLE IF EXISTS cars");
 
-        await runQuery(`CREATE TABLE IF NOT EXISTS cars (
+        // Tạo lại bảng mới
+        await runQuery(`CREATE TABLE cars (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT, category TEXT, transmission TEXT, 
             price_per_day REAL, image_url TEXT, seats INTEGER, 
             location_id TEXT, status TEXT DEFAULT 'available'
         )`);
 
-        const carCheck = await getQuery("SELECT count(*) as count FROM cars");
-        
-        if (carCheck.count !== TARGET_CAR_COUNT) {
-            console.log(`♻️  Đang tái tạo ${TARGET_CAR_COUNT} xe chuẩn...`);
-            if (!shouldReset) await runQuery("DELETE FROM cars");
+        console.log(`📥 Đang nạp ${carList.length} xe vào hệ thống...`);
 
-            const carModels = [
-                { name: "Mercedes S450 Luxury", cat: "4 chỗ", price: 4000000, img: "images/e300.jpg", seats: 4 },
-                { name: "Toyota Vios 2025",     cat: "5 chỗ", price: 800000,  img: "images/vios_2025.jpg", seats: 5 },
-                { name: "Ford Everest Bi-Turbo",cat: "7 chỗ", price: 1500000, img: "images/foreverret.jpg", seats: 7 },
-                { name: "Hyundai Accent",       cat: "5 chỗ", price: 700000,  img: "images/huyndai_acen.jpg", seats: 5 },
-                { name: "VinFast VF9 Plus",     cat: "7 chỗ", price: 2500000, img: "images/vin_vf9.jpg", seats: 7 }
-            ];
+        // Nạp từng xe trong danh sách
+        for (const car of carList) {
+            // Logic tự động: Xe giá dưới 800k thường là số sàn, trên là tự động
+            const transmission = car.price < 800000 ? "Số sàn" : "Tự động";
+            const seats = parseInt(car.category); // Lấy số ghế từ category (vd: "5" -> 5)
+            const categoryStr = `${car.category} chỗ`; // Tạo chuỗi hiển thị (vd: "5 chỗ")
 
-            for (let i = 1; i <= TARGET_CAR_COUNT; i++) {
-                const m = carModels[(i - 1) % carModels.length];
-                await runQuery(`INSERT INTO cars (name, category, transmission, price_per_day, image_url, seats, location_id, status) 
-                                VALUES (?,?,?,?,?,?,?,?)`, 
-                                [`${m.name} #${i}`, m.cat, i % 2 === 0 ? "Tự động" : "Số sàn", m.price, m.img, m.seats, "HungYen", "available"]);
-            }
+            await runQuery(`INSERT INTO cars (name, category, transmission, price_per_day, image_url, seats, location_id, status) 
+                            VALUES (?,?,?,?,?,?,?,?)`, 
+                            [car.name, categoryStr, transmission, car.price, car.image_url, seats, "HungYen", "available"]);
         }
 
         // --- BƯỚC 2: BẢNG TÀI XẾ (DRIVERS) ---
@@ -83,30 +100,22 @@ async function initDatabase() {
 
         const driverCheck = await getQuery("SELECT count(*) as count FROM drivers");
         
-        if (driverCheck.count !== 30) {
-            console.log(`♻️  Cập nhật danh sách 30 tài xế...`);
-            await runQuery("DELETE FROM drivers"); // Xóa cũ nạp mới cho nhanh
-
+        // Chỉ nạp lại tài xế nếu bảng trống
+        if (driverCheck.count === 0) {
+            console.log(`♻️  Khởi tạo danh sách tài xế...`);
             const fNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi"];
             const mNames = ["Văn", "Đình", "Quốc", "Minh", "Thành", "Hữu"];
             const lNames = ["Hùng", "Nam", "Đức", "Tùng", "Thắng", "Tuấn", "Sơn", "Hải"];
-            const bios = [
-                "Chuyên lái xe đường dài, nhiệt tình, chu đáo.",
-                "Am hiểu mọi cung đường du lịch, phục vụ tận tâm.",
-                "Lái xe an toàn, lịch sự, phong cách phục vụ VIP."
-            ];
-
-            for (let i = 1; i <= 30; i++) {
-                const fullName = `${fNames[(i-1)%8]} ${mNames[(i-1)%6]} ${lNames[(i-1)%8]}`;
-                const age = 28 + (i % 22);
+            
+            for (let i = 1; i <= 20; i++) {
+                const fullName = `${fNames[i%8]} ${mNames[i%6]} ${lNames[i%8]}`;
                 await runQuery(`INSERT INTO drivers (name, phone, age, experience, price_per_day, bio, status) 
                                 VALUES (?,?,?,?,?,?,?)`,
-                                [fullName, `09${Math.floor(10000000 + Math.random() * 90000000)}`, age, age - 22, 500000, bios[i%3], "available"]);
+                                [fullName, "0908888999", 30 + (i%10), 5 + (i%5), 500000, "Tài xế chuyên nghiệp, rành đường", "available"]);
             }
         }
 
-        // --- NÂNG CẤP 2: THÊM BẢNG BOOKINGS (QUAN TRỌNG) ---
-        // Nếu không có bảng này, chức năng "Đặt xe" sẽ gây lỗi server
+        // --- BƯỚC 3: BẢNG BOOKINGS (QUAN TRỌNG) ---
         await runQuery(`CREATE TABLE IF NOT EXISTS bookings (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             type TEXT,          -- 'car' hoặc 'driver'
@@ -118,7 +127,7 @@ async function initDatabase() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         )`);
 
-        console.log("✅ Database đã sẵn sàng: Cars, Drivers & Bookings.");
+        console.log("✅ Database đã cập nhật xong: Danh sách xe chuẩn, Tài xế & Đơn hàng.");
 
     } catch (err) {
         console.error("❌ Lỗi Database:", err);
