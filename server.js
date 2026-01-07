@@ -19,7 +19,7 @@ if (!fs.existsSync(dbDir)) {
     fs.mkdirSync(dbDir, { recursive: true });
 }
 
-const dbPath = path.join(dbDir, 'rental.db');
+const dbPath = path.join(dbDir, 'rental_MOI.db');
 const db = new sqlite3.Database(dbPath);
 
 // Hàm helper để dùng async/await cho Database
