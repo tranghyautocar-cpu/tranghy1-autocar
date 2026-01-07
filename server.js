@@ -1,6 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+
+// --- 1. KẾT NỐI DATABASE (QUAN TRỌNG NHẤT) ---
+// Dòng này trỏ đúng vào file db.js nằm trong thư mục backend/database
+// Nó sẽ tự động kích hoạt file đó để tạo bảng và nạp dữ liệu
 const db = require('./backend/database/db'); 
 
 const app = express();
@@ -9,10 +13,10 @@ const PORT = 5000;
 app.use(cors());
 app.use(express.json());
 
-// Cấu hình để thư mục public hiển thị được ảnh (QUAN TRỌNG)
+// Cấu hình để thư mục public hiển thị được ảnh
 app.use(express.static('public'));
 
-// --- HÀM HỖ TRỢ (Giữ lại để API chạy mượt) ---
+// --- HÀM HỖ TRỢ (Promise wrapper) ---
 const dbAll = (sql, params = []) => new Promise((resolve, reject) => {
     db.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows));
 });
@@ -20,9 +24,9 @@ const dbRun = (sql, params = []) => new Promise((resolve, reject) => {
     db.run(sql, params, function(err) { err ? reject(err) : resolve(this); });
 });
 
-// --- 2. API ENDPOINTS (Giữ nguyên logic của bạn) ---
+// --- 2. API ENDPOINTS ---
 
-// API LẤY DANH SÁCH XE
+// LẤY DANH SÁCH XE
 app.get('/api/cars', async (req, res) => {
     try {
         const { category } = req.query;
@@ -32,20 +36,26 @@ app.get('/api/cars', async (req, res) => {
             sql += " WHERE category = ?";
             params.push(category);
         }
+        // Sắp xếp xe theo tên cho đẹp
+        sql += " ORDER BY id ASC";
+        
         const rows = await dbAll(sql, params);
         res.json(rows);
-    } catch (e) { res.status(500).json({ error: e.message }); }
+    } catch (e) { 
+        console.error("Lỗi lấy xe:", e);
+        res.status(500).json({ error: e.message }); 
+    }
 });
 
-// API LẤY DANH SÁCH TÀI XẾ
+// LẤY DANH SÁCH TÀI XẾ
 app.get('/api/drivers', async (req, res) => {
     try {
-        const rows = await dbAll("SELECT * FROM drivers WHERE status = 'available'", []);
+        const rows = await dbAll("SELECT * FROM drivers WHERE status = 'available'");
         res.json(rows);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// API ĐẶT XE/TÀI XẾ
+// ĐẶT XE/TÀI XẾ (NÂNG CẤP: DÙNG TRANSACTION AN TOÀN)
 app.post('/api/bookings', async (req, res) => {
     const { type, id, customer, startDate, endDate } = req.body;
 
@@ -54,50 +64,54 @@ app.post('/api/bookings', async (req, res) => {
     }
 
     try {
+        // Bắt đầu giao dịch (Khóa database lại để xử lý an toàn)
+        await dbRun("BEGIN TRANSACTION");
+
         const table = type === 'car' ? 'cars' : 'drivers';
         
-        // Kiểm tra xe còn trống không
-        const updateResult = await dbRun(`UPDATE ${table} SET status = 'busy' WHERE id = ? AND status = 'available'`, [id]);
+        // 1. Cố gắng cập nhật trạng thái
+        const updateResult = await dbRun(
+            `UPDATE ${table} SET status = 'busy' WHERE id = ? AND status = 'available'`, 
+            [id]
+        );
         
+        // Nếu không update được (do xe đã bị người khác nhanh tay đặt trước)
         if (updateResult.changes === 0) {
-            return res.status(400).json({ success: false, error: "Mục này đã bị người khác đặt hoặc không tồn tại" });
+            await dbRun("ROLLBACK"); // Hủy giao dịch
+            return res.status(400).json({ success: false, error: "Rất tiếc, mục này vừa bị người khác đặt mất rồi!" });
         }
 
-        // Tạo bảng bookings nếu chưa có (Phòng hờ)
-        await dbRun(`CREATE TABLE IF NOT EXISTS bookings (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            type TEXT, item_id INTEGER, customer_name TEXT, 
-            customer_phone TEXT, start_date TEXT, end_date TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
-
-        // Lưu đơn hàng
+        // 2. Lưu đơn hàng
         await dbRun(
             `INSERT INTO bookings (type, item_id, customer_name, customer_phone, start_date, end_date) VALUES (?,?,?,?,?,?)`,
             [type, id, customer.name, customer.phone, startDate, endDate]
         );
 
-        console.log(`\n📢 Đơn hàng mới: ${customer.name} đã thuê ${type} (ID: ${id})`);
-        res.json({ success: true, message: "Đặt chỗ thành công! Chúng tôi sẽ liên hệ sớm." });
+        // Mọi thứ ổn -> Chốt giao dịch
+        await dbRun("COMMIT");
+
+        console.log(`\n📢 Đơn hàng mới: ${customer.name} - ${type.toUpperCase()} #${id}`);
+        res.json({ success: true, message: "Đặt chỗ thành công!" });
 
     } catch (e) {
+        await dbRun("ROLLBACK"); // Có lỗi -> Hoàn tác mọi thứ
+        console.error("Lỗi đặt xe:", e);
         res.status(500).json({ success: false, error: e.message });
     }
 });
 
-// API ADMIN HEALTH CHECK
+// ADMIN HEALTH CHECK
 app.get('/api/health', async (req, res) => {
     try {
         const cars = await dbAll("SELECT COUNT(*) as count FROM cars WHERE status = 'available'");
         const drivers = await dbAll("SELECT COUNT(*) as count FROM drivers WHERE status = 'available'");
         
-        // Kiểm tra bảng bookings có tồn tại không trước khi query
+        // Kiểm tra an toàn xem bảng booking đã có chưa
         let bookingCount = 0;
         try {
             const bookings = await dbAll("SELECT COUNT(*) as count FROM bookings");
             bookingCount = bookings[0].count;
-        } catch (err) {
-            // Nếu bảng chưa có thì count = 0, không báo lỗi
-        }
+        } catch (err) {}
 
         res.json({ 
             status: "Online", 
@@ -109,6 +123,8 @@ app.get('/api/health', async (req, res) => {
 });
 
 app.listen(PORT, () => {
+    console.log(`--------------------------------------------------`);
     console.log(`🚀 Server đang chạy tại: http://localhost:${PORT}`);
-    console.log(`🔗 Database đang dùng: rental_MOI.db (Load từ db.js)`);
+    console.log(`🔗 Đã kết nối Database tại: backend/database/db.js`);
+    console.log(`--------------------------------------------------`);
 });
