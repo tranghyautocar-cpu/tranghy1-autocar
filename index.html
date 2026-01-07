@@ -126,56 +126,71 @@
         .terms-scroll::-webkit-scrollbar { width: 4px; }
         .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         /* Định vị bộ nút */
-/* Định vị bộ nút bên phải */
-.fixed-contact-buttons {
+/* Container cố định bên phải */
+.vip-contact-container {
     position: fixed;
-    bottom: 30px;
-    right: 20px; /* Đã chuyển sang bên phải */
-    z-index: 9999;
+    bottom: 40px;
+    right: 30px; /* Đưa sang bên phải */
+    z-index: 99999;
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 15px;
+    align-items: flex-end;
 }
 
-.contact-btn {
-    width: 50px;
-    height: 50px;
+.vip-btn {
+    display: flex;
+    align-items: center;
+    text-decoration: none !important;
+    position: relative;
+}
+
+.icon-box {
+    width: 55px;
+    height: 55px;
     border-radius: 50%;
     display: flex;
     justify-content: center;
     align-items: center;
-    position: relative;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+    z-index: 2;
+    transition: all 0.3s;
 }
 
-/* Nút Gọi: Màu xanh thương hiệu */
-.call-btn { background: #2563eb; color: white; font-size: 20px; }
+.fb-vip .icon-box { background: #1877F2; color: white; font-size: 24px; }
+.zalo-vip .icon-box { background: #0068ff; color: white; font-size: 24px; }
 
-/* Nút Zalo: Sửa lỗi hiển thị ảnh */
-.zalo-btn { background: #0088ff; overflow: hidden; }
-.zalo-btn img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover;
+/* Nhãn chữ hiện ra khi hover */
+.btn-label {
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 6px 15px;
+    border-radius: 20px;
+    font-size: 13px;
+    margin-right: 15px;
+    opacity: 0;
+    transition: 0.3s;
+    white-space: nowrap;
 }
 
-/* Hiệu ứng nhấp nháy lan tỏa */
-.pulse {
+.vip-btn:hover .btn-label { opacity: 1; }
+.vip-btn:hover .icon-box { transform: scale(1.1); }
+
+/* Hiệu ứng nhấp nháy tỏa tròn */
+.vip-pulse {
     position: absolute;
-    width: 100%;
-    height: 100%;
+    right: 0; width: 55px; height: 55px;
     border-radius: 50%;
-    background: inherit;
-    z-index: -1;
-    animation: pulse-animation 1.8s infinite;
+    z-index: 1;
+    animation: vip-pulse-ring 2s infinite;
 }
+.fb-vip .vip-pulse { background: #1877F2; }
+.zalo-vip .vip-pulse { background: #0068ff; }
 
-@keyframes pulse-animation {
+@keyframes vip-pulse-ring {
     0% { transform: scale(1); opacity: 0.6; }
     100% { transform: scale(1.8); opacity: 0; }
 }
-
 .contact-btn:hover { transform: scale(1.1) translateX(-5px); }
     </style>
  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -1138,11 +1153,12 @@ app.handleDriverBooking = function() {
     
     <a href="https://zalo.me/0353979614" target="_blank" class="vip-btn zalo-vip">
         <div class="icon-box">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/9/91/Icon_Zalo.svg" alt="Zalo">
+            <i class="fas fa-comment-dots"></i> 
         </div>
         <span class="btn-label">Nhắn tin Zalo</span>
         <span class="vip-pulse"></span>
     </a>
+</div>
 </div>
 </div>
 </body>
