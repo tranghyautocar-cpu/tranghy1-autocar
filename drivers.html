@@ -147,41 +147,162 @@
         </button>
     </nav>
 
-    <script>
-        // 1. Kiểm tra đăng nhập
-        const user = JSON.parse(localStorage.getItem('tranghy_user'));
-        
-        if (!user || user.role !== 'DRIVER') {
-            alert("Vui lòng đăng nhập tài khoản Tài xế!");
-            window.location.href = 'login.html';
-        } else {
-            // Hiển thị tên tài xế
-            document.getElementById('driver-name').innerText = user.name;
-        }
+  <script>
+    // --- CẤU HÌNH ---
+    // Link Google Script (Backend) của bạn
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
+    // 1. KIỂM TRA ĐĂNG NHẬP
+    const user = JSON.parse(localStorage.getItem('tranghy_user'));
+    
+    if (!user || user.role !== 'DRIVER') {
+        alert("Vui lòng đăng nhập tài khoản Tài xế!");
+        window.location.href = 'login.html';
+    } else {
+        // Hiển thị tên tài xế lên góc màn hình
+        document.getElementById('driver-name').innerText = user.name;
+        // Bắt đầu tải dữ liệu thật
+        loadDriverJobs();
+    }
 
-        // 2. Hàm Toggle trạng thái
-        function toggleStatus(checkbox) {
-            const statusText = document.getElementById('status-text');
-            const statusDot = document.getElementById('status-dot');
+    // 2. HÀM TẢI DỮ LIỆU TỪ GOOGLE SHEET
+    async function loadDriverJobs() {
+        try {
+            console.log("⏳ Đang tải danh sách cuốc xe...");
             
-            if(checkbox.checked) {
-                statusText.innerText = "Đang trực tuyến";
-                statusText.className = "font-bold text-sm text-white";
-                statusDot.className = "w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]";
-            } else {
-                statusText.innerText = "Đang ngoại tuyến";
-                statusText.className = "font-bold text-sm text-slate-400";
-                statusDot.className = "w-3 h-3 rounded-full bg-slate-500";
-            }
-        }
+            // Gọi dữ liệu từ Google Sheet
+            const response = await fetch(SCRIPT_URL);
+            const allOrders = await response.json();
 
-        // 3. Đăng xuất
-        function logout() {
-            if(confirm("Bác tài muốn nghỉ ca và đăng xuất?")) {
-                localStorage.removeItem('tranghy_user');
-                window.location.href = 'login.html';
+            // LỌC ĐƠN HÀNG CỦA RIÊNG TÀI XẾ NÀY
+            // (So sánh tên tài xế trong đơn hàng với tên user đăng nhập)
+            const myJobs = allOrders.filter(order => 
+                order.carName && order.carName.toLowerCase().includes(user.name.toLowerCase())
+            );
+
+            console.log("Việc của tôi:", myJobs);
+
+            // --- A. CẬP NHẬT SỐ LIỆU TỔNG QUAN ---
+            
+            // 1. Cập nhật Số chuyến
+            document.querySelector('.glass-card .text-lg.text-slate-900').innerHTML = 
+                `${myJobs.length} <span class="text-[10px] font-normal">chuyến</span>`;
+
+            // 2. Cập nhật Tổng thu nhập
+            let totalIncome = 0;
+            myJobs.forEach(job => {
+                // Chuyển tiền từ dạng chữ "1.500.000đ" sang số để cộng
+                let price = job.price ? parseInt(job.price.toString().replace(/[^\d]/g, '')) : 0;
+                totalIncome += price;
+            });
+            // Hiển thị tiền đã format (Ví dụ: 850.000)
+            document.querySelector('.glass-card .text-blue-600').innerText = 
+                new Intl.NumberFormat('vi-VN').format(totalIncome);
+
+
+            // --- B. HIỂN THỊ NHIỆM VỤ MỚI NHẤT (ĐƠN HÀNG) ---
+            
+            const missionCard = document.querySelector('.glass-card.border-l-blue-600');
+            
+            if (myJobs.length > 0) {
+                // Lấy đơn mới nhất (là đơn cuối cùng trong danh sách)
+                const job = myJobs[myJobs.length - 1]; 
+
+                // Điền dữ liệu thật vào HTML
+                missionCard.innerHTML = `
+                    <div class="p-5">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-blue-100 text-blue-700 text-[10px] font-black px-2 py-1 rounded uppercase">
+                                ${job.status || 'Chờ phục vụ'}
+                            </span>
+                            <span class="text-xs font-bold text-slate-900">
+                                ${job.timestamp ? job.timestamp.split('T')[0] : 'Mới nhận'}
+                            </span>
+                        </div>
+                        
+                        <div class="flex items-center gap-4 mb-4">
+                            <div class="w-12 h-12 bg-slate-100 rounded-xl overflow-hidden flex items-center justify-center text-2xl">
+                                🚗
+                            </div>
+                            <div>
+                                <h4 class="font-black text-slate-900">${job.custName}</h4>
+                                <a href="tel:${job.phone}" class="text-xs text-blue-600 font-bold hover:underline">
+                                    <i class="fas fa-phone-alt"></i> ${job.phone}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div class="space-y-3 relative pl-4 border-l border-dashed border-slate-300 ml-1">
+                            <div class="relative">
+                                <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-blue-500 ring-4 ring-white"></div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Lộ trình / Địa điểm</p>
+                                <p class="text-sm font-bold text-slate-800 line-clamp-2">
+                                    ${job.location || 'Chưa cập nhật địa điểm'}
+                                </p>
+                            </div>
+                            <div class="relative">
+                                <div class="absolute -left-[21px] top-1 w-3 h-3 rounded-full bg-orange-500 ring-4 ring-white"></div>
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Thời gian thuê</p>
+                                <p class="text-xs font-bold text-slate-700">
+                                    Từ: ${job.startDate} <br> Đến: ${job.endDate}
+                                </p>
+                            </div>
+                            <div class="relative pt-2 border-t border-slate-100 mt-2">
+                                <p class="text-[10px] text-slate-400 font-bold uppercase">Giá trị cuốc xe</p>
+                                <p class="text-lg font-black text-red-500">${job.price}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-slate-50 p-3 flex gap-3">
+                        <a href="tel:${job.phone}" class="flex-1 bg-white border border-slate-200 text-slate-700 py-3 rounded-xl font-bold text-xs shadow-sm flex items-center justify-center gap-2">
+                            <i class="fas fa-phone"></i> Gọi khách
+                        </a>
+                        <button class="flex-1 bg-slate-900 text-white py-3 rounded-xl font-bold text-xs shadow-lg shadow-blue-900/20">
+                            Hoàn thành
+                        </button>
+                    </div>
+                `;
+            } else {
+                // Nếu chưa có đơn nào
+                missionCard.innerHTML = `
+                    <div class="p-8 text-center">
+                        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3 text-slate-400">
+                            <i class="fas fa-coffee text-2xl"></i>
+                        </div>
+                        <p class="text-slate-500 font-bold">Chưa có chuyến xe nào!</p>
+                        <p class="text-xs text-slate-400 mt-1">Vui lòng chờ Admin điều phối...</p>
+                    </div>
+                `;
             }
+
+        } catch (e) {
+            console.error("Lỗi tải dữ liệu:", e);
+            alert("Không thể tải đơn hàng. Vui lòng kiểm tra kết nối!");
         }
-    </script>
+    }
+
+    // 3. CÁC HÀM TIỆN ÍCH (UI)
+    function toggleStatus(checkbox) {
+        const statusText = document.getElementById('status-text');
+        const statusDot = document.getElementById('status-dot');
+        
+        if(checkbox.checked) {
+            statusText.innerText = "Đang trực tuyến";
+            statusText.className = "font-bold text-sm text-white";
+            statusDot.className = "w-3 h-3 rounded-full bg-green-400 shadow-[0_0_10px_#4ade80]";
+        } else {
+            statusText.innerText = "Đang ngoại tuyến";
+            statusText.className = "font-bold text-sm text-slate-400";
+            statusDot.className = "w-3 h-3 rounded-full bg-slate-500";
+        }
+    }
+
+    function logout() {
+        if(confirm("Bác tài muốn nghỉ ca và đăng xuất?")) {
+            localStorage.removeItem('tranghy_user');
+            window.location.href = 'login.html';
+        }
+    }
+</script>
 </body>
 </html>
