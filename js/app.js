@@ -19,7 +19,7 @@ const app = {
         ACCOUNT_NO: "0353979614",
         ACCOUNT_NAME: "BUI VAN TRANG",
         DRIVER_PRICE_PER_DAY: 500000,
-        SCRIPT_URL: 'https://script.google.com/macros/s/AKfycby_iypBShENktKrM_K25bLQDlE_SfUQBQ9AKkvaZIXVuOuzsQGvi5RBFmYBssYwhWo-/exec'
+        SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
     },
 
     // ============================================================
