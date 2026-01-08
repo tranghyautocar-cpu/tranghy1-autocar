@@ -156,61 +156,55 @@ updateAdminStats: function() {
     // ============================================================
     // 5. RENDER XE VÀ TÀI XẾ
     // ============================================================
- // 4. VẼ DANH SÁCH XE (Đã chỉnh sửa chuẩn theo logic của bạn)
-    renderCars: function(list) {
-        // Lưu ý: ID trong HTML của bạn là 'car-grid' (nếu bạn đổi thành 'car-list' thì sửa ở đây nhé)
-        const container = document.getElementById('car-grid'); 
+ renderCars(data = null) {
+        const container = document.getElementById('car-list');
         if (!container) return;
 
-        // Nếu danh sách rỗng
-        if (!list || list.length === 0) {
+        // Ưu tiên lấy data truyền vào, nếu không thì lấy filteredCars, cuối cùng là cars
+        const displayData = data || (this.state.filteredCars.length > 0 ? this.state.filteredCars : this.state.cars);
+
+        if (displayData.length === 0) {
             container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400'>Không tìm thấy xe nào...</p>";
             return;
         }
 
-        // Tạo HTML
-        container.innerHTML = list.map(car => {
-            // 1. Kiểm tra trạng thái (Ví dụ xe bận)
-            const isBusy = car.status === 'busy'; 
+        container.innerHTML = displayData.map(car => {
+            // 1. Kiểm tra trạng thái
+            const isBusy = car.status === 'busy' || car.status === 'Đang bận';
             
-            // 2. Xử lý ảnh (Ưu tiên image_url như JSON mới)
-            const img = car.image_url || 'images/default-car.png'; 
+            // 2. Lấy ảnh trực tiếp từ JSON (JSON đã có sẵn "images/...")
+            const img = car.image_url; 
 
-            // 3. Xử lý hiển thị số chỗ (Logic của bạn rất hay, tôi giữ nguyên)
-            // Nó sẽ tự thêm chữ "Chỗ" nếu thiếu
+            // 3. Xử lý hiển thị số chỗ (Để tránh bị lỗi "5 chỗ Chỗ")
+            // Nếu trong JSON ghi "5 chỗ" rồi thì dùng luôn, nếu chỉ ghi số "5" thì thêm chữ "Chỗ"
             let seatDisplay = car.category || car.seats || '4';
             if (!String(seatDisplay).toLowerCase().includes('chỗ')) {
                 seatDisplay += ' Chỗ';
             }
 
-            // 4. Format tiền tệ (Dùng Intl cho chuẩn)
-            const priceDisplay = new Intl.NumberFormat('vi-VN').format(car.price);
-
             return `
-            <div class="bg-white p-4 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group border border-slate-100 relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : ''}">
+            <div onclick="${isBusy ? '' : `app.openCar(${car.id})`}" 
+                 class="car-card bg-white p-5 group relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
                 
-                <div class="relative overflow-hidden h-48 rounded-[1.5rem] mb-4">
-                    <img src="${img}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                <div class="relative overflow-hidden h-56 rounded-[2rem] mb-4">
+                    <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
                          onerror="this.src='https://via.placeholder.com/300?text=Xe+TrangHy'">
                     
-                    <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-sm">
+                    <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold">
                         ${seatDisplay}
-                    </span>
-
+                    </div>
                     ${isBusy ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold uppercase">ĐÃ ĐƯỢC THUÊ</div>' : ''}
                 </div>
                 
-                <div class="px-2">
-                    <h3 class="font-black text-slate-900 text-lg mb-1 italic">${car.name}</h3>
-                    <div class="flex items-end justify-between border-t border-slate-100 pt-3 mt-2">
+                <div class="space-y-2">
+                    <h3 class="text-xl font-black text-slate-900 italic">${car.name}</h3>
+                    <div class="flex justify-between items-center border-t border-slate-100 pt-3">
                         <div>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Giá thuê ngày</p>
-                            <p class="text-xl font-black text-blue-600">${priceDisplay}đ</p>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase">Giá thuê ngày</p>
+                            <p class="text-xl font-black text-blue-600">${this.formatMoney(car.price)}</p>
                         </div>
-                        
-                        <button onclick="app.openBookingModal('${car.name}', '${car.price}')" 
-                            class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 hover:rotate-90 transition-all duration-300 shadow-lg shadow-blue-900/20">
-                            <i class="fas fa-arrow-right"></i>
+                        <button class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                            <i class="fas fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
                         </button>
                     </div>
                 </div>
