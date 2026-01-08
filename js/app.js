@@ -156,14 +156,15 @@ updateAdminStats: function() {
     // ============================================================
     // 5. RENDER XE VÀ TÀI XẾ
     // ============================================================
- renderCars(data = null) {
+// 5. RENDER XE (Phiên bản chuẩn - Khớp với app.js của bạn)
+    renderCars: function(data = null) {
         const container = document.getElementById('car-list');
         if (!container) return;
 
-        // Ưu tiên lấy data truyền vào, nếu không thì lấy filteredCars, cuối cùng là cars
-        const displayData = data || (this.state.filteredCars.length > 0 ? this.state.filteredCars : this.state.cars);
+        // SỬA 1: Dùng this.allCars thay vì this.state (vì app.js không có state)
+        const displayData = data || this.allCars;
 
-        if (displayData.length === 0) {
+        if (!displayData || displayData.length === 0) {
             container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400'>Không tìm thấy xe nào...</p>";
             return;
         }
@@ -172,19 +173,20 @@ updateAdminStats: function() {
             // 1. Kiểm tra trạng thái
             const isBusy = car.status === 'busy' || car.status === 'Đang bận';
             
-            // 2. Lấy ảnh trực tiếp từ JSON (JSON đã có sẵn "images/...")
-            const img = car.image_url; 
+            // 2. Lấy ảnh (Ưu tiên image_url)
+            const img = car.image_url || 'images/default-car.png'; 
 
-            // 3. Xử lý hiển thị số chỗ (Để tránh bị lỗi "5 chỗ Chỗ")
-            // Nếu trong JSON ghi "5 chỗ" rồi thì dùng luôn, nếu chỉ ghi số "5" thì thêm chữ "Chỗ"
+            // 3. Xử lý hiển thị số chỗ (Logic của bạn rất hay, tôi giữ nguyên)
             let seatDisplay = car.category || car.seats || '4';
             if (!String(seatDisplay).toLowerCase().includes('chỗ')) {
                 seatDisplay += ' Chỗ';
             }
 
+            // SỬA 2: Dùng Intl trực tiếp thay vì this.formatMoney (tránh lỗi thiếu hàm)
+            const priceDisplay = new Intl.NumberFormat('vi-VN').format(car.price);
+
             return `
-            <div onclick="${isBusy ? '' : `app.openCar(${car.id})`}" 
-                 class="car-card bg-white p-5 group relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
+            <div class="car-card bg-white p-5 group relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
                 
                 <div class="relative overflow-hidden h-56 rounded-[2rem] mb-4">
                     <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
@@ -201,9 +203,11 @@ updateAdminStats: function() {
                     <div class="flex justify-between items-center border-t border-slate-100 pt-3">
                         <div>
                             <p class="text-[9px] font-bold text-slate-400 uppercase">Giá thuê ngày</p>
-                            <p class="text-xl font-black text-blue-600">${this.formatMoney(car.price)}</p>
+                            <p class="text-xl font-black text-blue-600">${priceDisplay}đ</p>
                         </div>
-                        <button class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors">
+                        
+                        <button onclick="app.openBookingModal('${car.name}', '${car.price}')" 
+                            class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors">
                             <i class="fas fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
                         </button>
                     </div>
