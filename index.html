@@ -345,24 +345,24 @@
     </header>
 
     <main id="inventory" class="max-w-7xl mx-auto px-6 py-24">
-       <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
-    <button onclick="app.filterCars('All')" 
-        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest bg-white shadow-lg text-blue-600">
+   <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
+    <button onclick="app.filterCars('All', event)" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 bg-white shadow-lg text-blue-600">
         TẤT CẢ XE
     </button>
     
-    <button onclick="app.filterCars('4 chỗ')" 
-        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+    <button onclick="app.filterCars('4 chỗ', event)" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-slate-500 hover:bg-white/50">
         4 CHỖ
     </button>
     
-    <button onclick="app.filterCars('5 chỗ')" 
-        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+    <button onclick="app.filterCars('5 chỗ', event)" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-slate-500 hover:bg-white/50">
         5 CHỖ
     </button>
     
-    <button onclick="app.filterCars('7 chỗ')" 
-        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">
+    <button onclick="app.filterCars('7 chỗ', event)" 
+        class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 text-slate-500 hover:bg-white/50">
         7 CHỖ
     </button>
 </div>
@@ -559,11 +559,12 @@
         </div>
 
         <div class="p-8 space-y-6 overflow-y-auto custom-scrollbar bg-white">
+            
             <div class="text-center">
                 <h2 id="dr-name" class="text-3xl font-black text-slate-900 italic tracking-tighter uppercase leading-none">Tên Tài Xế</h2>
                 <div class="flex items-center justify-center gap-2 mt-2">
                     <span class="h-[1px] w-8 bg-blue-200"></span>
-                    <p id="dr-exp" class="text-blue-600 font-black text-[10px] uppercase tracking-[0.2em]">10 Năm Kinh Nghiệm</p>
+                    <p id="dr-exp" class="text-blue-600 font-black text-[10px] uppercase tracking-[0.2em]">Kinh Nghiệm</p>
                     <span class="h-[1px] w-8 bg-blue-200"></span>
                 </div>
             </div>
@@ -641,26 +642,24 @@
                     <span class="text-[11px] font-black text-slate-700 uppercase tracking-tighter italic">Tôi đã đọc và đồng ý với điều khoản trên</span>
                 </label>
             </div>
- <div class="flex gap-4 pt-4">
-    <button onclick="app.closeCar()" 
-        class="group flex-1 flex items-center justify-center gap-2 bg-slate-50 text-slate-400 py-5 rounded-[1.8rem] font-bold uppercase text-[10px] tracking-[0.15em] hover:bg-slate-100 hover:text-slate-600 transition-all duration-300 border border-slate-100">
-        <i class="fas fa-chevron-left text-[8px] group-hover:-translate-x-1 transition-transform"></i>
-        Quay lại
-    </button>
 
-    <button onclick="app.handleDriverBooking()" 
-        class="flex-[2.5] flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-5 rounded-[1.8rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-[0_15px_30px_-5px_rgba(37,99,235,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-300">
-        <span>Xác nhận & Thanh toán ngay</span>
-        <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
-            <i class="fas fa-arrow-right text-[9px]"></i>
-        </div>
-    </button>
-</div>
-                 <i class="fas fa-chevron-right text-[10px]"></i>
-            </button>
-        </div>
-    </div>
-</div>
+            <div class="flex gap-4 pt-4">
+                <button onclick="app.closeDriver()" 
+                    class="group flex-1 flex items-center justify-center gap-2 bg-slate-50 text-slate-400 py-5 rounded-[1.8rem] font-bold uppercase text-[10px] tracking-[0.15em] hover:bg-slate-100 hover:text-slate-600 transition-all duration-300 border border-slate-100">
+                    <i class="fas fa-chevron-left text-[8px] group-hover:-translate-x-1 transition-transform"></i>
+                    Quay lại
+                </button>
+
+                <button onclick="app.handleDriverBooking()" 
+                    class="flex-[2.5] flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white py-5 rounded-[1.8rem] font-black uppercase text-[11px] tracking-[0.2em] shadow-[0_15px_30px_-5px_rgba(37,99,235,0.3)] hover:shadow-[0_20px_40px_-5px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 active:scale-[0.97] transition-all duration-300">
+                    <span>Xác nhận & Thanh toán ngay</span>
+                    <div class="w-6 h-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fas fa-arrow-right text-[9px]"></i>
+                    </div>
+                </button>
+            </div>
+
+        </div> </div> </div> ```
 <script>
 // Sửa hàm selectDelivery
 function selectDelivery(type) {
