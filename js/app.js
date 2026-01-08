@@ -156,55 +156,61 @@ updateAdminStats: function() {
     // ============================================================
     // 5. RENDER XE VÀ TÀI XẾ
     // ============================================================
- renderCars(data = null) {
-        const container = document.getElementById('car-list');
+ // 4. VẼ DANH SÁCH XE (Đã chỉnh sửa chuẩn theo logic của bạn)
+    renderCars: function(list) {
+        // Lưu ý: ID trong HTML của bạn là 'car-grid' (nếu bạn đổi thành 'car-list' thì sửa ở đây nhé)
+        const container = document.getElementById('car-grid'); 
         if (!container) return;
 
-        // Ưu tiên lấy data truyền vào, nếu không thì lấy filteredCars, cuối cùng là cars
-        const displayData = data || (this.state.filteredCars.length > 0 ? this.state.filteredCars : this.state.cars);
-
-        if (displayData.length === 0) {
+        // Nếu danh sách rỗng
+        if (!list || list.length === 0) {
             container.innerHTML = "<p class='col-span-full text-center py-10 text-slate-400'>Không tìm thấy xe nào...</p>";
             return;
         }
 
-        container.innerHTML = displayData.map(car => {
-            // 1. Kiểm tra trạng thái
-            const isBusy = car.status === 'busy' || car.status === 'Đang bận';
+        // Tạo HTML
+        container.innerHTML = list.map(car => {
+            // 1. Kiểm tra trạng thái (Ví dụ xe bận)
+            const isBusy = car.status === 'busy'; 
             
-            // 2. Lấy ảnh trực tiếp từ JSON (JSON đã có sẵn "images/...")
-            const img = car.image_url; 
+            // 2. Xử lý ảnh (Ưu tiên image_url như JSON mới)
+            const img = car.image_url || 'images/default-car.png'; 
 
-            // 3. Xử lý hiển thị số chỗ (Để tránh bị lỗi "5 chỗ Chỗ")
-            // Nếu trong JSON ghi "5 chỗ" rồi thì dùng luôn, nếu chỉ ghi số "5" thì thêm chữ "Chỗ"
+            // 3. Xử lý hiển thị số chỗ (Logic của bạn rất hay, tôi giữ nguyên)
+            // Nó sẽ tự thêm chữ "Chỗ" nếu thiếu
             let seatDisplay = car.category || car.seats || '4';
             if (!String(seatDisplay).toLowerCase().includes('chỗ')) {
                 seatDisplay += ' Chỗ';
             }
 
+            // 4. Format tiền tệ (Dùng Intl cho chuẩn)
+            const priceDisplay = new Intl.NumberFormat('vi-VN').format(car.price);
+
             return `
-            <div onclick="${isBusy ? '' : `app.openCar(${car.id})`}" 
-                 class="car-card bg-white p-5 group relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
+            <div class="bg-white p-4 rounded-[2rem] shadow-sm hover:shadow-xl transition-all duration-300 group border border-slate-100 relative ${isBusy ? 'opacity-60 grayscale pointer-events-none' : ''}">
                 
-                <div class="relative overflow-hidden h-56 rounded-[2rem] mb-4">
-                    <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                <div class="relative overflow-hidden h-48 rounded-[1.5rem] mb-4">
+                    <img src="${img}" class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
                          onerror="this.src='https://via.placeholder.com/300?text=Xe+TrangHy'">
                     
-                    <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-bold">
+                    <span class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-blue-600 shadow-sm">
                         ${seatDisplay}
-                    </div>
+                    </span>
+
                     ${isBusy ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold uppercase">ĐÃ ĐƯỢC THUÊ</div>' : ''}
                 </div>
                 
-                <div class="space-y-2">
-                    <h3 class="text-xl font-black text-slate-900 italic">${car.name}</h3>
-                    <div class="flex justify-between items-center border-t border-slate-100 pt-3">
+                <div class="px-2">
+                    <h3 class="font-black text-slate-900 text-lg mb-1 italic">${car.name}</h3>
+                    <div class="flex items-end justify-between border-t border-slate-100 pt-3 mt-2">
                         <div>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Giá thuê ngày</p>
-                            <p class="text-xl font-black text-blue-600">${this.formatMoney(car.price)}</p>
+                            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Giá thuê ngày</p>
+                            <p class="text-xl font-black text-blue-600">${priceDisplay}đ</p>
                         </div>
-                        <button class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center group-hover:bg-blue-600 transition-colors">
-                            <i class="fas fa-arrow-right -rotate-45 group-hover:rotate-0 transition-transform"></i>
+                        
+                        <button onclick="app.openBookingModal('${car.name}', '${car.price}')" 
+                            class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 hover:rotate-90 transition-all duration-300 shadow-lg shadow-blue-900/20">
+                            <i class="fas fa-arrow-right"></i>
                         </button>
                     </div>
                 </div>
@@ -1101,3 +1107,85 @@ async fetchInitialData() {
 ]
 };
 document.addEventListener('DOMContentLoaded', () => app.init());
+
+async function loadDriversToUI() {
+    const grid = document.getElementById('driver-grid');
+    
+    // Nếu không tìm thấy chỗ hiển thị (ví dụ đang ở trang khác) thì dừng lại
+    if (!grid) return; 
+
+    try {
+        // 1. Gọi file drivers.json
+        const response = await fetch('drivers.json');
+        
+        // Kiểm tra xem file có tồn tại không
+        if (!response.ok) {
+            throw new Error("Không tìm thấy file drivers.json");
+        }
+
+        const drivers = await response.json();
+
+        // 2. Tạo HTML cho từng tài xế
+        let htmlContent = '';
+        
+        drivers.forEach(driver => {
+            // Format tiền (500000 -> 500.000)
+            const priceFormatted = new Intl.NumberFormat('vi-VN').format(driver.price);
+
+            htmlContent += `
+            <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 hover:border-blue-500 transition-all group relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500 rounded-full blur-3xl opacity-10 -mr-10 -mt-10 transition-opacity group-hover:opacity-20"></div>
+
+                <div class="flex items-center gap-4 mb-4 relative z-10">
+                    <div class="w-14 h-14 bg-slate-700 rounded-full flex items-center justify-center text-3xl shadow-lg group-hover:scale-110 transition-transform">
+                        ${driver.avatar}
+                    </div>
+                    <div>
+                        <h3 class="font-bold text-white text-lg leading-tight">${driver.name}</h3>
+                        <div class="flex items-center gap-2 mt-1">
+                            <span class="text-[10px] font-bold bg-blue-900 text-blue-300 px-2 py-0.5 rounded uppercase">
+                                ${driver.exp} KN
+                            </span>
+                            <span class="text-xs text-slate-400">
+                                <i class="fas fa-star text-yellow-500"></i> 4.9
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="space-y-2 mb-6 border-t border-slate-700 pt-4">
+                    <div class="flex justify-between text-sm">
+                        <span class="text-slate-400">Số điện thoại</span>
+                        <span class="text-white font-bold">${driver.phone}</span>
+                    </div>
+                     <div class="flex justify-between text-sm">
+                        <span class="text-slate-400">Giá thuê/ngày</span>
+                        <span class="text-green-400 font-bold">${priceFormatted}đ</span>
+                    </div>
+                </div>
+                
+                <button onclick="openBookingModal('TÀI XẾ: ${driver.name}', '${driver.price}')" 
+                    class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-900/50 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all">
+                    LIÊN HỆ THUÊ NGAY
+                </button>
+            </div>
+            `;
+        });
+
+        // 3. Đổ HTML vào trang web
+        grid.innerHTML = htmlContent;
+
+    } catch (error) {
+        console.error("Lỗi:", error);
+        grid.innerHTML = `<div class="col-span-4 text-center p-10">
+            <p class="text-red-500 font-bold mb-2">⚠️ Không tải được danh sách tài xế!</p>
+            <p class="text-slate-500 text-sm">Vui lòng kiểm tra lại file drivers.json</p>
+        </div>`;
+    }
+}
+
+// CHẠY HÀM NÀY KHI TRANG WEB TẢI XONG
+document.addEventListener('DOMContentLoaded', () => {
+    loadDriversToUI();
+    // ... các hàm khác của bạn ...
+});
