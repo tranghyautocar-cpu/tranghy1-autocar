@@ -740,18 +740,20 @@ app.handleDriverBooking = function() {
 <script src="js/app.js"></script>
     <script>
     // 3. CẬP NHẬT CON SỐ DASHBOARD
-    function updateDashboard() {
-        const fleetBtn = document.querySelector('.bg-blue-50 .text-blue-600.font-black.text-xl');
-        const driverBtn = document.querySelectorAll('.bg-slate-50 .font-black.text-xl');
-        
-        // Tìm và gán số lượng vào đúng vị trí UI của bạn
-        document.querySelectorAll('.font-black.text-xl').forEach(el => {
-            if(el.innerText.includes('XE')) el.innerText = `${cars.length} XE`;
-            if(el.innerText.includes('TÀI XẾ')) el.innerText = `${drivers.length} TÀI XẾ`;
-        });
+  function updateDashboard() {
+    // Chỉ chạy khi app đã nạp xong allCars và allDrivers
+    if (window.app && window.app.allCars && window.app.allDrivers) {
+        const carCount = window.app.allCars.length;
+        const driverCount = window.app.allDrivers.length;
 
-        console.log(`✅ Đã tải ${cars.length} xe và ${drivers.length} tài xế vào hệ thống.`);
+        document.querySelectorAll('.font-black.text-xl').forEach(el => {
+            if (el.innerText.includes('XE')) el.innerText = `${carCount} XE`;
+            if (el.innerText.includes('TÀI XẾ')) el.innerText = `${driverCount} TÀI XẾ`;
+        });
+        
+        console.log("✅ Dashboard updated with real data.");
     }
+}
 
     // 4. HIỂN THỊ DANH SÁCH XE
  function displayCars(data) {

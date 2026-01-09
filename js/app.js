@@ -338,22 +338,7 @@ updateAdminStats: function() {
         if (daysEl) daysEl.innerText = this.state.driverDays;
     },
 
-    // ============================================================
-    // 8. XỬ LÝ BOOKING (Gửi Sheet & Mở QR)
-    // ============================================================
- // 1. XỬ LÝ ĐẶT XE (Đã sửa để Admin nhận được đơn)
-  saveBookingToLocal(carId) {
-        // Lấy danh sách ID đang có trong bộ nhớ
-        let bookedIDs = JSON.parse(localStorage.getItem('booked_car_ids')) || [];
-        
-        // Nếu ID xe này chưa có thì thêm vào
-        if (!bookedIDs.includes(carId)) {
-            bookedIDs.push(carId);
-            // Lưu ngược lại vào LocalStorage
-            localStorage.setItem('booked_car_ids', JSON.stringify(bookedIDs));
-        }
-    },
-
+    
     // --- 2. HÀM XỬ LÝ ĐẶT XE (ĐÃ CẬP NHẬT) ---
   saveBookingToLocal(id, type = 'car') {
         const key = type === 'driver' ? 'booked_driver_ids' : 'booked_car_ids';
@@ -961,93 +946,48 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         emailInput.value = "";
     },
 
-async fetchInitialData() {
-
+ async fetchInitialData() {
         try {
+            // 1. Nạp dữ liệu Xe
+            const resCar = await fetch('cars.json');
+            if (!resCar.ok) throw new Error("Không thấy cars.json");
+            this.allCars = await resCar.json();
 
-            console.log("📂 Đang tải dữ liệu từ cars.json...");
+            // 2. Nạp dữ liệu Tài xế thật từ file của bạn
+            // Lưu ý: Nếu file của bạn là 'driver.json' (không có s) thì sửa dòng dưới
+            const resDr = await fetch('driver.json'); 
+            if (!resDr.ok) throw new Error("Không thấy driver.json");
+            this.allDrivers = await resDr.json();
 
+            console.log(`✅ Thành công: ${this.allCars.length} Xe & ${this.allDrivers.length} Tài xế.`);
 
-
-            // 1. Đọc file cars.json (File này nằm ngang hàng với index.html)
-
-            const response = await fetch('cars.json');
-
-           
-
-            if (!response.ok) {
-
-                throw new Error("Không tìm thấy file cars.json!");
-
-            }
-
-
-
-            // 2. Lưu dữ liệu xe vào state
-
-            this.state.cars = await response.json();
-
-            this.state.filteredCars = [...this.state.cars];
-
-
-
-            // 3. Tạo dữ liệu Tài xế giả (Vì chúng ta không có file drivers.json)
-
-            this.state.drivers = this.createMockDrivers();
-
-
-
-            // 4. Lấy đơn hàng cũ từ LocalStorage (Để Admin xem lại đơn đã đặt)
-
-            const rawOrders = localStorage.getItem('tranghy_orders');
-
-            this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
-
-
-
-            console.log(`✅ Đã tải xong: ${this.state.cars.length} Xe & ${this.state.drivers.length} Tài xế.`);
-
-
-
-            // 5. Hiển thị lên màn hình
-
-            this.renderAll();
-
-            this.updateAdminStats();
-
-
+            // 3. Hiển thị lên giao diện
+            this.renderCars(this.allCars);
+            this.renderDriversHome(this.allDrivers);
+            
+            // 4. Cập nhật số lượng trên Dashboard
+            if (typeof updateDashboard === 'function') updateDashboard();
 
         } catch (error) {
-
-            console.error("❌ Lỗi tải dữ liệu:", error);
-
-            alert("⚠️ Lỗi: Không đọc được file cars.json. Hãy kiểm tra lại file!");
-
-           
-
-            // Nếu lỗi thì dùng tạm mảng rỗng để web không bị trắng trơn
-
-            this.state.cars = [];
-
-            this.state.drivers = [];
-
-            this.renderAll();
-
+            console.error("❌ Lỗi nạp dữ liệu:", error);
+            // Hiện thông báo lỗi nếu không tìm thấy file JSON
+            const container = document.getElementById('car-list');
+            if(container) container.innerHTML = `<p class="col-span-full text-center py-20 text-red-500 font-bold">⚠️ Lỗi: ${error.message}</p>`;
         }
+    },
 
-    },
-    // Hàm tạo tài xế giả (Giữ nguyên hoặc thêm mới nếu chưa có)
-    createMockDrivers() {
-        const fNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi"];
-        const mNames = ["Văn", "Đức", "Thành", "Minh", "Quốc", "Hữu"];
-        return Array.from({length: 20}, (_, i) => ({
-            id: i + 1,
-            name: `Tài xế ${fNames[i%8]} ${mNames[i%6]}`,
-            experience: 5 + (i%10),
-            bio: "Lái xe an toàn, kinh nghiệm lâu năm",
-            status: "available"
-        }));
-    },
+// Hàm tạo tài xế giả (Giữ nguyên logic của bạn nhưng đổi tên mảng trả về nếu cần)
+createMockDrivers() {
+    const fNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi"];
+    const mNames = ["Văn", "Đức", "Thành", "Minh", "Quốc", "Hữu"];
+    return Array.from({length: 20}, (_, i) => ({
+        id: i + 1,
+        name: `Tài xế ${fNames[i % 8]} ${mNames[i % 6]}`,
+        experience: 5 + (i % 10),
+        bio: "Lái xe an toàn, kinh nghiệm lâu năm",
+        status: "available"
+    }));
+},
 
  renderAll() {
     const dash = document.getElementById('admin-dashboard');
