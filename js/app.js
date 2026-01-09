@@ -152,27 +152,17 @@ updateAdminStats: function() {
             </div>`;
         }
     },
-
-    // ============================================================
-    // 5. RENDER XE VÀ TÀI XẾ
-    // ============================================================
-// 5. RENDER XE (Phiên bản chuẩn - Khớp với app.js của bạn)
- // HÀM RENDER XE (CHUẨN 100%)
-  // 5. RENDER XE (Bản sửa lỗi ReferenceError)
     renderCars: function(data = null) {
-        const container = document.getElementById('car-list');
-        if (!container) {
-            console.error("❌ Không tìm thấy ID 'car-list' trong HTML");
-            return;
-        }
+    const container = document.getElementById('car-list');
+    if (!container) return;
 
-        // SỬA LỖI: Dùng trực tiếp this.allCars thay vì this.state
-        const displayData = data || this.allCars;
+    // Lấy dữ liệu từ allCars nếu không có tham số truyền vào
+    const displayData = data || this.allCars;
 
-        if (!displayData || displayData.length === 0) {
-            container.innerHTML = "<p class='col-span-full text-center py-20 text-slate-400 font-bold'>Dữ liệu xe đang trống hoặc không tìm thấy...</p>";
-            return;
-        }
+    if (!displayData || displayData.length === 0) {
+        container.innerHTML = "<p class='col-span-full text-center py-20 text-slate-400 font-bold'>Dữ liệu xe đang trống...</p>";
+        return;
+    }
 
         container.innerHTML = displayData.map(car => {
             const isBusy = car.status === 'busy' || car.status === 'Đang bận';
@@ -984,20 +974,6 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         this.renderAll();
     }
 },
-
-// Hàm tạo tài xế giả (Giữ nguyên logic của bạn nhưng đổi tên mảng trả về nếu cần)
-createMockDrivers() {
-    const fNames = ["Nguyễn", "Trần", "Lê", "Phạm", "Hoàng", "Vũ", "Đặng", "Bùi"];
-    const mNames = ["Văn", "Đức", "Thành", "Minh", "Quốc", "Hữu"];
-    return Array.from({length: 20}, (_, i) => ({
-        id: i + 1,
-        name: `Tài xế ${fNames[i % 8]} ${mNames[i % 6]}`,
-        experience: 5 + (i % 10),
-        bio: "Lái xe an toàn, kinh nghiệm lâu năm",
-        status: "available"
-    }));
-},
-
  renderAll() {
     const dash = document.getElementById('admin-dashboard');
     if (dash) {

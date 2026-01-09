@@ -741,17 +741,13 @@ app.handleDriverBooking = function() {
     <script>
     // 3. CẬP NHẬT CON SỐ DASHBOARD
   function updateDashboard() {
-    // Chỉ chạy khi app đã nạp xong allCars và allDrivers
-    if (window.app && window.app.allCars && window.app.allDrivers) {
-        const carCount = window.app.allCars.length;
-        const driverCount = window.app.allDrivers.length;
-
+    // Chỉ chạy khi app và dữ liệu đã sẵn sàng
+    if (window.app && window.app.allCars) {
+        const totalCars = app.allCars.length;
         document.querySelectorAll('.font-black.text-xl').forEach(el => {
-            if (el.innerText.includes('XE')) el.innerText = `${carCount} XE`;
-            if (el.innerText.includes('TÀI XẾ')) el.innerText = `${driverCount} TÀI XẾ`;
+            if(el.innerText.includes('XE')) el.innerText = `${totalCars} XE`;
         });
-        
-        console.log("✅ Dashboard updated with real data.");
+        console.log("✅ Dashboard đã đồng bộ xong.");
     }
 }
 
