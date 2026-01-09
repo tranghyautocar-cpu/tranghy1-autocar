@@ -947,34 +947,43 @@ const pdf = new jsPDF('p', 'mm', 'a4');
     },
 
  async fetchInitialData() {
-        try {
-            // 1. Nạp dữ liệu Xe
-            const resCar = await fetch('cars.json');
-            if (!resCar.ok) throw new Error("Không thấy cars.json");
-            this.allCars = await resCar.json();
+    try {
+        console.log("📂 Đang tải dữ liệu từ cars.json...");
 
-            // 2. Nạp dữ liệu Tài xế thật từ file của bạn
-            // Lưu ý: Nếu file của bạn là 'driver.json' (không có s) thì sửa dòng dưới
-            const resDr = await fetch('driver.json'); 
-            if (!resDr.ok) throw new Error("Không thấy driver.json");
-            this.allDrivers = await resDr.json();
-
-            console.log(`✅ Thành công: ${this.allCars.length} Xe & ${this.allDrivers.length} Tài xế.`);
-
-            // 3. Hiển thị lên giao diện
-            this.renderCars(this.allCars);
-            this.renderDriversHome(this.allDrivers);
-            
-            // 4. Cập nhật số lượng trên Dashboard
-            if (typeof updateDashboard === 'function') updateDashboard();
-
-        } catch (error) {
-            console.error("❌ Lỗi nạp dữ liệu:", error);
-            // Hiện thông báo lỗi nếu không tìm thấy file JSON
-            const container = document.getElementById('car-list');
-            if(container) container.innerHTML = `<p class="col-span-full text-center py-20 text-red-500 font-bold">⚠️ Lỗi: ${error.message}</p>`;
+        // 1. Đọc file cars.json
+        const response = await fetch('cars.json');
+        if (!response.ok) {
+            throw new Error("Không tìm thấy file cars.json!");
         }
-    },
+
+        // 2. Lưu dữ liệu xe trực tiếp vào thuộc tính của app (this.allCars)
+        this.allCars = await response.json();
+        
+        // 3. Tạo dữ liệu Tài xế giả trực tiếp vào this.allDrivers
+        this.allDrivers = this.createMockDrivers();
+
+        // 4. Lấy đơn hàng cũ từ LocalStorage
+        const rawOrders = localStorage.getItem('tranghy_orders');
+        this.bookings = rawOrders ? JSON.parse(rawOrders) : [];
+
+        console.log(`✅ Đã tải xong: ${this.allCars.length} Xe & ${this.allDrivers.length} Tài xế.`);
+
+        // 5. Hiển thị lên màn hình
+        this.renderAll(); 
+        
+        // Cập nhật Dashboard (Hàm này ở index.html sẽ gọi app.allCars.length)
+        if (typeof updateDashboard === 'function') updateDashboard();
+
+    } catch (error) {
+        console.error("❌ Lỗi tải dữ liệu:", error);
+        alert("⚠️ Lỗi: Không nạp được dữ liệu xe.");
+        
+        // Gán mảng rỗng để tránh lỗi logic render
+        this.allCars = [];
+        this.allDrivers = [];
+        this.renderAll();
+    }
+},
 
 // Hàm tạo tài xế giả (Giữ nguyên logic của bạn nhưng đổi tên mảng trả về nếu cần)
 createMockDrivers() {
