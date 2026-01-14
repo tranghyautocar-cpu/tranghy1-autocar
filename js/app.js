@@ -1003,17 +1003,18 @@ async fetchInitialData() {
         this.updateAdminStats();
     }
 },
- createMockDrivers: function() {
-    return Array.from({ length: 20 }, (_, i) => ({
-        id: 100 + i,
-        name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
-        experience: 5 + (i % 15),
-        rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
-        status: "Sẵn sàng", 
-        image_url: `https://i.pravatar.cc/150?u=${i}`,
-        bio: "Tài xế chuyên nghiệp, tận tâm, rành đường đi tỉnh và nội thành."
-    }));
-},
+ // Đổi tên thành getFallbackDrivers để khớp với hàm fetchInitialData
+    getFallbackDrivers() { 
+        return Array.from({ length: 20 }, (_, i) => ({
+            id: 100 + i,
+            name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
+            experience: 5 + (i % 15),
+            rating: (4.5 + (Math.random() * 0.5)).toFixed(1),
+            status: "Sẵn sàng", 
+            image_url: `https://i.pravatar.cc/150?u=${i}`,
+            bio: "Tài xế chuyên nghiệp, tận tâm, rành đường đi tỉnh và nội thành."
+        }));
+    },
    getFallbackCars: () => 
     [
     { id: 1, name: "Toyota Camry 2024", category: "5", price: 1200000, status: "Sẵn sàng", image_url: "images/toyota2024.jpg", desc: "Sedan hạng D sang trọng." },
