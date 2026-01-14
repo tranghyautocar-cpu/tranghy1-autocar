@@ -9,76 +9,127 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #94a3b8; scroll-behavior: smooth; }
-        .luxury-gradient { background: linear-gradient(135deg, #fff 0%, #2563eb 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .luxury-gradient { background: linear-gradient(135deg, #fff 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px);
+            transition: all 0.4s ease;
+        }
+        .glass-card:hover { border-color: rgba(59, 130, 246, 0.3); transform: translateY(-5px); }
+        .accent-line { width: 40px; height: 2px; background: #3b82f6; display: inline-block; margin-right: 10px; vertical-align: middle; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="antialiased">
-    <nav class="fixed w-full z-50 top-0 bg-slate-950/50 backdrop-blur-xl border-b border-white/5 p-4">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-white font-bold uppercase tracking-tighter">
-                <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">T</div>
-                TrangHy <span class="text-blue-500">Autocar</span>
+    <nav class="fixed w-full z-50 top-0 bg-slate-950/60 backdrop-blur-xl border-b border-white/5 p-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 text-white font-bold uppercase tracking-tighter">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-lg shadow-lg shadow-blue-600/20">T</div>
+                <div class="flex flex-col">
+                    <span class="leading-none text-base">TrangHy</span>
+                    <span class="text-[10px] text-blue-500 tracking-[0.3em]">Autocar</span>
+                </div>
             </a>
-            <a href="index.html" class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors">Trở về Trang chủ</a>
+            <a href="index.html" class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-white transition-all flex items-center gap-2">
+                <i class="fas fa-home"></i> Trang chủ
+            </a>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto pt-32 pb-20 px-6">
-        <header class="mb-16">
-            <h1 class="text-5xl md:text-6xl font-black luxury-gradient italic tracking-tighter uppercase mb-6">Điều khoản <br>Dịch vụ</h1>
-            <p class="text-blue-500 font-bold uppercase tracking-[0.3em] text-[10px]">Quy chuẩn dịch vụ chuyên nghiệp</p>
+    <main class="max-w-4xl mx-auto pt-40 pb-20 px-6">
+        <header class="mb-20">
+            <h1 class="text-6xl md:text-7xl font-black luxury-gradient italic tracking-tighter uppercase mb-6">Điều khoản <br>Dịch vụ</h1>
+            <div class="flex items-center gap-4">
+                <span class="accent-line"></span>
+                <p class="text-blue-500 font-bold uppercase tracking-[0.4em] text-[10px]">Minh bạch - Uy tín - Chuyên nghiệp</p>
+            </div>
         </header>
 
-        <div class="space-y-8">
-            <div class="glass-card p-10 rounded-[3rem]">
-                <h2 class="text-white font-black text-2xl mb-6 italic border-b border-white/5 pb-4">01. Đối với khách thuê tự lái</h2>
+        <div class="space-y-12">
+            <section class="glass-card p-10 rounded-[2.5rem]">
+                <h2 class="text-white font-black text-2xl mb-8 italic flex items-center gap-4">
+                    <i class="fas fa-file-contract text-blue-500 text-lg"></i> 01. Thủ tục & Đối chiếu
+                </h2>
+                <div class="grid md:grid-cols-2 gap-10 text-sm">
+                    <div class="space-y-4">
+                        <p class="font-bold text-white uppercase tracking-widest text-xs opacity-60">Giấy tờ bắt buộc</p>
+                        <ul class="space-y-3">
+                            <li class="flex gap-3"><i class="fas fa-check-circle text-blue-600"></i> GPLX hạng B1/B2 trở lên (Bản gốc, chính chủ).</li>
+                            <li class="flex gap-3"><i class="fas fa-check-circle text-blue-600"></i> CCCD gắn chip đối chiếu.</li>
+                            <li class="flex gap-3"><i class="fas fa-check-circle text-blue-600"></i> Chấp nhận ảnh chụp/định danh VNeID mức 2 cho bước đặt chỗ.</li>
+                        </ul>
+                    </div>
+                    <div class="space-y-4">
+                        <p class="font-bold text-white uppercase tracking-widest text-xs opacity-60">Tài sản thế chấp</p>
+                        <ul class="space-y-3">
+                            <li class="flex gap-3"><i class="fas fa-motorcycle text-blue-600"></i> 01 Xe máy kèm đăng ký xe chính chủ (Trị giá trên 15 triệu).</li>
+                            <li class="flex gap-3"><i class="fas fa-money-bill-wave text-blue-600"></i> Hoặc tiền mặt từ 15,000,000đ đến 30,000,000đ tùy dòng xe.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="glass-card p-10 rounded-[2.5rem]">
+                <h2 class="text-white font-black text-2xl mb-8 italic flex items-center gap-4">
+                    <i class="fas fa-steering-wheel text-blue-500 text-lg"></i> 02. Trách nhiệm vận hành
+                </h2>
+                <div class="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 mb-8">
+                    <p class="text-sm leading-relaxed italic text-white/80">
+                        "Khách hàng cam kết vận hành xe an toàn, tuân thủ luật giao thông đường bộ Việt Nam. Tuyệt đối không sử dụng rượu bia, chất kích thích khi cầm lái."
+                    </p>
+                </div>
                 <div class="grid md:grid-cols-2 gap-8 text-sm leading-relaxed">
-                    <div class="space-y-4">
-                        <p class="font-bold text-blue-500 uppercase tracking-widest">Yêu cầu hồ sơ</p>
-                        <ul class="list-disc pl-4 space-y-2 opacity-80">
-                            <li>Bằng lái xe hạng B1 trở lên (bản gốc).</li>
-                            <li>CCCD gắn chip (đối chiếu khi nhận xe).</li>
-                            <li>Tài sản thế chấp (Xe máy + Đăng ký xe) hoặc tiền mặt tùy giá trị xe thuê.</li>
-                        </ul>
+                    <ul class="space-y-3">
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Giới hạn quãng đường: 300km - 400km/ngày (Tùy hợp đồng).</li>
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Phí quá giờ: 100.000đ - 200.000đ/giờ.</li>
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Phí quá km: 3.000đ - 5.000đ/km.</li>
+                    </ul>
+                    <ul class="space-y-3">
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Không hút thuốc trong xe (Phí khử mùi: 500.000đ).</li>
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Không mang theo thực phẩm có mùi nặng.</li>
+                        <li class="flex gap-3"><i class="fas fa-minus text-blue-500 mt-1"></i> Trả xe đúng mức nhiên liệu như khi nhận xe.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <section class="glass-card p-10 rounded-[3rem]">
+                <h2 class="text-white font-black text-2xl mb-8 italic flex items-center gap-4">
+                    <i class="fas fa-hand-holding-usd text-blue-500 text-lg"></i> 03. Thanh toán & Hủy lịch
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-center border border-white/5">
+                        <i class="fas fa-calendar-check text-green-500 mb-4 text-xl"></i>
+                        <p class="text-white font-bold text-xs uppercase mb-2">Trước 48h</p>
+                        <p class="text-[10px] text-slate-400">Hoàn cọc 100% qua chuyển khoản.</p>
                     </div>
-                    <div class="space-y-4">
-                        <p class="font-bold text-blue-500 uppercase tracking-widest">Trách nhiệm</p>
-                        <ul class="list-disc pl-4 space-y-2 opacity-80">
-                            <li>Không sử dụng xe để vận chuyển hàng cấm, chất cháy nổ.</li>
-                            <li>Tuyệt đối không sử dụng rượu bia khi lái xe.</li>
-                            <li>Bồi thường chi phí sửa chữa nếu xảy ra va quẹt do lỗi chủ quan.</li>
-                        </ul>
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-center border border-white/5">
+                        <i class="fas fa-hourglass-half text-yellow-500 mb-4 text-xl"></i>
+                        <p class="text-white font-bold text-xs uppercase mb-2">24h - 48h</p>
+                        <p class="text-[10px] text-slate-400">Khấu trừ 50% tiền cọc đặt xe.</p>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] text-center border border-red-500/20">
+                        <i class="fas fa-calendar-times text-red-500 mb-4 text-xl"></i>
+                        <p class="text-white font-bold text-xs uppercase mb-2">Dưới 24h</p>
+                        <p class="text-[10px] text-slate-400">Không hoàn tiền cọc giữ xe.</p>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="glass-card p-10 rounded-[3rem]">
-                <h2 class="text-white font-black text-2xl mb-6 italic border-b border-white/5 pb-4">02. Quy định thanh toán & Hủy chuyến</h2>
-                <div class="space-y-6 text-sm">
-                    <p class="leading-relaxed italic">Hệ thống áp dụng đặt cọc để giữ xe chắc chắn. Việc thanh toán được thực hiện qua QR Bank hoặc tiền mặt tại văn phòng.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div class="bg-white/5 p-4 rounded-2xl text-center">
-                            <p class="text-white font-bold mb-1">Trước 48h</p>
-                            <p class="text-[10px] text-green-500">Hoàn cọc 100%</p>
-                        </div>
-                        <div class="bg-white/5 p-4 rounded-2xl text-center">
-                            <p class="text-white font-bold mb-1">Từ 24h - 48h</p>
-                            <p class="text-[10px] text-yellow-500">Hoàn cọc 50%</p>
-                        </div>
-                        <div class="bg-white/5 p-4 rounded-2xl text-center">
-                            <p class="text-white font-bold mb-1">Dưới 24h</p>
-                            <p class="text-[10px] text-red-500">Không hoàn cọc</p>
-                        </div>
-                    </div>
+            <section class="glass-card p-10 rounded-[3rem]">
+                <h2 class="text-white font-black text-2xl mb-6 italic flex items-center gap-4 text-blue-400">
+                    <i class="fas fa-shield-check"></i> Cam kết TrangHy
+                </h2>
+                <div class="space-y-4 text-sm leading-relaxed">
+                    <p>Mọi phương tiện thuộc hệ thống <strong>TrangHy Autocar</strong> đều được bảo hiểm dân sự bắt buộc và bảo hiểm thân vỏ đầy đủ. Chúng tôi cam kết xe luôn được vệ sinh tiêu chuẩn khách sạn và kiểm tra kỹ thuật 24 bước trước khi bàn giao cho quý khách.</p>
                 </div>
-            </div>
-
-            <div class="glass-card p-10 rounded-[3rem]">
-                <h2 class="text-white font-black text-2xl mb-6 italic border-b border-white/5 pb-4">03. Cam kết từ TrangHy Autocar</h2>
-                <p class="text-sm leading-relaxed mb-4">Chúng tôi cam kết cung cấp xe đời mới, đã được bảo dưỡng định kỳ và vệ sinh sạch sẽ trước khi bàn giao. Hỗ trợ kỹ thuật và cứu hộ tận nơi trong trường hợp có sự cố khách quan.</p>
-            </div>
+            </section>
         </div>
+
+        <footer class="mt-24 pt-10 border-t border-white/5 text-center">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-slate-600">An toàn của bạn là sứ mệnh của TrangHy Autocar</p>
+        </footer>
     </main>
 </body>
 </html>

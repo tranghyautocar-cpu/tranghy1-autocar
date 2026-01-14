@@ -10,57 +10,130 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #020617; color: #94a3b8; scroll-behavior: smooth; }
         .luxury-gradient { background: linear-gradient(135deg, #fff 0%, #3b82f6 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); }
+        .glass-card { 
+            background: rgba(255, 255, 255, 0.02); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(12px); 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .glass-card:hover { 
+            background: rgba(255, 255, 255, 0.04); 
+            border-color: rgba(59, 130, 246, 0.3);
+            transform: translateY(-5px);
+        }
+        .section-number {
+            background: linear-gradient(135deg, #2563eb, #3b82f6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 0.8rem;
+            letter-spacing: 0.2em;
+        }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #020617; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
     </style>
 </head>
 <body class="antialiased">
-    <nav class="fixed w-full z-50 top-0 bg-slate-950/50 backdrop-blur-xl border-b border-white/5 p-4">
-        <div class="max-w-5xl mx-auto flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-2 text-white font-bold uppercase tracking-tighter">
-                <span class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center text-sm">T</span>
-                TrangHy <span class="text-blue-500">Autocar</span>
+    <nav class="fixed w-full z-50 top-0 bg-slate-950/60 backdrop-blur-xl border-b border-white/5 p-4">
+        <div class="max-w-6xl mx-auto flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 text-white font-bold uppercase tracking-tighter group">
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-lg shadow-lg shadow-blue-600/20 group-hover:rotate-12 transition-transform">T</div>
+                <div class="flex flex-col">
+                    <span class="leading-none text-base">TrangHy</span>
+                    <span class="text-[10px] text-blue-500 tracking-[0.3em]">Autocar</span>
+                </div>
             </a>
-            <a href="index.html" class="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-white transition-colors">
-                <i class="fas fa-arrow-left mr-2"></i> Quay lại
+            <a href="index.html" class="group flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 hover:text-blue-400 transition-all">
+                <i class="fas fa-long-arrow-alt-left transition-transform group-hover:-translate-x-1"></i> Quay lại hệ thống
             </a>
         </div>
     </nav>
 
-    <main class="max-w-4xl mx-auto pt-32 pb-20 px-6">
-        <header class="mb-16">
-            <h1 class="text-5xl md:text-6xl font-black luxury-gradient italic tracking-tighter uppercase mb-6">Chính sách <br>Bảo mật</h1>
-            <p class="text-blue-500 font-bold uppercase tracking-[0.3em] text-xs">An toàn dữ liệu là ưu tiên số 1</p>
+    <main class="max-w-4xl mx-auto pt-40 pb-20 px-6">
+        <header class="mb-20 relative">
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-blue-600/10 blur-[100px] rounded-full"></div>
+            <h1 class="text-6xl md:text-7xl font-black luxury-gradient italic tracking-tighter uppercase mb-6 leading-tight">Chính sách <br>Bảo mật dữ liệu</h1>
+            <div class="flex items-center gap-4">
+                <span class="h-[1px] w-12 bg-blue-600"></span>
+                <p class="text-blue-500 font-bold uppercase tracking-[0.4em] text-[10px]">Tiêu chuẩn vận tải số 4.0</p>
+            </div>
         </header>
 
-        <div class="space-y-12">
-            <section class="glass-card p-8 rounded-[2rem]">
-                <h2 class="text-white font-bold text-xl mb-4 flex items-center gap-3">
-                    <span class="text-blue-600">01.</span> Thu thập dữ liệu cá nhân
+        <div class="space-y-8">
+            <section class="glass-card p-10 rounded-[2.5rem] relative overflow-hidden">
+                <span class="section-number font-black uppercase mb-4 block italic">Section 01</span>
+                <h2 class="text-white font-black text-2xl mb-6 tracking-tight uppercase italic flex items-center gap-4">
+                    Thu thập dữ liệu cá nhân
+                    <i class="fas fa-fingerprint text-blue-600/50 text-sm"></i>
                 </h2>
-                <p class="leading-relaxed">Để phục vụ quy trình lập hợp đồng thuê xe theo đúng quy định pháp luật Việt Nam, chúng tôi thu thập các thông tin: Họ và tên, số điện thoại chính chủ, địa chỉ cư trú, ảnh chụp CCCD và Giấy phép lái xe (hạng B1/B2 trở lên). Thông tin này chỉ được thu thập khi quý khách thực hiện thao tác đặt xe trên hệ thống.</p>
+                <div class="space-y-4 leading-relaxed text-slate-400">
+                    <p>Để thực hiện hợp đồng thuê xe theo Nghị định pháp luật Việt Nam, TrangHy Autocar thu thập:</p>
+                    <ul class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm italic">
+                        <li class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5"><i class="fas fa-user-check text-blue-500"></i> Định danh: Họ tên, Ngày sinh, CCCD</li>
+                        <li class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5"><i class="fas fa-id-card text-blue-500"></i> Giấy phép lái xe (Hạng B1/B2/D/E)</li>
+                        <li class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5"><i class="fas fa-phone-alt text-blue-500"></i> Liên lạc: SĐT, Email, Địa chỉ tạm trú</li>
+                        <li class="flex items-center gap-3 bg-white/5 p-3 rounded-xl border border-white/5"><i class="fas fa-map-marker-alt text-blue-500"></i> Định vị GPS (Khi vận hành xe thuê)</li>
+                    </ul>
+                </div>
             </section>
 
-            <section class="glass-card p-8 rounded-[2rem]">
-                <h2 class="text-white font-bold text-xl mb-4 flex items-center gap-3">
-                    <span class="text-blue-600">02.</span> Mục đích sử dụng thông tin
-                </h2>
-                <ul class="space-y-4">
-                    <li class="flex gap-3 items-start"><i class="fas fa-check text-blue-500 mt-1"></i> Xác thực danh tính chủ thể thuê xe và đảm bảo an toàn vận tải.</li>
-                    <li class="flex gap-3 items-start"><i class="fas fa-check text-blue-500 mt-1"></i> Liên hệ bàn giao xe, hỗ trợ kỹ thuật và cứu hộ trên đường.</li>
-                    <li class="flex gap-3 items-start"><i class="fas fa-check text-blue-500 mt-1"></i> Gửi hóa đơn điện tử và xác nhận thanh toán đặt cọc.</li>
-                </ul>
+            <section class="glass-card p-10 rounded-[2.5rem]">
+                <span class="section-number font-black uppercase mb-4 block italic">Section 02</span>
+                <h2 class="text-white font-black text-2xl mb-6 tracking-tight uppercase italic">Mục đích sử dụng & Pháp lý</h2>
+                <div class="grid gap-6">
+                    <div class="flex gap-5">
+                        <div class="w-12 h-12 shrink-0 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-500 shadow-inner">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm mb-1">Xác thực hợp đồng</h4>
+                            <p class="text-sm">Đảm bảo chủ thể thuê xe đủ điều kiện pháp lý để vận hành phương tiện giao thông tại Việt Nam.</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-5">
+                        <div class="w-12 h-12 shrink-0 bg-blue-600/10 rounded-2xl flex items-center justify-center text-blue-500 shadow-inner">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        <div>
+                            <h4 class="text-white font-bold text-sm mb-1">Hỗ trợ khẩn cấp</h4>
+                            <p class="text-sm">Liên hệ cứu hộ, kỹ thuật 24/7 và gửi thông báo lịch trình qua Zalo/SĐT khách hàng cung cấp.</p>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <section class="glass-card p-8 rounded-[2rem]">
-                <h2 class="text-white font-bold text-xl mb-4 flex items-center gap-3">
-                    <span class="text-blue-600">03.</span> Cam kết bảo mật 3 lớp
+            <section class="glass-card p-10 rounded-[2.5rem]">
+                <span class="section-number font-black uppercase mb-4 block italic">Section 03</span>
+                <h2 class="text-white font-black text-2xl mb-6 tracking-tight uppercase italic flex items-center gap-4">
+                    Cam kết bảo mật 3 lớp
+                    <div class="flex gap-1">
+                        <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse"></span>
+                        <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse" style="animation-delay: 0.2s"></span>
+                        <span class="w-1 h-1 bg-green-500 rounded-full animate-pulse" style="animation-delay: 0.4s"></span>
+                    </div>
                 </h2>
-                <p class="leading-relaxed">TrangHy Autocar sử dụng công nghệ mã hóa SSL 256-bit để bảo vệ thông tin. Chúng tôi cam kết tuyệt đối: Không bán, không chia sẻ và không tiết lộ dữ liệu khách hàng cho bên thứ ba vì bất kỳ mục đích thương mại nào.</p>
+                <div class="bg-blue-600/5 p-6 rounded-3xl border border-blue-500/10 mb-6">
+                    <p class="text-sm leading-relaxed mb-4">TrangHy Autocar áp dụng tiêu chuẩn bảo mật <strong>AES-256 bit</strong> cho mọi dữ liệu ảnh (CCCD/GPLX) được tải lên hệ thống.</p>
+                    <div class="flex flex-wrap gap-4 text-[10px] font-bold text-blue-500">
+                        <span class="px-3 py-1 bg-blue-600/10 rounded-full uppercase"><i class="fas fa-lock mr-2"></i> Không bán dữ liệu</span>
+                        <span class="px-3 py-1 bg-blue-600/10 rounded-full uppercase"><i class="fas fa-user-secret mr-2"></i> Không bên thứ 3</span>
+                        <span class="px-3 py-1 bg-blue-600/10 rounded-full uppercase"><i class="fas fa-history mr-2"></i> Lưu trữ hữu hạn</span>
+                    </div>
+                </div>
+                <p class="text-sm italic">Theo Nghị định 13/2023/NĐ-CP, quý khách có quyền yêu cầu truy xuất, chỉnh sửa hoặc yêu cầu xóa dữ liệu cá nhân sau khi thanh lý hợp đồng thuê xe.</p>
             </section>
         </div>
 
-        <div class="mt-20 pt-10 border-t border-white/5 text-center">
-            <p class="text-[10px] uppercase tracking-[0.4em] text-slate-600">© 2025 TrangHy Autocar - Hung Yen City</p>
+        <div class="mt-32 pt-12 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
+            <div class="flex flex-col gap-2">
+                <p class="text-[10px] uppercase tracking-[0.4em] text-slate-500 font-bold">© 2025 TrangHy Autocar Global</p>
+                <p class="text-[9px] text-slate-700 font-medium">Bản quyền thuộc về Hệ thống quản lý vận tải TrangHy - Hưng Yên City</p>
+            </div>
+            <div class="flex gap-6 grayscale opacity-30 hover:grayscale-0 hover:opacity-100 transition-all">
+                <i class="fab fa-cc-visa text-2xl"></i>
+                <i class="fab fa-cc-mastercard text-2xl"></i>
+                <i class="fas fa-shield-virus text-2xl text-blue-500"></i>
+            </div>
         </div>
     </main>
 </body>
