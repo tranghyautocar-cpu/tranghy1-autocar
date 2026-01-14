@@ -163,57 +163,61 @@ updateAdminStats: function() {
             </div>`;
         }
     },
-    renderCars: function(data = null) {
+ renderCars: function(data = null) {
     const container = document.getElementById('car-list');
     if (!container) return;
 
-    // Lấy dữ liệu từ allCars nếu không có tham số truyền vào
+    // Ưu tiên lấy data truyền vào, nếu không có thì lấy từ state
     const displayData = data || this.state.cars;
 
+    // Kiểm tra nếu vẫn không có dữ liệu
     if (!displayData || displayData.length === 0) {
-        container.innerHTML = "<p class='col-span-full text-center py-20 text-slate-400 font-bold'>Dữ liệu xe đang trống...</p>";
+        container.innerHTML = `
+            <div class="col-span-full text-center py-20">
+                <p class='text-slate-400 font-bold'>Dữ liệu xe đang trống...</p>
+                <p class='text-xs text-slate-500'>Vui lòng kiểm tra file cars.json hoặc kết nối mạng.</p>
+            </div>`;
         return;
     }
 
-        container.innerHTML = displayData.map(car => {
-            const isBusy = car.status === 'busy' || car.status === 'Đang bận';
-            const img = car.image_url || 'images/default-car.png'; 
-            
-            // Xử lý hiển thị số chỗ
-            let seatDisplay = car.category || car.seats || '4';
-            if (!String(seatDisplay).toLowerCase().includes('chỗ')) {
-                seatDisplay += ' Chỗ';
-            }
+    container.innerHTML = displayData.map(car => {
+        const isBusy = car.status === 'busy' || car.status === 'Đang bận';
+        const img = car.image_url || 'images/default-car.png'; 
+        
+        // Chuẩn hóa hiển thị số chỗ
+        let seatDisplay = car.category || car.seats || '4';
+        if (!String(seatDisplay).toLowerCase().includes('chỗ')) {
+            seatDisplay += ' Chỗ';
+        }
 
-            const priceDisplay = new Intl.NumberFormat('vi-VN').format(car.price);
+        const priceDisplay = new Intl.NumberFormat('vi-VN').format(car.price);
 
-            return `
-            <div class="car-card bg-white p-5 group relative shadow-sm rounded-[2rem] border border-slate-100 ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
-                <div class="relative overflow-hidden h-52 rounded-[1.5rem] mb-4">
-                    <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                         onerror="this.src='https://via.placeholder.com/300?text=Xe+TrangHy'">
-                    <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-blue-600">
-                        ${seatDisplay}
-                    </div>
-                    ${isBusy ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold uppercase">ĐÃ ĐƯỢC THUÊ</div>' : ''}
+        return `
+        <div class="car-card bg-white p-5 group relative shadow-sm rounded-[2rem] border border-slate-100 ${isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer'}">
+            <div class="relative overflow-hidden h-52 rounded-[1.5rem] mb-4">
+                <img src="${img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                     onerror="this.src='https://via.placeholder.com/300?text=Xe+TrangHy'">
+                <div class="absolute bottom-3 left-3 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-[10px] font-black text-blue-600">
+                    ${seatDisplay}
                 </div>
-                <div class="space-y-2 px-2">
-                    <h3 class="text-xl font-black text-slate-900 italic uppercase tracking-tighter">${car.name}</h3>
-                    <div class="flex justify-between items-center border-t border-slate-100 pt-3 mt-2">
-                        <div>
-                            <p class="text-[9px] font-bold text-slate-400 uppercase">Giá thuê ngày</p>
-                            <p class="text-xl font-black text-blue-600">${priceDisplay}đ</p>
-                        </div>
-                        <button onclick="app.openBookingModal('${car.name}', '${car.price}')" 
-                            class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 transition-all shadow-lg shadow-blue-900/20">
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
+                ${isBusy ? '<div class="absolute inset-0 bg-black/50 flex items-center justify-center text-white font-bold uppercase text-xs">ĐÃ ĐƯỢC THUÊ</div>' : ''}
+            </div>
+            <div class="space-y-2 px-2">
+                <h3 class="text-xl font-black text-slate-900 italic uppercase tracking-tighter">${car.name}</h3>
+                <div class="flex justify-between items-center border-t border-slate-100 pt-3 mt-2">
+                    <div>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">Giá thuê ngày</p>
+                        <p class="text-xl font-black text-blue-600">${priceDisplay}đ</p>
                     </div>
+                    <button onclick="app.openCar(${car.id})" 
+                        class="w-10 h-10 rounded-full bg-slate-900 text-white flex items-center justify-center hover:bg-blue-600 transition-all shadow-lg shadow-blue-900/20">
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
                 </div>
-            </div>`;
-        }).join('');
-    },
-
+            </div>
+        </div>`;
+    }).join('');
+},
    renderDriversHome() {
         const container = document.getElementById('display-drivers');
         if (!container) return;
@@ -947,7 +951,7 @@ window.open(`https://zalo.me/0353979614?text=${encodeURIComponent(message)}`, '_
         emailInput.value = "";
     },
 
- async fetchInitialData() {
+async fetchInitialData() {
     try {
         console.log("📂 Đang tải dữ liệu từ cars.json...");
 
@@ -956,26 +960,33 @@ window.open(`https://zalo.me/0353979614?text=${encodeURIComponent(message)}`, '_
         if (!response.ok) {
             throw new Error("Không tìm thấy file cars.json!");
         }
-       this.allCars = await response.json();
-       this.allDrivers = this.createMockDrivers();
-        const rawOrders = localStorage.getItem('tranghy_orders');
-        this.bookings = rawOrders ? JSON.parse(rawOrders) : [];
 
-        console.log(`✅ Đã tải xong: ${this.allCars.length} Xe & ${this.allDrivers.length} Tài xế.`);
+        // --- SỬA TẠI ĐÂY ---
+        // Thay vì this.allCars, hãy dùng this.state.cars
+        this.state.cars = await response.json(); 
+        
+        // Thay vì createMockDrivers (hàm không tồn tại), dùng getFallbackDrivers
+        this.state.drivers = this.getFallbackDrivers(); 
+        
+        // Đảm bảo bookings cũng vào state
+        const rawOrders = localStorage.getItem('tranghy_orders');
+        this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
+        // -------------------
+
+        console.log(`✅ Đã tải xong: ${this.state.cars.length} Xe & ${this.state.drivers.length} Tài xế.`);
 
         // 5. Hiển thị lên màn hình
         this.renderAll(); 
         
-        // Cập nhật Dashboard (Hàm này ở index.html sẽ gọi app.allCars.length)
+        // Cập nhật Dashboard (Nếu hàm này cần data, hãy đảm bảo nó đọc từ this.state.cars)
         if (typeof updateDashboard === 'function') updateDashboard();
 
     } catch (error) {
         console.error("❌ Lỗi tải dữ liệu:", error);
-        alert("⚠️ Lỗi: Không nạp được dữ liệu xe.");
         
-        // Gán mảng rỗng để tránh lỗi logic render
-        this.allCars = [];
-        this.allDrivers = [];
+        // Gán mảng dự phòng vào state để web không bị trắng
+        this.state.cars = this.getFallbackCars();
+        this.state.drivers = this.getFallbackDrivers();
         this.renderAll();
     }
 },
