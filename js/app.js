@@ -869,14 +869,33 @@ window.open(`https://zalo.me/0353979614?text=${encodeURIComponent(message)}`, '_
     formatMoney(amount) {
         return parseInt(amount || 0).toLocaleString('vi-VN') + "đ";
     },
+async subscribeNewsletter() {
+    const emailInput = document.getElementById('newsletter-email');
+    
+    // 1. Kiểm tra xem ô input có tồn tại không
+    if (!emailInput) return;
 
-    async subscribeNewsletter() {
-        const emailInput = document.getElementById('newsletter-email');
-        if (!emailInput || !emailInput.value) return alert("Vui lòng nhập email!");
-        alert("🎉 Đã đăng ký nhận tin thành công!");
-        emailInput.value = "";
-    },
+    const email = emailInput.value.trim();
 
+    // 2. Kiểm tra bỏ trống
+    if (!email) {
+        alert("⚠️ Vui lòng nhập địa chỉ email của bạn!");
+        return;
+    }
+
+    // 3. Kiểm tra định dạng email hợp lệ (có dấu @ và tên miền)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        alert("⚠️ Địa chỉ email không hợp lệ. Vui lòng kiểm tra lại!");
+        return;
+    }
+
+    // 4. Thông báo thành công
+    alert("🎉 Cảm ơn bạn! TrangHy Autocar đã ghi nhận email: " + email);
+    
+    // 5. Xóa trống ô nhập để sẵn sàng cho lần sau
+    emailInput.value = "";
+},
 async fetchInitialData() {
     try {
         console.log("📂 Đang tải dữ liệu từ cars.json...");
