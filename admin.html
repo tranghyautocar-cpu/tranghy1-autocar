@@ -6,7 +6,7 @@
     <title>Hệ thống Quản trị - TrangHy Autocar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
@@ -198,274 +198,178 @@
         </div>
     </div>
 
-    <script>
-        // --- 1. QUẢN LÝ DỮ LIỆU & LIÊN KẾT JSON ---
-        function getData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
-        function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
+   <script>
+    // --- 1. QUẢN LÝ DỮ LIỆU CHUẨN ---
+    const DB = {
+        get: (key) => JSON.parse(localStorage.getItem(key)) || [],
+        set: (key, val) => localStorage.setItem(key, JSON.stringify(val))
+    };
 
-        // Hàm mới: Tải dữ liệu từ file JSON nếu LocalStorage trống
-        async function initJsonData() {
-            // Liên kết Cars
-            if (getData('tranghy_cars').length === 0) {
-                try {
-                    const res = await fetch('cars.json');
-                    if (res.ok) {
-                        const data = await res.json();
-                        // Chuyển image_url sang img để khớp logic render của bạn
-                        const mappedData = data.map(c => ({
-                            ...c,
-                            img: c.image_url || c.img
-                        }));
-                        saveData('tranghy_cars', mappedData);
-                    }
-                } catch (e) { console.error("Lỗi liên kết cars.json"); }
+    // --- 2. HÀM KHỞI TẠO (QUAN TRỌNG: ƯU TIÊN FILE JSON) ---
+    async function initData() {
+        console.log("⏳ Đang đồng bộ dữ liệu từ file JSON...");
+        
+        try {
+            // Tải XE từ cars.json
+            const resCars = await fetch('cars.json');
+            if (resCars.ok) {
+                const dataCars = await resCars.json();
+                // Đồng bộ thuộc tính ảnh
+                const mappedCars = dataCars.map(c => ({
+                    ...c,
+                    img: c.image_url || c.img || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70'
+                }));
+                DB.set('tranghy_cars', mappedCars);
             }
 
-            // Liên kết Drivers
-            if (getData('drivers_data').length === 0) {
-                try {
-                    const res = await fetch('drivers.json');
-                    if (res.ok) {
-                        const data = await res.json();
-                        saveData('drivers_data', data);
-                    }
-                } catch (e) { console.error("Lỗi liên kết drivers.json"); }
+            // Tải TÀI XẾ từ drivers.json
+            const resDrivers = await fetch('drivers.json');
+            if (resDrivers.ok) {
+                const dataDrivers = await resDrivers.json();
+                DB.set('drivers_data', dataDrivers);
+                console.log("✅ Đã tải danh sách tài xế từ file!");
             }
-            // Sau khi nạp xong, vẽ lại toàn bộ
-            renderAll();
+        } catch (e) {
+            console.error("❌ Lỗi fetch dữ liệu:", e);
+        }
+        
+        renderAll();
+    }
+
+    // --- 3. RENDER TÀI XẾ (SỬA LỖI TX03 IS NOT DEFINED) ---
+    function renderDrivers() {
+        const tbody = document.getElementById('driver-management-table');
+        const drivers = DB.get('drivers_data');
+        if(!tbody) return;
+
+        if(drivers.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400 font-bold italic">Chưa có dữ liệu tài xế.</td></tr>';
+            return;
         }
 
-        function renderAll() {
-            updateDashboardStats();
-            renderOrders();
-            renderCars();
-            renderDrivers();
-        }
+        tbody.innerHTML = drivers.map((d, idx) => `
+            <tr class="hover:bg-slate-50/50 transition-all border-b border-slate-100/10">
+                <td class="px-8 py-5 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-black italic shadow-lg">${(d.name || '?').charAt(0)}</div>
+                    <div>
+                        <p class="font-bold uppercase italic text-xs text-white">${d.name}</p>
+                        <p class="text-[9px] text-blue-400 font-bold">ID: ${d.id}</p>
+                    </div>
+                </td>
+                <td class="px-8 py-5">
+                    <p class="text-[10px] font-bold text-slate-300">${d.email || d.phone}</p>
+                    <p class="text-[10px] text-blue-500">${d.phone || ''}</p>
+                </td>
+                <td class="px-8 py-5">
+                    <span class="status-badge bg-green-100 text-green-600">${d.status || 'Sẵn sàng'}</span>
+                </td>
+                <td class="px-8 py-5 text-right">
+                    <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600 transition-all">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
 
-        // --- 2. RENDER DASHBOARD ---
-        function updateDashboardStats() {
-            const cars = getData('tranghy_cars');
-            const drivers = getData('drivers_data');
-            const orders = getData('tranghy_orders');
-
-            let totalRevenue = 0;
-            orders.forEach(o => {
-                if(o.status === 'approved' && o.totalPrice) {
-                    const price = parseInt(o.totalPrice.toString().replace(/[^0-9]/g, '')) || 0;
-                    totalRevenue += price;
-                }
-            });
-
-            document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + 'đ';
-            document.getElementById('stat-orders').innerText = orders.filter(o => o.status === 'pending').length;
-            document.getElementById('stat-cars').innerText = cars.length;
-            document.getElementById('stat-drivers').innerText = drivers.length;
-            document.getElementById('menu-orders-count').innerText = orders.filter(o => o.status === 'pending').length;
-        }
-
-        // --- 3. QUẢN LÝ XE ---
-        function renderCars() {
-            const container = document.getElementById('cars-grid');
-            const cars = getData('tranghy_cars');
-            if(!container) return;
+    // --- 4. RENDER XE (SỬA LỖI ẢNH) ---
+    function renderCars() {
+        const container = document.getElementById('cars-grid');
+        const cars = DB.get('tranghy_cars');
+        if(!container) return;
+        
+        container.innerHTML = cars.map((car, idx) => {
+            // Xử lý link ảnh an toàn
+            const imageSource = car.img || car.image_url;
             
-            container.innerHTML = cars.map((car, idx) => `
-                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 relative group">
-                    <img src="${car.img || car.image_url}" onerror="this.src='https://via.placeholder.com/300?text=Lỗi+ảnh'" class="w-full h-40 object-cover rounded-2xl mb-4 grayscale group-hover:grayscale-0 transition-all">
+            return `
+                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 relative group overflow-hidden">
+                    <div class="h-40 w-full overflow-hidden rounded-2xl mb-4 shadow-inner">
+                        <img src="${imageSource}" 
+                             class="w-full h-full object-cover transition-transform group-hover:scale-110"
+                             onerror="this.src='https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=400'">
+                    </div>
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <h4 class="font-black text-slate-800 italic uppercase text-sm">${car.name}</h4>
-                            <p class="text-[10px] text-slate-400 font-bold">${car.type || car.category || 'N/A'}</p>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${car.type || car.category || '5 Chỗ'}</p>
                         </div>
-                        <select onchange="updateCarStatus(${idx}, this.value)" class="text-[10px] font-bold border-none bg-slate-100 rounded-lg px-2 py-1 outline-none">
-                            <option value="Sẵn sàng" ${car.status === 'Sẵn sàng' || car.status === 'ready' ? 'selected' : ''}>Sẵn sàng</option>
-                            <option value="Đang chạy" ${car.status === 'Đang chạy' || car.status === 'busy' ? 'selected' : ''}>Đang chạy</option>
-                            <option value="Bảo dưỡng" ${car.status === 'Bảo dưỡng' ? 'selected' : ''}>Bảo dưỡng</option>
-                        </select>
+                        <span class="status-badge ${car.status === 'busy' ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">
+                            ${car.status === 'busy' ? 'Đang chạy' : 'Sẵn sàng'}
+                        </span>
                     </div>
                     <div class="flex justify-between items-center pt-4 border-t border-slate-50">
-                        <span class="text-blue-600 font-black text-sm">${(car.price || 0).toLocaleString('vi-VN')}đ</span>
-                        <button onclick="deleteItem('tranghy_cars', ${idx}, renderCars)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                        <span class="text-blue-600 font-black text-sm">${parseInt(car.price || 0).toLocaleString('vi-VN')}đ</span>
+                        <button onclick="deleteItem('tranghy_cars', ${idx}, renderCars)" class="text-red-400 hover:text-red-600">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
                     </div>
                 </div>
-            `).join('');
-        }
+            `;
+        }).join('');
+    }
 
-        function updateCarStatus(idx, status) {
-            const cars = getData('tranghy_cars');
-            cars[idx].status = status;
-            saveData('tranghy_cars', cars);
-            updateDashboardStats();
-        }
+    // --- CÁC HÀM TIỆN ÍCH GIỮ NGUYÊN (NHƯNG TỐI ƯU HÓA) ---
+    function renderAll() {
+        updateDashboardStats();
+        renderOrders();
+        renderCars();
+        renderDrivers();
+    }
 
-        function handleSaveCar() {
-            const name = document.getElementById('car-name').value;
-            const type = document.getElementById('car-type').value;
-            const price = parseInt(document.getElementById('car-price').value);
-            const img = document.getElementById('car-img').value || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70';
+    function updateDashboardStats() {
+        const cars = DB.get('tranghy_cars');
+        const drivers = DB.get('drivers_data');
+        const orders = DB.get('tranghy_orders');
 
-            if(!name || !price) return alert("Vui lòng nhập tên và giá xe!");
-
-            const cars = getData('tranghy_cars');
-            cars.push({ id: Date.now(), name, type, price, img, status: 'Sẵn sàng' });
-            saveData('tranghy_cars', cars);
-            
-            closeModal('modal-add-car');
-            renderCars();
-            updateDashboardStats();
-        }
-
-        // --- 4. QUẢN LÝ ĐƠN HÀNG ---
-        function renderOrders() {
-            const tbody = document.getElementById('orders-table-body');
-            const orders = getData('tranghy_orders');
-            if(!tbody) return;
-
-            if(orders.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Chưa có dữ liệu đơn hàng.</td></tr>';
-                return;
-            }
-
-            tbody.innerHTML = orders.map((o, idx) => `
-                <tr class="hover:bg-slate-50/50 transition-all">
-                    <td class="px-8 py-5">
-                        <p class="font-bold">${o.customerName}</p>
-                        <p class="text-[10px] text-slate-400">${o.customerPhone}</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <p class="text-xs font-bold text-blue-600 uppercase italic">${o.carName}</p>
-                        <p class="text-[9px] text-slate-500">${o.date}</p>
-                    </td>
-                    <td class="px-8 py-5 font-black text-slate-800">${o.totalPrice}</td>
-                    <td class="px-8 py-5">
-                        <span class="status-badge ${o.status === 'pending' ? 'status-warning' : (o.status === 'approved' ? 'status-success' : 'status-danger')}">
-                            ${o.status === 'pending' ? 'Chờ duyệt' : (o.status === 'approved' ? 'Đã duyệt' : 'Đã hủy')}
-                        </span>
-                    </td>
-                    <td class="px-8 py-5 text-right space-x-2">
-                        ${o.status === 'pending' ? `
-                            <button onclick="changeOrderStatus(${idx}, 'approved')" class="bg-green-500 text-white w-8 h-8 rounded-lg hover:bg-green-600"><i class="fas fa-check"></i></button>
-                            <button onclick="changeOrderStatus(${idx}, 'cancelled')" class="bg-red-500 text-white w-8 h-8 rounded-lg hover:bg-red-600"><i class="fas fa-times"></i></button>
-                        ` : `<button onclick="deleteItem('tranghy_orders', ${idx}, renderOrders)" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button>`}
-                    </td>
-                </tr>
-            `).reverse().join('');
-        }
-
-        function changeOrderStatus(idx, status) {
-            const orders = getData('tranghy_orders');
-            orders[idx].status = status;
-            saveData('tranghy_orders', orders);
-            renderOrders();
-            updateDashboardStats();
-            const logContainer = document.getElementById('recent-logs');
-            const time = new Date().toLocaleTimeString('vi-VN');
-            if(logContainer) logContainer.insertAdjacentHTML('afterbegin', `<p class="text-[10px] bg-white/5 p-2 rounded-lg border border-white/5"><b>${time}</b>: Đơn #${orders[idx].id} đã được ${status === 'approved' ? 'duyệt' : 'hủy'}</p>`);
-        }
-
-        // --- 5. QUẢN LÝ TÀI XẾ ---
-        function renderDrivers() {
-            const tbody = document.getElementById('driver-management-table');
-            const drivers = getData('drivers_data');
-            if(!tbody) return;
-
-            tbody.innerHTML = drivers.map((d, idx) => `
-                <tr class="hover:bg-slate-50/50 transition-all">
-                    <td class="px-8 py-5 flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">${(d.name || '?').charAt(0)}</div>
-                        <p class="font-bold uppercase italic text-xs">${d.name}</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <p class="text-[10px] font-bold text-slate-800">${d.email || 'N/A'}</p>
-                        <p class="text-[10px] text-blue-500">${d.phone || 'N/A'}</p>
-                    </td>
-                    <td class="px-8 py-5">
-                        <span class="status-badge status-success">${d.status || 'Sẵn sàng'}</span>
-                    </td>
-                    <td class="px-8 py-5 text-right">
-                        <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        function handleSaveDriver() {
-            const name = document.getElementById('dr-name-input').value;
-            const email = document.getElementById('dr-email-input').value;
-            const phone = document.getElementById('dr-phone-input').value;
-
-            if(!name || !email) return alert("Nhập đủ thông tin!");
-
-            const drivers = getData('drivers_data');
-            drivers.push({ id: Date.now(), name, email, phone, password: '123', exp: 'Mới', status: 'Sẵn sàng' });
-            saveData('drivers_data', drivers);
-            closeModal('modal-add-driver');
-            renderDrivers();
-            updateDashboardStats();
-        }
-
-        // --- TIỆN ÍCH CHUNG ---
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-
-        function deleteItem(key, idx, callback) {
-            if(confirm('Bạn chắc chắn muốn xóa mục này?')) {
-                const data = getData(key);
-                data.splice(idx, 1);
-                saveData(key, data);
-                callback();
-                updateDashboardStats();
-            }
-        }
-
-        function switchTab(tab) {
-            document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
-            document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
-            const targetNav = document.getElementById(`nav-${tab}`);
-            if(targetNav) targetNav.classList.add('active');
-            
-            if(tab === 'cars') renderCars();
-            if(tab === 'orders') renderOrders();
-            if(tab === 'drivers') renderDrivers();
-            if(tab === 'dashboard') updateDashboardStats();
-        }
-
-        function logout() {
-            if(confirm("Xác nhận đăng xuất khỏi hệ thống quản trị?")) {
-                localStorage.removeItem('tranghy_user');
-                window.location.href = 'login.html';
-            }
-        }
-
-        // Khởi tạo Chart & Tải dữ liệu JSON
-        document.addEventListener('DOMContentLoaded', function() {
-            initJsonData(); // Tải file JSON vào localStorage ngay khi mở
-
-            const ctx = document.getElementById('revenueChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
-                    datasets: [{
-                        label: 'Doanh thu tuần này',
-                        data: [12, 19, 15, 25, 22, 30, 45],
-                        borderColor: '#2563eb',
-                        tension: 0.4,
-                        fill: true,
-                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
-                    }]
-                },
-                options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
-            });
-        });
-
-        window.addEventListener('storage', (e) => {
-            if(e.key === 'tranghy_orders') {
-                renderOrders();
-                updateDashboardStats();
+        let totalRevenue = 0;
+        orders.forEach(o => {
+            if(o.status === 'approved' && o.totalPrice) {
+                const price = parseInt(o.totalPrice.toString().replace(/[^0-9]/g, '')) || 0;
+                totalRevenue += price;
             }
         });
-    </script>
+
+        document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('stat-orders').innerText = orders.filter(o => o.status === 'pending').length;
+        document.getElementById('stat-cars').innerText = cars.length;
+        document.getElementById('stat-drivers').innerText = drivers.length;
+    }
+
+    function switchTab(tab) {
+        document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
+        document.getElementById(`view-${tab}`).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+        document.getElementById(`nav-${tab}`).classList.add('active');
+        renderAll();
+    }
+
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+    function deleteItem(key, idx, callback) {
+        if(confirm('Bạn chắc chắn muốn xóa?')) {
+            const data = DB.get(key);
+            data.splice(idx, 1);
+            DB.set(key, data);
+            callback();
+            updateDashboardStats();
+        }
+    }
+
+    // KHỞI CHẠY
+    document.addEventListener('DOMContentLoaded', () => {
+        initData();
+        // Khởi tạo biểu đồ đơn giản
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{ label: 'Doanh thu', data: [10, 15, 8, 20, 25, 30, 45], borderColor: '#2563eb', tension: 0.4 }]
+            }
+        });
+    });
+</script>
 </body>
 </html>
