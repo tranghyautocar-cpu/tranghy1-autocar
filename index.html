@@ -676,12 +676,11 @@
 
         </div> </div> </div> ```
 <script>
-// Sửa hàm selectDelivery
+
 function selectDelivery(type) {
     const btnGara = document.getElementById('btn-at-gara');
     const btnHome = document.getElementById('btn-at-home');
-    const addressInput = document.getElementById('home-address-input');
-    
+    const addressInput = document.getElementById('home-address-input');   
     if (type === 'home') {
         btnHome.classList.add('border-blue-600', 'bg-blue-50', 'text-blue-600');
         btnHome.classList.remove('border-slate-100', 'text-slate-400');

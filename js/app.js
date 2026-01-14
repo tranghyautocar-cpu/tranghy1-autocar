@@ -27,11 +27,12 @@ const app = {
     // ============================================================
     async init() {
         console.log("%c🚀 TrangHy Autocar: System Started", "color: #2563eb; font-weight: bold;");
-        window.app = this; // Public app ra window để HTML gọi được
+        window.app = app;
         this.bindEvents();
         await this.fetchInitialData();
         this.initDatePickers();
     },
+    
 
     bindEvents() {
         // Đóng modal khi click ra ngoài
@@ -1097,7 +1098,7 @@ async function loadDriversToUI() {
                     </div>
                 </div>
                 
-               <button onclick="app.openDriverBooking(${driver.id})" 
+               <button onclick="app.openDriverBooking($'{driver.id}')" 
         class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-900/50 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all">
         LIÊN HỆ THUÊ NGAY
     </button>
