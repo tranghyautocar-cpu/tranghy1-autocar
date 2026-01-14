@@ -228,36 +228,49 @@ filterCars(seats) {
         this.renderCars(filtered);
     }
 },
-   renderDriversHome() {
-        const container = document.getElementById('display-drivers');
-        if (!container) return;
+ renderDriversHome() {
+    const container = document.getElementById('display-drivers');
+    if (!container) return;
 
-        // Đảm bảo lấy đúng mảng drivers từ state
-        const driversData = this.state.drivers || [];
+    // Đảm bảo lấy đúng mảng drivers từ state
+    const driversData = this.state.drivers || [];
 
-        container.innerHTML = driversData.map(d => {
-            const isBusy = d.status === 'busy' || d.status === 'Đang bận';
-            const avatarChar = d.name ? d.name.split(' ').pop().charAt(0) : '?';
-            
-            return `
-            <div class="driver-card bg-white p-8 relative ${isBusy ? 'opacity-60 grayscale' : ''}">
-                <div class="flex items-center gap-4 mb-6">
-                    <div class="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-black italic">
-                        ${avatarChar}
-                    </div>
-                    <div>
-                        <h4 class="text-lg font-black italic">${d.name}</h4>
-                        <p class="text-xs font-bold text-blue-600">${d.experience || d.exp || 0}+ Năm kinh nghiệm</p>
-                    </div>
+    container.innerHTML = driversData.map(d => {
+        // Chuẩn hóa kiểm tra trạng thái bận
+        const status = String(d.status || '').toLowerCase();
+        const isBusy = status === 'busy' || status === 'đang bận';
+        
+        const avatarChar = d.name ? d.name.trim().split(' ').pop().charAt(0) : '?';
+        
+        // Dùng dấu ngoặc đơn quanh ${d.id} để an toàn cho cả ID dạng số và chữ
+        const clickAction = isBusy ? '' : `onclick="window.app.openDriverBooking('${d.id}')"`;
+        const busyClass = isBusy ? 'opacity-60 grayscale pointer-events-none' : 'cursor-pointer';
+
+        return `
+        <div class="driver-card bg-white p-8 relative shadow-sm rounded-[2.5rem] border border-slate-100 transition-all hover:shadow-xl ${busyClass}">
+            <div class="flex items-center gap-4 mb-6">
+                <div class="w-16 h-16 bg-slate-900 text-white rounded-2xl flex items-center justify-center text-2xl font-black italic shadow-lg">
+                    ${avatarChar}
                 </div>
-                <p class="text-slate-500 text-xs font-medium mb-6 line-clamp-2">${d.bio || 'Tài xế chuyên nghiệp'}</p>
-                <button ${isBusy ? 'disabled' : `onclick="app.openDriverBooking(${d.id})"`} 
-                    class="w-full py-4 rounded-xl bg-slate-100 text-slate-900 font-black text-[10px] uppercase hover:bg-slate-900 hover:text-white transition-all">
-                    ${isBusy ? 'Đang bận' : 'Liên hệ thuê'}
-                </button>
-            </div>`;
-        }).join('');
-    },
+                <div>
+                    <h4 class="text-lg font-black italic text-slate-900 uppercase tracking-tighter">${d.name}</h4>
+                    <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">${d.experience || d.exp || 0}+ Năm kinh nghiệm</p>
+                </div>
+            </div>
+            <p class="text-slate-500 text-xs font-medium mb-6 line-clamp-2 leading-relaxed italic border-l-2 border-slate-100 pl-3">
+                ${d.bio || 'Tài xế chuyên nghiệp, tận tâm và giàu kinh nghiệm.'}
+            </p>
+            
+            <button ${clickAction} 
+                class="w-full py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all duration-300
+                ${isBusy 
+                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed' 
+                    : 'bg-slate-900 text-white hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-200 active:scale-95'}">
+                ${isBusy ? 'Hiện đang bận' : 'Liên hệ thuê ngay'}
+            </button>
+        </div>`;
+    }).join('');
+},
     // ============================================================
     // 6. XỬ LÝ MỞ FORM ĐẶT (OPEN MODALS)
     // ============================================================
@@ -273,18 +286,37 @@ filterCars(seats) {
         this.updateTotal();
     },
 
-    openDriverBooking(id) {
-        const driver = this.state.drivers.find(d => d.id === id);
-        if (!driver) return;
-        this.state.selectedDriver = driver;
+ openDriverBooking(id) {
+    // 1. Ép kiểu cả 2 về String để đảm bảo luôn tìm thấy dù id là số hay chữ
+    const driver = this.state.drivers.find(d => String(d.id) === String(id));
+    
+    if (!driver) {
+        console.error("❌ Không tìm thấy tài xế với ID:", id);
+        return;
+    }
 
-        document.getElementById('dr-avatar').innerText = driver.name.split(' ').pop().charAt(0);
-        document.getElementById('dr-name').innerText = driver.name;
+    // 2. Lưu tài xế đang chọn vào state
+    this.state.selectedDriver = driver;
 
-        this.toggleModal('modal-driver', true);
-        this.updateDriverTotal();
-    },
+    // 3. Đổ dữ liệu an toàn vào giao diện (Dùng Optional Chaining để tránh lỗi name null)
+    const avatarChar = driver.name ? driver.name.trim().split(' ').pop().charAt(0) : '?';
+    
+    const avatarEl = document.getElementById('dr-avatar');
+    const nameEl = document.getElementById('dr-name');
+    const expEl = document.getElementById('dr-exp'); // Thêm dòng này để hiện kinh nghiệm
 
+    if (avatarEl) avatarEl.innerText = avatarChar;
+    if (nameEl) nameEl.innerText = driver.name;
+    if (expEl) expEl.innerText = `${driver.experience || driver.exp || 0} NĂM KINH NGHIỆM`;
+
+    // 4. Reset ngày và tính toán giá mặc định
+    if (document.getElementById('dr-start-date')) document.getElementById('dr-start-date').value = "";
+    if (document.getElementById('dr-end-date')) document.getElementById('dr-end-date').value = "";
+
+    // 5. Hiển thị Modal và cập nhật giá
+    this.toggleModal('modal-driver', true);
+    this.updateDriverTotal();
+},
     // ============================================================
     // 7. XỬ LÝ DATE & GIÁ (Thêm Validate Ngày)
     // ============================================================
