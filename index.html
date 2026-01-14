@@ -762,7 +762,7 @@ app.handleDriverBooking = function() {
 
         return `
             <div class="car-card p-4 fade-in relative ${isBusy ? 'opacity-75' : 'cursor-pointer'}" 
-                 ${isBusy ? '' : `onclick="app.openBooking(${car.id})"`}>
+                 ${isBusy ? '' : `onclick="app.openCar(${car.id})"`}>
                 
                 <div class="relative rounded-[1.5rem] overflow-hidden mb-6 h-48">
                     <img src="${car.image_url || car.img}" class="w-full h-full object-cover ${isBusy ? 'grayscale' : ''}">
@@ -893,93 +893,7 @@ app.handleDriverBooking = function() {
 <div id="modal-car" class="hidden">...</div>
 <div id="payment-modal" class="hidden">...</div>
 <div id="dashboard-container" class="fixed inset-0 z-[60] bg-slate-100 hidden overflow-y-auto">
-    <div class="sticky top-0 bg-white/90 backdrop-blur-md shadow-sm z-50 px-6 py-4 flex justify-between items-center">
-        <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-slate-900 rounded-xl flex items-center justify-center text-white">
-                <i class="fas fa-chart-pie"></i>
-            </div>
-            <div>
-                <h1 class="text-lg font-black italic text-slate-900 leading-none">QUẢN TRỊ</h1>
-                <p id="dash-role" class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">Loading...</p>
-            </div>
-        </div>
-        <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-xl text-xs font-bold hover:bg-red-100 transition-colors">
-            <i class="fas fa-sign-out-alt mr-1"></i> Đăng xuất
-        </button>
-    </div>
-
-    <div class="max-w-7xl mx-auto p-6 space-y-8">
-        
-        <div id="admin-view" class="hidden space-y-8">
-            <div id="admin-stats" class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-black text-lg text-slate-800 uppercase flex items-center gap-2">
-                            <i class="fas fa-car text-blue-600"></i> Trạng thái Xe
-                        </h3>
-                        <span class="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-500">Real-time</span>
-                    </div>
-                    <div id="admin-car-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        </div>
-                </div>
-
-                <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-black text-lg text-slate-800 uppercase flex items-center gap-2">
-                            <i class="fas fa-user-tie text-green-600"></i> Trạng thái Tài xế
-                        </h3>
-                        <span class="text-xs font-bold bg-slate-100 px-2 py-1 rounded text-slate-500">Real-time</span>
-                    </div>
-                    <div id="admin-driver-status-list" class="space-y-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-                        </div>
-                </div>
-            </div>
-
-            <div class="bg-white p-6 rounded-[2rem] shadow-lg shadow-blue-100/50 border border-slate-100">
-                <h3 class="font-black text-lg text-slate-800 uppercase mb-6 flex items-center gap-2">
-                    <i class="fas fa-file-invoice-dollar text-orange-500"></i> Quản lý Đơn hàng
-                </h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-wider border-b border-slate-100">
-                                <th class="pb-3 pl-4">Khách hàng</th>
-                                <th class="pb-3">Dịch vụ</th>
-                                <th class="pb-3">Thời gian</th>
-                                <th class="pb-3">Tổng tiền</th>
-                                <th class="pb-3">Trạng thái</th>
-                            </tr>
-                        </thead>
-                        <tbody id="admin-order-list" class="text-sm font-bold text-slate-700 divide-y divide-slate-50">
-                            </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div id="driver-view" class="hidden space-y-6">
-            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl">
-                <div class="relative z-10">
-                    <span class="bg-white/20 px-3 py-1 rounded-full text-[10px] font-bold uppercase backdrop-blur">Driver App</span>
-                    <h2 class="text-3xl font-black italic mt-2 mb-1">CHÀO BẠN!</h2>
-                    <p class="text-blue-100 text-sm font-medium">Kiểm tra lịch trình và đón khách đúng giờ nhé.</p>
-                </div>
-                <i class="fas fa-map-marked-alt absolute -right-6 -bottom-6 text-[10rem] opacity-20 rotate-12"></i>
-            </div>
-
-            <div class="flex items-center justify-between">
-                <h3 class="font-black text-xl text-slate-900 uppercase italic">Lịch trình của tôi</h3>
-                <span class="bg-white px-3 py-1 rounded-full text-xs font-bold shadow-sm border">Hôm nay</span>
-            </div>
-
-            <div id="driver-order-list" class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                </div>
-        </div>
-    </div>
-</div>
+  
 <footer class="bg-slate-950 text-slate-400 py-16 border-t border-white/5 relative overflow-hidden">
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full"></div>
     

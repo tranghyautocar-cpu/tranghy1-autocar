@@ -81,32 +81,43 @@ const app = {
         }
     },
 
-   showDashboard: function(role) {
-    this.closeLogin();
-    document.getElementById('dashboard-container').classList.remove('hidden');
+  showDashboard: function(role) {
+    // 1. Đóng modal login (nếu có)
+    this.closeLogin(); 
+    
+    // 2. Hiện container tổng của Dashboard
+    const dashContainer = document.getElementById('dashboard-container');
+    if (dashContainer) dashContainer.classList.remove('hidden');
+
     const adminView = document.getElementById('admin-view');
     const driverView = document.getElementById('driver-view');
     const roleText = document.getElementById('dash-role');
 
+    // 3. Phân quyền hiển thị
     if (role === 'ADMIN') {
-        roleText.innerText = "HỆ THỐNG QUẢN TRỊ";
-        adminView.classList.remove('hidden');
-        driverView.classList.add('hidden');
+        if (roleText) roleText.innerText = "HỆ THỐNG QUẢN TRỊ";
         
-        // --- THÊM DÒNG NÀY ĐỂ CẬP NHẬT CON SỐ ---
-        this.updateAdminStats(); 
-        // ----------------------------------------
+        // Hiển thị view Admin, ẩn view Driver
+        if (adminView) adminView.classList.remove('hidden');
+        if (driverView) driverView.classList.add('hidden');
         
-        this.renderAdminOrders();
-        this.renderAdminCars();    
-        this.renderAdminDrivers(); 
-        } else {
-            roleText.innerText = "GIAO DIỆN TÀI XẾ";
-            driverView.classList.remove('hidden');
-            adminView.classList.add('hidden');
-            this.renderDriverOrders();
-        }
-    },
+        // Cập nhật dữ liệu thực tế
+        this.updateAdminStats();  // Cập nhật các con số (Tổng xe, doanh thu...)
+        this.renderAdminOrders(); // Vẽ bảng đơn hàng
+        this.renderAdminCars();   // Vẽ trạng thái xe
+        this.renderAdminDrivers(); // Vẽ trạng thái tài xế
+        
+    } else if (role === 'DRIVER') {
+        if (roleText) roleText.innerText = "GIAO DIỆN TÀI XẾ";
+        
+        // Hiển thị view Driver, ẩn view Admin
+        if (driverView) driverView.classList.remove('hidden');
+        if (adminView) adminView.classList.add('hidden');
+        
+        // Cập nhật dữ liệu cho tài xế
+        this.renderDriverOrders(); // Vẽ lịch trình đón khách
+    }
+},
 updateAdminStats: function() {
     // Đếm số lượng từ mảng dữ liệu hiện tại trong state
     const carCount = this.state.cars.length;
@@ -157,7 +168,7 @@ updateAdminStats: function() {
     if (!container) return;
 
     // Lấy dữ liệu từ allCars nếu không có tham số truyền vào
-    const displayData = data || this.allCars;
+    const displayData = data || this.state.cars;
 
     if (!displayData || displayData.length === 0) {
         container.innerHTML = "<p class='col-span-full text-center py-20 text-slate-400 font-bold'>Dữ liệu xe đang trống...</p>";
@@ -899,7 +910,10 @@ updateAdminStats: function() {
     const imgData = canvas.toDataURL('image/png');
     
     // 3. Khởi tạo PDF (Sửa lỗi jspdf ở đây)
-  const { jsPDF } = window.jspdf; 
+const jsPDF = window.jspdf ? window.jspdf.jsPDF : window.jsPDF; 
+
+if (!jsPDF) {
+    throw new Error("Không tìm thấy thư viện jsPDF. Vui lòng kiểm tra lại kết nối mạng!");}
 const pdf = new jsPDF('p', 'mm', 'a4');
     
     const imgProps = pdf.getImageProperties(imgData);
@@ -917,14 +931,11 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         document.body.removeChild(element);
     }
 }
+const message = `Chào TrangHy Autocar, tôi là ${name}. Tôi đã thanh toán ${total} cho đơn hàng và vừa nhận hợp đồng điện tử.`;
 
-        // Mở Zalo
-        window.open(`https://zalo.me/0353979614?text=Toi la ${name}, da thanh toan ${total} va nhan Hop dong dien tu.`, '_blank');
-    },
-
-    // ============================================================
-    // 10. CÁC HÀM HỖ TRỢ KHÁC
-    // ============================================================
+// Mở Zalo với nội dung đã được mã hóa chuẩn URL
+window.open(`https://zalo.me/0353979614?text=${encodeURIComponent(message)}`, '_blank');
+},
     formatMoney(amount) {
         return parseInt(amount || 0).toLocaleString('vi-VN') + "đ";
     },
@@ -945,14 +956,8 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         if (!response.ok) {
             throw new Error("Không tìm thấy file cars.json!");
         }
-
-        // 2. Lưu dữ liệu xe trực tiếp vào thuộc tính của app (this.allCars)
-        this.allCars = await response.json();
-        
-        // 3. Tạo dữ liệu Tài xế giả trực tiếp vào this.allDrivers
-        this.allDrivers = this.createMockDrivers();
-
-        // 4. Lấy đơn hàng cũ từ LocalStorage
+       this.allCars = await response.json();
+       this.allDrivers = this.createMockDrivers();
         const rawOrders = localStorage.getItem('tranghy_orders');
         this.bookings = rawOrders ? JSON.parse(rawOrders) : [];
 
@@ -987,7 +992,7 @@ const pdf = new jsPDF('p', 'mm', 'a4');
         this.updateAdminStats();
     }
 },
- getFallbackDrivers: () => {
+ createMockDrivers: function() {
     return Array.from({ length: 20 }, (_, i) => ({
         id: 100 + i,
         name: `Tài xế ${["Nguyễn", "Trần", "Lê", "Phạm", "Vũ"][i % 5]} ${["Văn", "Thành", "Minh", "Quốc", "Đình"][i % 5]} ${["Hùng", "Hải", "Nam", "Tâm", "Bảo", "Dũng", "Sơn", "Tùng"][i % 8]}`,
