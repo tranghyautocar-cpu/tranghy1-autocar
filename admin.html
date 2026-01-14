@@ -3,411 +3,467 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Điều hành - TrangHy Autocar</title>
+    <title>Hệ thống Quản trị - TrangHy Autocar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f4f7fe; }
-        .sidebar-active { background: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.2); }
-        .status-badge { padding: 4px 10px; border-radius: 12px; font-size: 10px; font-weight: 800; text-transform: uppercase; }
-        .bg-ready { background: #dcfce7; color: #15803d; }
-        .bg-busy { background: #fee2e2; color: #b91c1c; }
+        body { font-family: 'Montserrat', sans-serif; background: #f8fafc; }
+        .nav-item.active { background-color: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
+        .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
+        .status-success { background: #dcfce7; color: #166534; }
+        .status-warning { background: #fef9c3; color: #854d0e; }
+        .status-danger { background: #fee2e2; color: #991b1b; }
         .custom-scroll::-webkit-scrollbar { width: 5px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .card-anim { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .card-anim:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05); }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .modal-enter { animation: fade-in-up 0.3s ease-out forwards; }
+        @keyframes fade-in-up { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden">
+<body class="flex h-screen overflow-hidden text-slate-800">
 
-    <aside class="w-72 bg-white border-r border-slate-200 flex flex-col z-30">
-        <div class="p-8 border-b border-slate-50 flex items-center gap-4">
-            <div class="w-12 h-12 bg-slate-900 rounded-2xl flex items-center justify-center text-white font-black italic shadow-lg">T</div>
-            <div>
-                <h1 class="font-black text-xl tracking-tighter">TRANGHY</h1>
-                <p class="text-[10px] font-bold text-blue-600 uppercase tracking-widest">Master Admin</p>
+    <aside class="w-64 bg-slate-900 text-slate-300 flex flex-col z-20 shadow-2xl">
+        <div class="h-24 flex items-center justify-center border-b border-slate-800">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-white text-slate-900 rounded-xl flex items-center justify-center text-xl font-black italic">T</div>
+                <div>
+                    <h1 class="text-xl font-black italic text-white tracking-tighter uppercase">TrangHy</h1>
+                    <p class="text-[9px] font-bold uppercase tracking-widest text-blue-500">Admin Control</p>
+                </div>
             </div>
         </div>
-
-        <nav class="flex-1 p-6 space-y-3">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="sidebar-active w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold transition-all">
-                <i class="fas fa-th-large"></i> Tổng quan
+        
+        <nav class="flex-1 px-4 py-8 space-y-2">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all active">
+                <i class="fas fa-th-large w-5"></i> Tổng quan
             </button>
-            <button onclick="switchTab('orders')" id="nav-orders" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-50 transition-all relative">
-                <i class="fas fa-shopping-cart"></i> Đơn hàng
-                <span id="badge-orders" class="absolute right-4 bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full hidden">0</span>
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+                <i class="fas fa-file-invoice-dollar w-5"></i> Đơn hàng
+                <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full" id="menu-orders-count">0</span>
             </button>
-            <button onclick="switchTab('cars')" id="nav-cars" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-50 transition-all">
-                <i class="fas fa-car"></i> Quản lý Xe
+            <button onclick="switchTab('cars')" id="nav-cars" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+                <i class="fas fa-car w-5"></i> Quản lý Xe
             </button>
-            <button onclick="switchTab('drivers')" id="nav-drivers" class="w-full flex items-center gap-4 px-5 py-4 rounded-2xl text-sm font-bold text-slate-400 hover:bg-slate-50 transition-all">
-                <i class="fas fa-user-tie"></i> Quản lý Tài xế
+            <button onclick="switchTab('drivers')" id="nav-drivers" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+                <i class="fas fa-users w-5"></i> Tài xế
             </button>
         </nav>
 
-        <div class="p-6 border-t border-slate-50">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-3 py-4 text-red-500 bg-red-50 rounded-2xl text-xs font-black uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all">
-                <i class="fas fa-power-off"></i> Đăng xuất
+        <div class="p-4 border-t border-slate-800">
+            <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-bold transition-all">
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống
             </button>
         </div>
     </aside>
 
-    <main class="flex-1 flex flex-col overflow-y-auto custom-scroll">
-        <header class="h-24 bg-white/80 backdrop-blur-xl sticky top-0 z-20 px-10 flex items-center justify-between border-b border-slate-100">
-            <div>
-                <h2 id="page-title" class="text-2xl font-black text-slate-800">Bảng điều khiển</h2>
-                <p class="text-xs text-slate-400 font-bold uppercase" id="current-time"></p>
-            </div>
-            <div class="flex items-center gap-6">
-                <div class="text-right">
-                    <p class="text-sm font-black uppercase italic">Admin Manager</p>
-                    <span class="text-[10px] bg-green-100 text-green-600 px-2 py-0.5 rounded-full font-bold">Máy chủ: Sẵn sàng</span>
+    <main class="flex-1 flex flex-col relative overflow-y-auto custom-scroll">
+        <header class="h-20 bg-white/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between border-b border-slate-100">
+            <h2 class="text-xl font-black text-slate-800" id="page-title">Tổng quan hệ thống</h2>
+            <div class="flex items-center gap-4">
+                <div class="text-right hidden md:block">
+                    <p class="text-xs font-bold">Admin Trang</p>
+                    <p class="text-[9px] text-green-500 font-bold uppercase">Trạng thái: Online</p>
                 </div>
-                <img src="https://ui-avatars.com/api/?name=Admin&background=0f172a&color=fff" class="w-12 h-12 rounded-2xl shadow-xl border-2 border-white">
+                <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff" class="w-10 h-10 rounded-full border-2 border-white shadow-sm">
             </div>
         </header>
 
-        <div class="p-10">
-            <div id="view-dashboard" class="content-view space-y-10">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm card-anim">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Doanh thu thật</p>
-                        <h3 class="text-3xl font-black text-blue-600" id="stat-revenue">0đ</h3>
+        <div class="p-8">
+            <div id="view-dashboard" class="content-view space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh thu (Đã duyệt)</p>
+                        <h3 class="text-3xl font-black text-blue-600 mt-1" id="stat-revenue">0đ</h3>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm card-anim">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Đơn chờ duyệt</p>
-                        <h3 class="text-3xl font-black text-orange-500" id="stat-orders">0</h3>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đơn hàng mới</p>
+                        <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-orders">0</h3>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm card-anim">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Tổng số xe</p>
-                        <h3 class="text-3xl font-black text-slate-800" id="stat-cars">0</h3>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đội xe</p>
+                        <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-cars">0</h3>
                     </div>
-                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm card-anim">
-                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-2">Đội ngũ tài xế</p>
-                        <h3 class="text-3xl font-black text-slate-800" id="stat-drivers">0</h3>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhân sự tài xế</p>
+                        <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-drivers">0</h3>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-                    <div class="lg:col-span-2 bg-white p-10 rounded-[3rem] shadow-sm border border-slate-100">
-                        <div class="flex justify-between items-center mb-8">
-                            <h3 class="font-black italic uppercase text-slate-800">Biểu đồ kinh doanh</h3>
-                            <select class="bg-slate-50 border-none rounded-xl px-4 py-2 text-xs font-bold outline-none">
-                                <option>7 ngày gần nhất</option>
-                                <option>Tháng này</option>
-                            </select>
-                        </div>
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                        <h3 class="font-bold mb-6">Biểu đồ tăng trưởng</h3>
                         <canvas id="revenueChart" height="150"></canvas>
                     </div>
-                    <div class="bg-slate-900 p-10 rounded-[3rem] text-white shadow-2xl relative overflow-hidden">
-                        <h3 class="text-blue-400 font-black text-xs uppercase tracking-widest mb-6 relative z-10">Nhật ký hệ thống</h3>
-                        <div id="recent-logs" class="space-y-6 relative z-10 text-xs">
-                             </div>
-                        <i class="fas fa-bolt absolute -bottom-10 -right-10 text-[15rem] text-white opacity-5"></i>
+                    <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
+                        <div class="relative z-10">
+                            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-4">Thông báo hệ thống</h3>
+                            <div class="space-y-4" id="recent-logs">
+                                <p class="text-xs opacity-70 italic">Chưa có hoạt động mới...</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-shield-alt absolute -bottom-10 -right-10 text-9xl opacity-5"></i>
                     </div>
                 </div>
             </div>
 
             <div id="view-orders" class="content-view hidden">
-                <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-8 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
-                        <h3 class="font-black italic uppercase">Danh sách đơn hàng mới</h3>
-                        <button onclick="clearAllOrders()" class="text-[10px] font-black text-red-500 uppercase hover:underline">Xóa lịch sử đơn</button>
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
+                    <div class="p-8 border-b border-slate-100 flex justify-between items-center">
+                        <h3 class="font-bold">Danh sách đơn hàng</h3>
+                        <span class="text-xs text-slate-400">Tự động cập nhật khi có khách đặt</span>
                     </div>
                     <div class="overflow-x-auto">
                         <table class="w-full text-left">
-                            <thead>
-                                <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b">
-                                    <th class="px-10 py-6">Khách hàng</th>
-                                    <th class="px-10 py-6">Phương tiện</th>
-                                    <th class="px-10 py-6">Tổng tiền</th>
-                                    <th class="px-10 py-6">Trạng thái</th>
-                                    <th class="px-10 py-6 text-right">Duyệt đơn</th>
+                            <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
+                                <tr>
+                                    <th class="px-8 py-4">Khách hàng</th>
+                                    <th class="px-8 py-4">Dịch vụ</th>
+                                    <th class="px-8 py-4">Tổng tiền</th>
+                                    <th class="px-8 py-4">Trạng thái</th>
+                                    <th class="px-8 py-4 text-right">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="orders-table-body" class="divide-y divide-slate-50"></tbody>
+                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div id="view-cars" class="content-view hidden">
-                <div class="flex justify-between items-center mb-10">
-                    <h3 class="text-xl font-black italic uppercase">Đội xe hiện có</h3>
-                    <button onclick="openModal('modal-add-car')" class="bg-blue-600 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-blue-500/30 hover:scale-105 transition-all">
-                        + Thêm xe mới
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-bold text-xl uppercase italic">Quản lý Đội xe</h3>
+                    <button onclick="openModal('modal-add-car')" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
+                        <i class="fas fa-plus mr-2"></i> Thêm xe mới
                     </button>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8" id="cars-grid"></div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="cars-grid"></div>
             </div>
 
             <div id="view-drivers" class="content-view hidden">
-                 <div class="flex justify-between items-center mb-10">
-                    <h3 class="text-xl font-black italic uppercase">Danh sách nhân sự</h3>
-                    <button onclick="openModal('modal-add-driver')" class="bg-slate-900 text-white px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl hover:scale-105 transition-all">
-                        + Thêm tài xế
+                <div class="flex justify-between items-center mb-8">
+                    <h3 class="font-bold text-xl uppercase italic">Quản lý Nhân sự</h3>
+                    <button onclick="openModal('modal-add-driver')" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-xs hover:bg-black transition-all shadow-xl shadow-slate-900/20">
+                        <i class="fas fa-user-plus mr-2"></i> Thêm tài xế
                     </button>
                 </div>
-                <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
                     <table class="w-full text-left">
-                        <thead>
-                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest border-b">
-                                <th class="px-10 py-6">Tài xế</th>
-                                <th class="px-10 py-6">Kinh nghiệm</th>
-                                <th class="px-10 py-6">Trạng thái</th>
-                                <th class="px-10 py-6 text-right">Xóa</th>
+                        <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
+                            <tr>
+                                <th class="px-8 py-4">Họ tên</th>
+                                <th class="px-8 py-4">Liên hệ</th>
+                                <th class="px-8 py-4">Trạng thái</th>
+                                <th class="px-8 py-4 text-right">Xóa</th>
                             </tr>
                         </thead>
-                        <tbody id="driver-management-table" class="divide-y divide-slate-50"></tbody>
+                        <tbody id="driver-management-table" class="text-sm divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
             </div>
         </div>
     </main>
 
-    <div id="modal-add-car" class="hidden fixed inset-0 z-[100] flex items-center justify-center p-6 bg-slate-900/60 backdrop-blur-md">
-        <div class="bg-white w-full max-w-md rounded-[3rem] shadow-2xl overflow-hidden animate-fade-in-up">
-            <div class="p-8 border-b flex justify-between items-center bg-slate-50">
-                <h3 class="font-black italic uppercase text-blue-600">Thêm xe mới</h3>
+    <div id="modal-add-car" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-add-car')"></div>
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 modal-enter overflow-hidden">
+            <div class="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-black text-lg uppercase italic text-blue-600">Thêm xe vào hệ thống</h3>
                 <button onclick="closeModal('modal-add-car')"><i class="fas fa-times"></i></button>
             </div>
             <div class="p-8 space-y-4">
-                <input type="text" id="car-name" placeholder="Tên xe (VD: VinFast VF8)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none focus:ring-2 focus:ring-blue-600">
-                <input type="text" id="car-type" placeholder="Hạng xe (VD: 5 Chỗ)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <input type="number" id="car-price" placeholder="Giá thuê/ngày (Số tiền)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <input type="text" id="car-img" placeholder="URL Hình ảnh" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <button onclick="handleSaveCar()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs tracking-widest shadow-xl shadow-blue-600/30">Xác nhận lưu</button>
+                <input type="text" id="car-name" placeholder="Tên xe (VD: Porsche Panamera)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
+                <input type="text" id="car-type" placeholder="Loại xe (VD: Sedan hạng sang)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
+                <input type="number" id="car-price" placeholder="Giá thuê/ngày (VD: 5000000)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
+                <input type="text" id="car-img" placeholder="Link ảnh xe (Unsplash/Imgur)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
+                <button onclick="handleSaveCar()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl shadow-blue-600/30">Lưu xe mới</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-add-driver" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-add-driver')"></div>
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 modal-enter overflow-hidden">
+            <div class="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-black text-lg uppercase italic text-slate-800">Cấp tài khoản tài xế</h3>
+                <button onclick="closeModal('modal-add-driver')"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="p-8 space-y-4">
+                <input type="text" id="dr-name-input" placeholder="Họ và tên" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
+                <input type="email" id="dr-email-input" placeholder="Email đăng nhập" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
+                <input type="text" id="dr-phone-input" placeholder="Số điện thoại" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
+                <button onclick="handleSaveDriver()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl shadow-slate-900/30">Tạo tài khoản</button>
             </div>
         </div>
     </div>
 
     <script>
-        // 1. DATA MANAGER
-        const DB = {
-            get: (key) => JSON.parse(localStorage.getItem(key)) || [],
-            set: (key, val) => localStorage.setItem(key, JSON.stringify(val))
-        };
+        // --- 1. QUẢN LÝ DỮ LIỆU & LIÊN KẾT JSON ---
+        function getData(key) { return JSON.parse(localStorage.getItem(key)) || []; }
+        function saveData(key, data) { localStorage.setItem(key, JSON.stringify(data)); }
 
-        // 2. KHỞI TẠO DỮ LIỆU GỐC (Hợp nhất Local & JSON)
-        async function initData() {
-            // Tải XE
-            if (DB.get('tranghy_cars').length === 0) {
+        // Hàm mới: Tải dữ liệu từ file JSON nếu LocalStorage trống
+        async function initJsonData() {
+            // Liên kết Cars
+            if (getData('tranghy_cars').length === 0) {
                 try {
                     const res = await fetch('cars.json');
-                    const data = await res.json();
-                    DB.set('tranghy_cars', data);
-                } catch (e) { console.error("Lỗi fetch cars"); }
+                    if (res.ok) {
+                        const data = await res.json();
+                        // Chuyển image_url sang img để khớp logic render của bạn
+                        const mappedData = data.map(c => ({
+                            ...c,
+                            img: c.image_url || c.img
+                        }));
+                        saveData('tranghy_cars', mappedData);
+                    }
+                } catch (e) { console.error("Lỗi liên kết cars.json"); }
             }
-            // Tải TÀI XẾ
-            if (DB.get('drivers_data').length === 0) {
+
+            // Liên kết Drivers
+            if (getData('drivers_data').length === 0) {
                 try {
                     const res = await fetch('drivers.json');
-                    const data = await res.json();
-                    DB.set('drivers_data', data);
-                } catch (e) { console.error("Lỗi fetch drivers"); }
+                    if (res.ok) {
+                        const data = await res.json();
+                        saveData('drivers_data', data);
+                    }
+                } catch (e) { console.error("Lỗi liên kết drivers.json"); }
             }
+            // Sau khi nạp xong, vẽ lại toàn bộ
             renderAll();
         }
 
-        // 3. RENDER ALL
         function renderAll() {
             updateDashboardStats();
             renderOrders();
             renderCars();
             renderDrivers();
-            updateTime();
         }
 
+        // --- 2. RENDER DASHBOARD ---
         function updateDashboardStats() {
-            const cars = DB.get('tranghy_cars');
-            const drivers = DB.get('drivers_data');
-            const orders = DB.get('tranghy_orders');
+            const cars = getData('tranghy_cars');
+            const drivers = getData('drivers_data');
+            const orders = getData('tranghy_orders');
 
-            let totalRev = 0;
+            let totalRevenue = 0;
             orders.forEach(o => {
-                if(o.status === 'approved') {
-                    const cleanPrice = parseInt(o.totalPrice.toString().replace(/[^0-9]/g, '')) || 0;
-                    totalRev += cleanPrice;
+                if(o.status === 'approved' && o.totalPrice) {
+                    const price = parseInt(o.totalPrice.toString().replace(/[^0-9]/g, '')) || 0;
+                    totalRevenue += price;
                 }
             });
 
-            document.getElementById('stat-revenue').innerText = totalRev.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + 'đ';
             document.getElementById('stat-orders').innerText = orders.filter(o => o.status === 'pending').length;
             document.getElementById('stat-cars').innerText = cars.length;
             document.getElementById('stat-drivers').innerText = drivers.length;
-            
-            const pendingCount = orders.filter(o => o.status === 'pending').length;
-            const badge = document.getElementById('badge-orders');
-            if(pendingCount > 0) {
-                badge.innerText = pendingCount;
-                badge.classList.remove('hidden');
-            } else { badge.classList.add('hidden'); }
+            document.getElementById('menu-orders-count').innerText = orders.filter(o => o.status === 'pending').length;
         }
 
-        function renderOrders() {
-            const tbody = document.getElementById('orders-table-body');
-            const orders = DB.get('tranghy_orders');
-            if(orders.length === 0) { tbody.innerHTML = '<tr><td colspan="5" class="p-10 text-center text-slate-400 font-bold italic">Hệ thống chưa ghi nhận đơn hàng nào.</td></tr>'; return; }
-
-            tbody.innerHTML = orders.reverse().map((o, i) => `
-                <tr class="hover:bg-slate-50 transition-all">
-                    <td class="px-10 py-6">
-                        <p class="font-black text-slate-900">${o.customerName}</p>
-                        <p class="text-[10px] font-bold text-blue-600">${o.customerPhone}</p>
-                    </td>
-                    <td class="px-10 py-6">
-                        <p class="text-xs font-bold text-slate-700 uppercase italic">${o.carName}</p>
-                        <p class="text-[9px] text-slate-400 font-bold uppercase tracking-tighter">${o.date}</p>
-                    </td>
-                    <td class="px-10 py-6 font-black text-slate-900">${o.totalPrice}</td>
-                    <td class="px-10 py-6">
-                        <span class="status-badge ${o.status === 'pending' ? 'bg-orange-100 text-orange-600' : (o.status === 'approved' ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-600')}">
-                            ${o.status === 'pending' ? 'Chờ duyệt' : (o.status === 'approved' ? 'Đã duyệt' : 'Đã hủy')}
-                        </span>
-                    </td>
-                    <td class="px-10 py-6 text-right flex gap-3 justify-end">
-                        ${o.status === 'pending' ? `
-                            <button onclick="updateOrderStatus(${orders.length - 1 - i}, 'approved')" class="w-10 h-10 bg-green-500 text-white rounded-xl shadow-lg shadow-green-500/20 hover:scale-110 transition-all"><i class="fas fa-check"></i></button>
-                            <button onclick="updateOrderStatus(${orders.length - 1 - i}, 'cancelled')" class="w-10 h-10 bg-red-500 text-white rounded-xl shadow-lg shadow-red-500/20 hover:scale-110 transition-all"><i class="fas fa-times"></i></button>
-                        ` : '<span class="text-[9px] font-black text-slate-300 uppercase italic">Đã xử lý xong</span>'}
-                    </td>
-                </tr>
-            `).join('');
-        }
-
+        // --- 3. QUẢN LÝ XE ---
         function renderCars() {
             const container = document.getElementById('cars-grid');
-            const cars = DB.get('tranghy_cars');
+            const cars = getData('tranghy_cars');
+            if(!container) return;
+            
             container.innerHTML = cars.map((car, idx) => `
-                <div class="bg-white p-6 rounded-[2.5rem] border border-slate-100 shadow-sm relative group overflow-hidden card-anim">
-                    <img src="${car.image_url || car.img}" onerror="this.src='https://via.placeholder.com/300?text=TrangHy+Autocar'" 
-                         class="w-full h-44 object-cover rounded-3xl mb-6 shadow-md transition-all group-hover:scale-105">
+                <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 relative group">
+                    <img src="${car.img || car.image_url}" onerror="this.src='https://via.placeholder.com/300?text=Lỗi+ảnh'" class="w-full h-40 object-cover rounded-2xl mb-4 grayscale group-hover:grayscale-0 transition-all">
                     <div class="flex justify-between items-start mb-4">
                         <div>
-                            <h4 class="font-black text-slate-900 text-sm italic uppercase">${car.name}</h4>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">${car.category || car.type || 'Hạng xe'}</p>
+                            <h4 class="font-black text-slate-800 italic uppercase text-sm">${car.name}</h4>
+                            <p class="text-[10px] text-slate-400 font-bold">${car.type || car.category || 'N/A'}</p>
                         </div>
-                        <span class="status-badge ${car.status === 'busy' || car.status === 'busy' ? 'bg-busy' : 'bg-ready'}">${car.status === 'busy' ? 'Đang chạy' : 'Sẵn sàng'}</span>
+                        <select onchange="updateCarStatus(${idx}, this.value)" class="text-[10px] font-bold border-none bg-slate-100 rounded-lg px-2 py-1 outline-none">
+                            <option value="Sẵn sàng" ${car.status === 'Sẵn sàng' || car.status === 'ready' ? 'selected' : ''}>Sẵn sàng</option>
+                            <option value="Đang chạy" ${car.status === 'Đang chạy' || car.status === 'busy' ? 'selected' : ''}>Đang chạy</option>
+                            <option value="Bảo dưỡng" ${car.status === 'Bảo dưỡng' ? 'selected' : ''}>Bảo dưỡng</option>
+                        </select>
                     </div>
-                    <div class="flex justify-between items-center pt-5 border-t border-slate-50">
-                        <span class="text-blue-600 font-black text-lg">${parseInt(car.price || car.price_per_day).toLocaleString('vi-VN')}đ</span>
-                        <button onclick="deleteItem('tranghy_cars', ${idx})" class="w-10 h-10 rounded-full text-slate-300 hover:bg-red-50 hover:text-red-500 transition-all"><i class="fas fa-trash-alt"></i></button>
+                    <div class="flex justify-between items-center pt-4 border-t border-slate-50">
+                        <span class="text-blue-600 font-black text-sm">${(car.price || 0).toLocaleString('vi-VN')}đ</span>
+                        <button onclick="deleteItem('tranghy_cars', ${idx}, renderCars)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function renderDrivers() {
-            const tbody = document.getElementById('driver-management-table');
-            const drivers = DB.get('drivers_data');
-            tbody.innerHTML = drivers.map((d, idx) => `
-                <tr class="hover:bg-slate-50 transition-all">
-                    <td class="px-10 py-6 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black italic text-xl shadow-lg">${d.name.charAt(0)}</div>
-                        <div>
-                            <p class="font-black text-slate-900 uppercase italic text-xs">${d.name}</p>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase tracking-widest">${d.phone}</p>
-                        </div>
-                    </td>
-                    <td class="px-10 py-6 text-xs font-black text-slate-600 italic uppercase">${d.exp || d.experience || 'Mới'}</td>
-                    <td class="px-10 py-6">
-                        <span class="status-badge bg-green-100 text-green-600">${d.status || 'Trực tuyến'}</span>
-                    </td>
-                    <td class="px-10 py-6 text-right">
-                        <button onclick="deleteItem('drivers_data', ${idx})" class="text-red-300 hover:text-red-500 transition-all"><i class="fas fa-trash-alt"></i></button>
-                    </td>
-                </tr>
-            `).join('');
-        }
-
-        // 4. LOGIC HANDLERS
-        function updateOrderStatus(idx, status) {
-            const orders = DB.get('tranghy_orders');
-            orders[idx].status = status;
-            DB.set('tranghy_orders', orders);
-            addLog(`Đơn hàng #${orders[idx].id} đã được ${status === 'approved' ? 'DUYỆT' : 'HỦY'}`);
-            renderAll();
+        function updateCarStatus(idx, status) {
+            const cars = getData('tranghy_cars');
+            cars[idx].status = status;
+            saveData('tranghy_cars', cars);
+            updateDashboardStats();
         }
 
         function handleSaveCar() {
             const name = document.getElementById('car-name').value;
             const type = document.getElementById('car-type').value;
-            const price = document.getElementById('car-price').value;
-            const img = document.getElementById('car-img').value;
+            const price = parseInt(document.getElementById('car-price').value);
+            const img = document.getElementById('car-img').value || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70';
 
-            if(!name || !price) return alert("Vui lòng nhập đủ tên và giá!");
+            if(!name || !price) return alert("Vui lòng nhập tên và giá xe!");
 
-            const cars = DB.get('tranghy_cars');
-            cars.push({ id: Date.now(), name, category: type, price, image_url: img, status: 'ready' });
-            DB.set('tranghy_cars', cars);
-            addLog(`Đã thêm xe mới: ${name} vào hệ thống`);
+            const cars = getData('tranghy_cars');
+            cars.push({ id: Date.now(), name, type, price, img, status: 'Sẵn sàng' });
+            saveData('tranghy_cars', cars);
+            
             closeModal('modal-add-car');
-            renderAll();
+            renderCars();
+            updateDashboardStats();
         }
 
-        function deleteItem(key, idx) {
-            if(confirm("Xác nhận xóa mục này khỏi hệ thống?")) {
-                const data = DB.get(key);
+        // --- 4. QUẢN LÝ ĐƠN HÀNG ---
+        function renderOrders() {
+            const tbody = document.getElementById('orders-table-body');
+            const orders = getData('tranghy_orders');
+            if(!tbody) return;
+
+            if(orders.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-slate-400">Chưa có dữ liệu đơn hàng.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = orders.map((o, idx) => `
+                <tr class="hover:bg-slate-50/50 transition-all">
+                    <td class="px-8 py-5">
+                        <p class="font-bold">${o.customerName}</p>
+                        <p class="text-[10px] text-slate-400">${o.customerPhone}</p>
+                    </td>
+                    <td class="px-8 py-5">
+                        <p class="text-xs font-bold text-blue-600 uppercase italic">${o.carName}</p>
+                        <p class="text-[9px] text-slate-500">${o.date}</p>
+                    </td>
+                    <td class="px-8 py-5 font-black text-slate-800">${o.totalPrice}</td>
+                    <td class="px-8 py-5">
+                        <span class="status-badge ${o.status === 'pending' ? 'status-warning' : (o.status === 'approved' ? 'status-success' : 'status-danger')}">
+                            ${o.status === 'pending' ? 'Chờ duyệt' : (o.status === 'approved' ? 'Đã duyệt' : 'Đã hủy')}
+                        </span>
+                    </td>
+                    <td class="px-8 py-5 text-right space-x-2">
+                        ${o.status === 'pending' ? `
+                            <button onclick="changeOrderStatus(${idx}, 'approved')" class="bg-green-500 text-white w-8 h-8 rounded-lg hover:bg-green-600"><i class="fas fa-check"></i></button>
+                            <button onclick="changeOrderStatus(${idx}, 'cancelled')" class="bg-red-500 text-white w-8 h-8 rounded-lg hover:bg-red-600"><i class="fas fa-times"></i></button>
+                        ` : `<button onclick="deleteItem('tranghy_orders', ${idx}, renderOrders)" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button>`}
+                    </td>
+                </tr>
+            `).reverse().join('');
+        }
+
+        function changeOrderStatus(idx, status) {
+            const orders = getData('tranghy_orders');
+            orders[idx].status = status;
+            saveData('tranghy_orders', orders);
+            renderOrders();
+            updateDashboardStats();
+            const logContainer = document.getElementById('recent-logs');
+            const time = new Date().toLocaleTimeString('vi-VN');
+            if(logContainer) logContainer.insertAdjacentHTML('afterbegin', `<p class="text-[10px] bg-white/5 p-2 rounded-lg border border-white/5"><b>${time}</b>: Đơn #${orders[idx].id} đã được ${status === 'approved' ? 'duyệt' : 'hủy'}</p>`);
+        }
+
+        // --- 5. QUẢN LÝ TÀI XẾ ---
+        function renderDrivers() {
+            const tbody = document.getElementById('driver-management-table');
+            const drivers = getData('drivers_data');
+            if(!tbody) return;
+
+            tbody.innerHTML = drivers.map((d, idx) => `
+                <tr class="hover:bg-slate-50/50 transition-all">
+                    <td class="px-8 py-5 flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">${(d.name || '?').charAt(0)}</div>
+                        <p class="font-bold uppercase italic text-xs">${d.name}</p>
+                    </td>
+                    <td class="px-8 py-5">
+                        <p class="text-[10px] font-bold text-slate-800">${d.email || 'N/A'}</p>
+                        <p class="text-[10px] text-blue-500">${d.phone || 'N/A'}</p>
+                    </td>
+                    <td class="px-8 py-5">
+                        <span class="status-badge status-success">${d.status || 'Sẵn sàng'}</span>
+                    </td>
+                    <td class="px-8 py-5 text-right">
+                        <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function handleSaveDriver() {
+            const name = document.getElementById('dr-name-input').value;
+            const email = document.getElementById('dr-email-input').value;
+            const phone = document.getElementById('dr-phone-input').value;
+
+            if(!name || !email) return alert("Nhập đủ thông tin!");
+
+            const drivers = getData('drivers_data');
+            drivers.push({ id: Date.now(), name, email, phone, password: '123', exp: 'Mới', status: 'Sẵn sàng' });
+            saveData('drivers_data', drivers);
+            closeModal('modal-add-driver');
+            renderDrivers();
+            updateDashboardStats();
+        }
+
+        // --- TIỆN ÍCH CHUNG ---
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+
+        function deleteItem(key, idx, callback) {
+            if(confirm('Bạn chắc chắn muốn xóa mục này?')) {
+                const data = getData(key);
                 data.splice(idx, 1);
-                DB.set(key, data);
-                renderAll();
+                saveData(key, data);
+                callback();
+                updateDashboardStats();
             }
         }
 
-        function addLog(msg) {
-            const logs = document.getElementById('recent-logs');
-            const time = new Date().toLocaleTimeString('vi-VN');
-            logs.insertAdjacentHTML('afterbegin', `
-                <div class="flex gap-4 animate-fade-in">
-                    <span class="text-blue-500 font-black">${time}</span>
-                    <p class="opacity-80">${msg}</p>
-                </div>
-            `);
-        }
-
-        // 5. UI UTILITIES
         function switchTab(tab) {
             document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${tab}`).classList.remove('hidden');
-            document.querySelectorAll('.sidebar-active').forEach(i => i.classList.remove('sidebar-active'));
-            document.getElementById(`nav-${tab}`).classList.add('sidebar-active');
-            document.getElementById('page-title').innerText = tab === 'dashboard' ? 'Bảng điều khiển' : (tab === 'orders' ? 'Quản lý đơn hàng' : 'Hệ thống kho bãi');
+            document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+            const targetNav = document.getElementById(`nav-${tab}`);
+            if(targetNav) targetNav.classList.add('active');
+            
+            if(tab === 'cars') renderCars();
+            if(tab === 'orders') renderOrders();
+            if(tab === 'drivers') renderDrivers();
+            if(tab === 'dashboard') updateDashboardStats();
         }
 
-        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
-        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function updateTime() { document.getElementById('current-time').innerText = new Date().toLocaleString('vi-VN', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); }
-        function logout() { if(confirm("Rời khỏi hệ thống quản trị?")) { localStorage.removeItem('tranghy_user'); window.location.href='login.html'; } }
+        function logout() {
+            if(confirm("Xác nhận đăng xuất khỏi hệ thống quản trị?")) {
+                localStorage.removeItem('tranghy_user');
+                window.location.href = 'login.html';
+            }
+        }
 
-        // 6. CHART INIT
-        document.addEventListener('DOMContentLoaded', () => {
-            initData();
+        // Khởi tạo Chart & Tải dữ liệu JSON
+        document.addEventListener('DOMContentLoaded', function() {
+            initJsonData(); // Tải file JSON vào localStorage ngay khi mở
+
             const ctx = document.getElementById('revenueChart').getContext('2d');
             new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
+                    labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
                     datasets: [{
-                        label: 'Doanh thu',
-                        data: [12, 19, 30, 25, 42, 35, 60],
+                        label: 'Doanh thu tuần này',
+                        data: [12, 19, 15, 25, 22, 30, 45],
                         borderColor: '#2563eb',
-                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
                         fill: true,
-                        tension: 0.4
+                        backgroundColor: 'rgba(37, 99, 235, 0.05)'
                     }]
                 },
                 options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
             });
         });
 
-        // Tự động cập nhật khi khách đặt hàng từ tab khác
         window.addEventListener('storage', (e) => {
             if(e.key === 'tranghy_orders') {
-                renderAll();
-                addLog("🔔 THÔNG BÁO: Có khách vừa đặt xe mới!");
+                renderOrders();
+                updateDashboardStats();
             }
         });
     </script>
