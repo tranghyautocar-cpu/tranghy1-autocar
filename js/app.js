@@ -897,42 +897,61 @@ async subscribeNewsletter() {
     emailInput.value = "";
 },
 async fetchInitialData() {
-    try {
-        console.log("📂 Đang tải dữ liệu từ cars.json...");
+    this.state.isLoading = true;
+    console.log("📂 Đang đồng bộ hóa dữ liệu từ hệ thống...");
 
-        // 1. Đọc file cars.json
-        const response = await fetch('cars.json');
-        if (!response.ok) {
-            throw new Error("Không tìm thấy file cars.json!");
+    try {
+        // 1. Tải song song cả 2 file để tối ưu tốc độ
+        const [resCars, resDrivers] = await Promise.all([
+            fetch('cars.json').catch(() => ({ ok: false })),
+            fetch('drivers.json').catch(() => ({ ok: false }))
+        ]);
+
+        // 2. Xử lý dữ liệu Xe
+        if (resCars.ok) {
+            this.state.cars = await resCars.json();
+            console.log("✅ Đã tải cars.json");
+        } else {
+            this.state.cars = this.getFallbackCars();
+            console.warn("⚠️ Dùng dữ liệu xe dự phòng");
         }
 
-        // --- SỬA TẠI ĐÂY ---
-        // Thay vì this.allCars, hãy dùng this.state.cars
-        this.state.cars = await response.json(); 
-        
-        // Thay vì createMockDrivers (hàm không tồn tại), dùng getFallbackDrivers
-        this.state.drivers = this.getFallbackDrivers(); 
-        
-        // Đảm bảo bookings cũng vào state
-        const rawOrders = localStorage.getItem('tranghy_orders');
-        this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
-        // -------------------
+        // 3. Xử lý dữ liệu Tài xế (Sửa lỗi bỏ quên file JSON của bạn)
+        if (resDrivers.ok) {
+            this.state.drivers = await resDrivers.json();
+            console.log("✅ Đã tải drivers.json");
+        } else {
+            this.state.drivers = this.getFallbackDrivers();
+            console.warn("⚠️ Dùng dữ liệu tài xế dự phòng");
+        }
 
-        console.log(`✅ Đã tải xong: ${this.state.cars.length} Xe & ${this.state.drivers.length} Tài xế.`);
+        // 4. Xử lý đơn hàng an toàn
+        try {
+            const rawOrders = localStorage.getItem('tranghy_orders');
+            this.state.bookings = rawOrders ? JSON.parse(rawOrders) : [];
+        } catch (e) {
+            this.state.bookings = [];
+            console.error("Lỗi dữ liệu LocalStorage");
+        }
 
-        // 5. Hiển thị lên màn hình
-        this.renderAll(); 
+        console.log(`🚀 System Ready: ${this.state.cars.length} Xe | ${this.state.drivers.length} Tài xế`);
+
+        // 5. Hiển thị dữ liệu lên UI
+        this.renderAll();
         
-        // Cập nhật Dashboard (Nếu hàm này cần data, hãy đảm bảo nó đọc từ this.state.cars)
-        if (typeof updateDashboard === 'function') updateDashboard();
+        // 6. Cập nhật Dashboard (Gửi state vào để hàm Dashboard xử lý chính xác)
+        if (typeof updateDashboard === 'function') {
+            updateDashboard(this.state);
+        }
 
     } catch (error) {
-        console.error("❌ Lỗi tải dữ liệu:", error);
-        
-        // Gán mảng dự phòng vào state để web không bị trắng
+        console.error("❌ Lỗi khởi tạo nghiêm trọng:", error);
+        // Chế độ cứu hộ: Đảm bảo web vẫn hiện được gì đó
         this.state.cars = this.getFallbackCars();
         this.state.drivers = this.getFallbackDrivers();
         this.renderAll();
+    } finally {
+        this.state.isLoading = false;
     }
 },
  renderAll() {
@@ -1046,10 +1065,10 @@ async function loadDriversToUI() {
                     </div>
                 </div>
                 
-                <button onclick="openBookingModal('TÀI XẾ: ${driver.name}', '${driver.price}')" 
-                    class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-900/50 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all">
-                    LIÊN HỆ THUÊ NGAY
-                </button>
+               <button onclick="app.openDriverBooking(${driver.id})" 
+        class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-blue-800 text-white font-bold text-sm shadow-lg shadow-blue-900/50 hover:shadow-blue-500/50 hover:scale-[1.02] transition-all">
+        LIÊN HỆ THUÊ NGAY
+    </button>
             </div>
             `;
         });
