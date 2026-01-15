@@ -131,133 +131,131 @@
         </div>
     </div>
 
-    <script>
-        // Lắng nghe phím Enter
-        document.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') handleLogin();
-        });
+  <script>
+    // Lắng nghe phím Enter
+    document.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') handleLogin();
+    });
 
-        async function handleLogin() {
-            const userInp = document.getElementById('login-user');
-            const passInp = document.getElementById('login-pass');
-            const user = userInp.value.trim();
-            const pass = passInp.value.trim();
+    async function handleLogin() {
+        const userInp = document.getElementById('login-user');
+        const passInp = document.getElementById('login-pass');
+        // Chuyển email nhập vào thành chữ thường để khớp với hệ thống
+        const inputUser = userInp.value.trim().toLowerCase();
+        const inputPass = passInp.value.trim();
 
-            // Hiệu ứng Loading
-            setLoading(true);
+        setLoading(true);
 
-            // Giả lập độ trễ mạng (cho nó nguy hiểm :D)
-            await new Promise(r => setTimeout(r, 800));
+        // Giả lập độ trễ mạng
+        await new Promise(r => setTimeout(r, 800));
 
-            if (!user || !pass) {
-                showToast("Vui lòng nhập đầy đủ thông tin!", "warning");
-                setLoading(false);
-                return;
-            }
-
-            // 1. Check Admin
-            if (user === 'trangadmin' && pass === '2005') {
-                showToast("Đăng nhập Admin thành công!", "success");
-                setTimeout(() => saveAndRedirect({ role: 'ADMIN', name: 'Admin Trang' }), 1000);
-                return;
-            }
-
-            // 2. Check Tài xế
-            const savedDrivers = localStorage.getItem('drivers_data');
-            if (savedDrivers) {
-                const drivers = JSON.parse(savedDrivers);
-                const driver = drivers.find(d => d.email === user && d.password === pass);
-                
-                if (driver) {
-                    showToast(`Xin chào tài xế ${driver.name}!`, "success");
-                    setTimeout(() => saveAndRedirect({ role: 'DRIVER', ...driver }), 1000);
-                    return;
-                }
-            } else {
-                showToast("Dữ liệu chưa tải xong. Quay lại trang chủ!", "error");
-                setLoading(false);
-                return;
-            }
-
-            // 3. Nếu sai
-            showToast("Sai tài khoản hoặc mật khẩu!", "error");
+        if (!inputUser || !inputPass) {
+            showToast("Vui lòng nhập đầy đủ thông tin!", "warning");
             setLoading(false);
-            
-            // Rung lắc input để báo sai
-            userInp.classList.add('animate__animated', 'animate__shakeX');
-            passInp.classList.add('animate__animated', 'animate__shakeX');
-            setTimeout(() => {
-                userInp.classList.remove('animate__animated', 'animate__shakeX');
-                passInp.classList.remove('animate__animated', 'animate__shakeX');
-            }, 500);
+            return;
         }
-// Thay thế hàm cũ bằng hàm này
-function saveAndRedirect(userData) {
-    // 1. Lưu thông tin vào bộ nhớ
-    localStorage.setItem('tranghy_user', JSON.stringify(userData));
-    
-    // 2. Phân quyền chuyển hướng
-    if (userData.role === 'ADMIN') {
-        // Nếu là Admin -> Vào trang quản trị
-        window.location.href = 'admin.html';
-    } else if (userData.role === 'DRIVER') {
-        // Nếu là Tài xế -> Vào trang dành cho tài xế (MỚI)
-        window.location.href = 'drivers.html';
-    } else {
-        // Khách hàng thường -> Về trang chủ
-        window.location.href = 'index.html';
+
+        // 1. Kiểm tra quyền ADMIN
+        if (inputUser === 'trangadmin' && inputPass === '2005') {
+            showToast("Đăng nhập Admin thành công!", "success");
+            setTimeout(() => saveAndRedirect({ role: 'ADMIN', name: 'Admin Trang' }), 1000);
+            return;
+        }
+
+        // 2. Kiểm tra quyền TÀI XẾ (DRIVER)
+        const savedDrivers = localStorage.getItem('drivers_data');
+        if (savedDrivers) {
+            const drivers = JSON.parse(savedDrivers);
+            
+            // Tìm tài xế: Email và Pass phải khớp hoàn toàn
+            const driver = drivers.find(d => 
+                d.email.toLowerCase() === inputUser && 
+                String(d.password) === inputPass
+            );
+            
+            if (driver) {
+                showToast(`Xin chào tài xế ${driver.name}!`, "success");
+                setTimeout(() => saveAndRedirect({ ...driver, role: 'DRIVER' }), 1000);
+                return;
+            }
+        } else {
+            showToast("Hệ thống đang đồng bộ dữ liệu, vui lòng đợi!", "error");
+            setLoading(false);
+            return;
+        }
+
+        // 3. Nếu sai tài khoản hoặc mật khẩu
+        showToast("Sai tài khoản hoặc mật khẩu!", "error");
+        setLoading(false);
+        
+        userInp.classList.add('animate__animated', 'animate__shakeX');
+        passInp.classList.add('animate__animated', 'animate__shakeX');
+        setTimeout(() => {
+            userInp.classList.remove('animate__animated', 'animate__shakeX');
+            passInp.classList.remove('animate__animated', 'animate__shakeX');
+        }, 500);
     }
-}
-        // Hàm hiệu ứng nút bấm
-        function setLoading(isLoading) {
-            const btn = document.getElementById('btn-login');
-            const txt = document.getElementById('btn-text');
-            const icon = document.getElementById('btn-icon');
-            const spinner = document.getElementById('btn-spinner');
 
-            if (isLoading) {
-                btn.disabled = true;
-                btn.classList.add('opacity-80', 'cursor-not-allowed');
-                txt.innerText = "Đang xử lý...";
-                icon.classList.add('hidden');
-                spinner.classList.remove('hidden');
-            } else {
-                btn.disabled = false;
-                btn.classList.remove('opacity-80', 'cursor-not-allowed');
-                txt.innerText = "Đăng nhập ngay";
-                icon.classList.remove('hidden');
-                spinner.classList.add('hidden');
-            }
+    function saveAndRedirect(userData) {
+        // Lưu thông tin phiên đăng nhập
+        localStorage.setItem('tranghy_user', JSON.stringify(userData));
+        
+        if (userData.role === 'ADMIN') {
+            window.location.href = 'admin.html';
+        } else if (userData.role === 'DRIVER') {
+            // FIX LỖI 404: Đổi từ drivers.html thành driver.html
+            window.location.href = 'drivers.html'; 
+        } else {
+            window.location.href = 'index.html';
+        }
+    }
+
+    function setLoading(isLoading) {
+        const btn = document.getElementById('btn-login');
+        const txt = document.getElementById('btn-text');
+        const icon = document.getElementById('btn-icon');
+        const spinner = document.getElementById('btn-spinner');
+
+        if (isLoading) {
+            btn.disabled = true;
+            btn.classList.add('opacity-80', 'cursor-not-allowed');
+            txt.innerText = "Đang xác thực...";
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+        } else {
+            btn.disabled = false;
+            btn.classList.remove('opacity-80', 'cursor-not-allowed');
+            txt.innerText = "Đăng nhập ngay";
+            icon.classList.remove('hidden');
+            spinner.classList.add('hidden');
+        }
+    }
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast-box');
+        const msgEl = document.getElementById('toast-message');
+        const iconEl = document.getElementById('toast-icon');
+
+        toast.className = 'toast show animate__animated animate__fadeInRight';
+        
+        if (type === 'success') {
+            toast.classList.add('success');
+            iconEl.className = 'fas fa-check-circle';
+        } else if (type === 'error') {
+            toast.classList.add('error');
+            iconEl.className = 'fas fa-exclamation-circle';
+        } else {
+            toast.classList.add('warning');
+            iconEl.className = 'fas fa-exclamation-triangle';
         }
 
-        // Hàm hiện thông báo Toast đẹp
-        function showToast(message, type = 'success') {
-            const toast = document.getElementById('toast-box');
-            const msgEl = document.getElementById('toast-message');
-            const iconEl = document.getElementById('toast-icon');
+        msgEl.innerText = message;
 
-            // Reset class cũ
-            toast.className = 'toast show animate__animated animate__fadeInRight';
-            
-            if (type === 'success') {
-                toast.classList.add('success');
-                iconEl.className = 'fas fa-check-circle';
-            } else if (type === 'error') {
-                toast.classList.add('error');
-                iconEl.className = 'fas fa-exclamation-circle';
-            } else {
-                toast.classList.add('warning');
-                iconEl.className = 'fas fa-exclamation-triangle';
-            }
-
-            msgEl.innerText = message;
-
-            // Tự ẩn sau 3 giây
-            setTimeout(() => {
-                toast.classList.remove('show', 'animate__fadeInRight');
-                toast.classList.add('animate__fadeOutRight');
-            }, 3000);
-        }
-    </script>
+        setTimeout(() => {
+            toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
+            setTimeout(() => toast.classList.remove('show'), 300);
+        }, 3000);
+    }
+</script>
 </body>
 </html>
