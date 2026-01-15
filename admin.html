@@ -286,25 +286,25 @@
         `).join('');
     }
 
-  function renderDrivers() {
+ function renderDrivers() {
     const tbody = document.getElementById('driver-management-table');
     const drivers = DB.get('drivers_data');
     if (!tbody) return;
 
     tbody.innerHTML = drivers.map((d, idx) => {
-        // --- LOGIC TỰ TẠO EMAIL CÁ NHÂN ---
+        // --- 1. GIỮ NGUYÊN LOGIC EMAIL NGON CỦA BẠN ---
         let displayEmail = d.email; 
-        
         if (!displayEmail) {
-            // Chuyển tên thành viết tắt không dấu (Ví dụ: "Đặng Văn Sơn" -> "son.dv")
             const nameParts = d.name.trim().toLowerCase().split(' ');
-            const lastName = nameParts[nameParts.length - 1]; // son
-            const initials = nameParts.slice(0, -1).map(p => p[0]).join(''); // dv
-            
-            // Loại bỏ dấu tiếng Việt (Hàm helper ở dưới)
+            const lastName = nameParts[nameParts.length - 1]; 
+            const initials = nameParts.slice(0, -1).map(p => p[0]).join(''); 
             const cleanName = removeVietnameseTones(lastName + "." + initials);
             displayEmail = `${cleanName}@tranghy.com`;
         }
+
+        // --- 2. NÂNG CẤP: TỰ ĐỘNG GÁN & HIỂN THỊ MẬT KHẨU MẶC ĐỊNH ---
+        // Nếu trong data chưa có password, mặc định hiển thị 123456
+        const defaultPass = d.password || '123456';
 
         return `
             <tr class="hover:bg-slate-50/50 transition-all border-b border-slate-100/10">
@@ -314,20 +314,32 @@
                     </div>
                     <div>
                         <p class="font-bold uppercase italic text-xs text-white">${d.name}</p>
-                        <p class="text-[9px] text-blue-400 font-bold">ID: ${d.id || 'TX' + idx}</p>
+                        <p class="text-[9px] text-blue-400 font-bold uppercase">ID: ${d.id || 'TX' + (idx + 1)}</p>
                     </div>
                 </td>
                 <td class="px-8 py-5">
-                    <p class="text-[10px] font-bold text-slate-300">${displayEmail}</p>
-                    <p class="text-[10px] text-blue-500">${d.phone || 'Chưa có SĐT'}</p>
+                    <p class="text-[11px] font-bold text-slate-300 flex items-center gap-1">
+                        <i class="far fa-envelope text-[10px] text-blue-500"></i> ${displayEmail}
+                    </p>
+                    <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+                        <i class="fas fa-key text-[9px]"></i> MK: <span class="text-white font-mono">${defaultPass}</span>
+                    </p>
                 </td>
                 <td class="px-8 py-5">
-                    <span class="status-badge bg-green-100 text-green-600">${d.status || 'Sẵn sàng'}</span>
+                    <p class="text-[10px] font-bold text-blue-400 mb-1">${d.phone || 'Chưa có SĐT'}</p>
+                    <span class="status-badge ${d.status === 'Sẵn sàng' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
+                        ${d.status || 'Sẵn sàng'}
+                    </span>
                 </td>
                 <td class="px-8 py-5 text-right">
-                    <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600 transition-all">
-                        <i class="fas fa-trash-alt"></i>
-                    </button>
+                    <div class="flex justify-end gap-2">
+                        <button onclick="copyAccount('${displayEmail}', '${defaultPass}')" class="text-blue-400 hover:text-blue-300 p-2" title="Copy tài khoản">
+                            <i class="far fa-copy"></i>
+                        </button>
+                        <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600 p-2">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>`;
     }).join('');
