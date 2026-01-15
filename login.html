@@ -131,83 +131,80 @@
         </div>
     </div>
 
-  <script>
-    // Lắng nghe phím Enter
+ <script>
+    // Lắng nghe phím Enter để đăng nhập nhanh
     document.addEventListener('keypress', function (e) {
         if (e.key === 'Enter') handleLogin();
     });
 
-  async function handleLogin() {
-    const userInp = document.getElementById('login-user');
-    const passInp = document.getElementById('login-pass');
-    
-    // Chuyển email nhập vào thành chữ thường và xóa khoảng trắng thừa
-    const inputUser = userInp.value.trim().toLowerCase();
-    const inputPass = passInp.value.trim();
-
-    setLoading(true);
-
-    // Giả lập độ trễ mạng
-    await new Promise(r => setTimeout(r, 800));
-
-    if (!inputUser || !inputPass) {
-        showToast("Vui lòng nhập đầy đủ thông tin!", "warning");
-        setLoading(false);
-        return;
-    }
-
-    // 1. Kiểm tra quyền ADMIN (Giữ nguyên)
-    if (inputUser === 'trangadmin' && inputPass === '2005') {
-        showToast("Đăng nhập Admin thành công!", "success");
-        setTimeout(() => saveAndRedirect({ role: 'ADMIN', name: 'Admin Trang' }), 1000);
-        return;
-    }
-
-    // 2. Kiểm tra quyền TÀI XẾ (DRIVER)
-    const savedDrivers = localStorage.getItem('drivers_data');
-    if (savedDrivers) {
-        const drivers = JSON.parse(savedDrivers);
+    // SỬA LỖI: Bỏ chữ 'g' ở đầu async
+    async function handleLogin() {
+        const userInp = document.getElementById('login-user');
+        const passInp = document.getElementById('login-pass');
         
-        // --- NÂNG CẤP LOGIC TÌM KIẾM AN TOÀN ---
-        const driver = drivers.find(d => {
-            // Kiểm tra xem tài xế có email và password không trước khi so sánh
-            if (!d.email || !d.password) return false;
-            
-            return d.email.toLowerCase() === inputUser && 
-                   String(d.password) === inputPass;
-        });
-        
-        if (driver) {
-            showToast(`Xin chào tài xế ${driver.name}!`, "success");
-            // Đảm bảo truyền đầy đủ thông tin để drivers.html sử dụng
-            setTimeout(() => saveAndRedirect({ ...driver, role: 'DRIVER' }), 1000);
+        // Chuẩn hóa input: Chữ thường và xóa khoảng trắng
+        const inputUser = userInp.value.trim().toLowerCase();
+        const inputPass = passInp.value.trim();
+
+        if (!inputUser || !inputPass) {
+            showToast("Vui lòng nhập đầy đủ thông tin!", "warning");
             return;
         }
-    } else {
-        showToast("Dữ liệu hệ thống lỗi. Vui lòng vào trang Admin để cập nhật!", "error");
+
+        setLoading(true);
+
+        // Giả lập độ trễ xác thực
+        await new Promise(r => setTimeout(r, 800));
+
+        // 1. Kiểm tra quyền ADMIN
+        if (inputUser === 'trangadmin' && inputPass === '2005') {
+            showToast("Đăng nhập Admin thành công!", "success");
+            setTimeout(() => saveAndRedirect({ role: 'ADMIN', name: 'Admin Trang' }), 1000);
+            return;
+        }
+
+        // 2. Kiểm tra quyền TÀI XẾ (DRIVER)
+        const savedDrivers = localStorage.getItem('drivers_data');
+        if (savedDrivers) {
+            const drivers = JSON.parse(savedDrivers);
+            
+            // Tìm tài xế: Kiểm tra an toàn để không bị crash nếu email undefined
+            const driver = drivers.find(d => {
+                if (!d.email || !d.password) return false;
+                return d.email.toLowerCase() === inputUser && 
+                       String(d.password) === inputPass;
+            });
+            
+            if (driver) {
+                showToast(`Xin chào tài xế ${driver.name}!`, "success");
+                setTimeout(() => saveAndRedirect({ ...driver, role: 'DRIVER' }), 1000);
+                return;
+            }
+        } else {
+            showToast("Hệ thống chưa nạp dữ liệu. Vui lòng vào trang Admin trước!", "error");
+            setLoading(false);
+            return;
+        }
+
+        // 3. Nếu sai (Rung lắc input báo lỗi)
+        showToast("Sai tài khoản hoặc mật khẩu!", "error");
         setLoading(false);
-        return;
+        
+        userInp.classList.add('animate__animated', 'animate__shakeX');
+        passInp.classList.add('animate__animated', 'animate__shakeX');
+        setTimeout(() => {
+            userInp.classList.remove('animate__animated', 'animate__shakeX');
+            passInp.classList.remove('animate__animated', 'animate__shakeX');
+        }, 500);
     }
 
-    // 3. Nếu sai tài khoản hoặc mật khẩu (Giữ nguyên hiệu ứng rung)
-    showToast("Sai tài khoản hoặc mật khẩu!", "error");
-    setLoading(false);
-    
-    userInp.classList.add('animate__animated', 'animate__shakeX');
-    passInp.classList.add('animate__animated', 'animate__shakeX');
-    setTimeout(() => {
-        userInp.classList.remove('animate__animated', 'animate__shakeX');
-        passInp.classList.remove('animate__animated', 'animate__shakeX');
-    }, 500);
-}
     function saveAndRedirect(userData) {
-        // Lưu thông tin phiên đăng nhập
         localStorage.setItem('tranghy_user', JSON.stringify(userData));
         
         if (userData.role === 'ADMIN') {
             window.location.href = 'admin.html';
         } else if (userData.role === 'DRIVER') {
-            // FIX LỖI 404: Đổi từ drivers.html thành driver.html
+            // Chuyển hướng đến file drivers.html (có chữ s)
             window.location.href = 'drivers.html'; 
         } else {
             window.location.href = 'index.html';
@@ -222,13 +219,11 @@
 
         if (isLoading) {
             btn.disabled = true;
-            btn.classList.add('opacity-80', 'cursor-not-allowed');
             txt.innerText = "Đang xác thực...";
             icon.classList.add('hidden');
             spinner.classList.remove('hidden');
         } else {
             btn.disabled = false;
-            btn.classList.remove('opacity-80', 'cursor-not-allowed');
             txt.innerText = "Đăng nhập ngay";
             icon.classList.remove('hidden');
             spinner.classList.add('hidden');
@@ -241,20 +236,11 @@
         const iconEl = document.getElementById('toast-icon');
 
         toast.className = 'toast show animate__animated animate__fadeInRight';
-        
-        if (type === 'success') {
-            toast.classList.add('success');
-            iconEl.className = 'fas fa-check-circle';
-        } else if (type === 'error') {
-            toast.classList.add('error');
-            iconEl.className = 'fas fa-exclamation-circle';
-        } else {
-            toast.classList.add('warning');
-            iconEl.className = 'fas fa-exclamation-triangle';
-        }
+        if (type === 'success') { toast.classList.add('success'); iconEl.className = 'fas fa-check-circle'; }
+        else if (type === 'error') { toast.classList.add('error'); iconEl.className = 'fas fa-exclamation-circle'; }
+        else { toast.classList.add('warning'); iconEl.className = 'fas fa-exclamation-triangle'; }
 
         msgEl.innerText = message;
-
         setTimeout(() => {
             toast.classList.replace('animate__fadeInRight', 'animate__fadeOutRight');
             setTimeout(() => toast.classList.remove('show'), 300);
