@@ -286,32 +286,64 @@
         `).join('');
     }
 
-    function renderDrivers() {
-        const tbody = document.getElementById('driver-management-table');
-        const drivers = DB.get('drivers_data');
-        if (!tbody) return;
+  function renderDrivers() {
+    const tbody = document.getElementById('driver-management-table');
+    const drivers = DB.get('drivers_data');
+    if (!tbody) return;
 
-        tbody.innerHTML = drivers.map((d, idx) => `
-            <tr class="hover:bg-slate-50/50 transition-all border-b border-slate-50">
+    tbody.innerHTML = drivers.map((d, idx) => {
+        // --- LOGIC TỰ TẠO EMAIL CÁ NHÂN ---
+        let displayEmail = d.email; 
+        
+        if (!displayEmail) {
+            // Chuyển tên thành viết tắt không dấu (Ví dụ: "Đặng Văn Sơn" -> "son.dv")
+            const nameParts = d.name.trim().toLowerCase().split(' ');
+            const lastName = nameParts[nameParts.length - 1]; // son
+            const initials = nameParts.slice(0, -1).map(p => p[0]).join(''); // dv
+            
+            // Loại bỏ dấu tiếng Việt (Hàm helper ở dưới)
+            const cleanName = removeVietnameseTones(lastName + "." + initials);
+            displayEmail = `${cleanName}@tranghy.com`;
+        }
+
+        return `
+            <tr class="hover:bg-slate-50/50 transition-all border-b border-slate-100/10">
                 <td class="px-8 py-5 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-black">${(d.name || '?').charAt(0)}</div>
-                    <p class="font-bold uppercase italic text-xs text-slate-700">${d.name}</p>
+                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-black italic shadow-lg">
+                        ${(d.name || '?').charAt(0)}
+                    </div>
+                    <div>
+                        <p class="font-bold uppercase italic text-xs text-white">${d.name}</p>
+                        <p class="text-[9px] text-blue-400 font-bold">ID: ${d.id || 'TX' + idx}</p>
+                    </div>
                 </td>
                 <td class="px-8 py-5">
-                    <p class="text-[10px] font-bold text-slate-800">${d.email || d.phone}</p>
-                    <p class="text-[10px] text-blue-500 font-bold">${d.phone || ''}</p>
+                    <p class="text-[10px] font-bold text-slate-300">${displayEmail}</p>
+                    <p class="text-[10px] text-blue-500">${d.phone || 'Chưa có SĐT'}</p>
                 </td>
                 <td class="px-8 py-5">
-                    <span class="status-badge status-success">${d.status || 'Sẵn sàng'}</span>
+                    <span class="status-badge bg-green-100 text-green-600">${d.status || 'Sẵn sàng'}</span>
                 </td>
                 <td class="px-8 py-5 text-right">
-                    <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600">
+                    <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600 transition-all">
                         <i class="fas fa-trash-alt"></i>
                     </button>
                 </td>
-            </tr>
-        `).join('');
-    }
+            </tr>`;
+    }).join('');
+}
+
+// Hàm hỗ trợ xóa dấu tiếng Việt để làm email đẹp hơn
+function removeVietnameseTones(str) {
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
+    str = str.replace(/đ/g,"d");
+    return str;
+}
 
     function renderOrders() {
         const tbody = document.getElementById('orders-table-body');
