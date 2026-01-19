@@ -346,7 +346,7 @@
     <main id="inventory" class="max-w-7xl mx-auto px-6 py-24">
     </main>
    <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
-    <button onclick="app.filterCars('All', event)" 
+    <button onclick="app.filterCars('all', event)" 
         class="filter-btn whitespace-nowrap px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all duration-300 bg-white shadow-lg text-blue-600">
         TẤT CẢ XE
     </button>
@@ -815,7 +815,7 @@ app.handleDriverBooking = function() {
         btn.classList.add('bg-white', 'shadow-lg', 'text-blue-600');
         btn.classList.remove('text-slate-500');
 
-        const filtered = (cat === 'All') ? cars : cars.filter(c => c.category === cat);
+        const filtered = (cat === 'all') ? cars : cars.filter(c => c.category === cat);
         displayCars(filtered);
     }
 

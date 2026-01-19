@@ -5,7 +5,7 @@ const path = require('path');
 // --- 1. KẾT NỐI DATABASE (QUAN TRỌNG NHẤT) ---
 // Dòng này trỏ đúng vào file db.js nằm trong thư mục backend/database
 // Nó sẽ tự động kích hoạt file đó để tạo bảng và nạp dữ liệu
-const db = require('./backend/database/db'); 
+const db = require('../database/db'); 
 
 const app = express();
 const PORT = 5000;
