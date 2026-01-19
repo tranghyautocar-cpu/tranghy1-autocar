@@ -538,26 +538,58 @@
             <img id="qr-code" src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=TRANGHYAUTOCAR" class="w-48 h-48 object-contain">
         </div>
         
-        <div class="text-slate-300 text-[11px] mb-8 space-y-3 text-left bg-white/5 p-6 rounded-3xl border border-white/5">
-            <p class="flex justify-between border-b border-white/5 pb-2"><span>Chủ tài khoản:</span> <span class="text-white font-black uppercase">Bui Van Trang</span></p>
-            <p class="flex justify-between border-b border-white/5 pb-2"><span>Số tài khoản:</span> <span class="text-blue-400 font-black text-sm">0353979614</span></p>
-            <p class="flex justify-between"><span>Ngân hàng:</span> <span class="text-white font-bold uppercase">MB BANK</span></p>
+   <div class="max-h-[300px] overflow-y-auto pr-2 custom-scrollbar space-y-4 mb-8">
+    
+    <div class="text-slate-300 text-[11px] space-y-3 text-left bg-white/5 p-6 rounded-3xl border border-white/5 shadow-inner">
+        <p class="flex justify-between border-b border-white/5 pb-2">
+            <span>Chủ tài khoản:</span> 
+            <span class="text-white font-black uppercase">Bui Van Trang</span>
+        </p>
+        <p class="flex justify-between border-b border-white/5 pb-2">
+            <span>Số tài khoản:</span> 
+            <span class="text-blue-400 font-black text-sm cursor-pointer hover:underline" onclick="copyToClipboard('0353979614')">0353979614 <i class="far fa-copy ml-1 text-[10px]"></i></span>
+        </p>
+        <p class="flex justify-between">
+            <span>Ngân hàng:</span> 
+            <span class="text-white font-bold uppercase">MB BANK</span>
+        </p>
+        
+        <div class="pt-4 space-y-3">
+            <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Số tiền thanh toán</p>
+            <p id="payment-final-amount" class="text-3xl font-black text-white italic tracking-tighter">0đ</p>
             
-            <div class="pt-4 space-y-3">
-                <p class="text-[9px] text-slate-500 uppercase font-black tracking-widest mb-1">Số tiền thanh toán</p>
-                <p id="payment-final-amount" class="text-3xl font-black text-white italic tracking-tighter">0đ</p>
-                <p class="text-[9px] text-slate-500 uppercase font-black mb-1 pt-2 border-t border-white/5">Nội dung chuyển khoản</p>
+            <p class="text-[9px] text-slate-500 uppercase font-black mb-1 pt-4 border-t border-white/5">Nội dung chuyển khoản</p>
+            <div class="flex items-center justify-between bg-blue-400/10 p-3 rounded-xl border border-blue-400/20">
                 <p id="payment-description" class="text-[11px] text-blue-400 font-bold uppercase italic tracking-tight">THUE XE/TAI XE</p>
+                <i class="far fa-copy text-blue-400 text-xs cursor-pointer" onclick="copyToClipboard(document.getElementById('payment-description').innerText)"></i>
             </div>
         </div>
+    </div>
 
-        <div class="flex gap-4">
-            <button onclick="document.getElementById('payment-modal').classList.add('hidden')" 
-                    class="flex-1 bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all">HỦY</button>
-            <button id="btn-confirm-payment" onclick="showSuccessBooking('xe')"
-                    class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30 uppercase text-[10px] tracking-widest">
-                XÁC NHẬN CHUYỂN
-            </button>
+    <div class="p-4 bg-orange-500/10 rounded-2xl border border-orange-500/20">
+        <p class="text-[10px] text-orange-400 leading-relaxed italic">
+            * Lưu ý: Vui lòng nhập chính xác nội dung chuyển khoản để hệ thống tự động xác nhận đơn hàng nhanh nhất.
+        </p>
+    </div>
+</div>
+
+<div class="flex gap-4 sticky bottom-0 bg-slate-900 pt-2">
+    <button onclick="document.getElementById('payment-modal').classList.add('hidden')" 
+            class="flex-1 bg-slate-800 text-slate-500 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-red-500 hover:text-white transition-all">
+        HỦY
+    </button>
+    <button id="btn-confirm-payment" onclick="showSuccessBooking('xe')"
+            class="flex-1 bg-blue-600 text-white py-4 rounded-2xl font-black hover:bg-blue-500 transition-all shadow-xl shadow-blue-600/30 uppercase text-[10px] tracking-widest">
+        XÁC NHẬN CHUYỂN
+    </button>
+</div>
+
+<style>
+    /* Làm đẹp thanh cuộn */
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 10px; }
+</style>
         </div>
     </div>
 </div>
