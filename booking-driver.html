@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thuê Tài Xế Riêng - TrangHy Autocar</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-gradient: linear-gradient(135deg, #007bff, #00d1ff);
+            --dark-bg: #0b0c10;
+            --card-bg: #161b22;
+            --input-bg: #1f242d;
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+            --border: #30363d;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            margin: 0; padding: 20px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* Back Button */
+        .back-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 100;
+            background: rgba(255,255,255,0.1); backdrop-filter: blur(10px);
+            border: 1px solid var(--border); color: white; padding: 10px 18px;
+            border-radius: 50px; text-decoration: none; font-weight: 600;
+            display: flex; align-items: center; gap: 8px; transition: 0.3s;
+        }
+        .back-btn:hover { background: var(--primary); transform: translateX(-5px); }
+
+        .container {
+            max-width: 900px; width: 100%; margin-top: 60px;
+        }
+
+        .header-section {
+            text-align: center; margin-bottom: 40px;
+        }
+        .header-section h1 { font-size: 2.2rem; margin-bottom: 10px; }
+        .header-section p { color: var(--text-muted); }
+
+        .booking-card {
+            background: var(--card-bg); border-radius: 24px;
+            border: 1px solid var(--border); overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .form-content { padding: 40px; }
+
+        .grid-layout {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 30px;
+        }
+
+        h3 { color: var(--primary); font-size: 1.1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; }
+
+        .input-group { margin-bottom: 20px; }
+        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        
+        input[type="text"], input[type="tel"], select {
+            width: 100%; padding: 14px; background: var(--input-bg);
+            border: 1px solid var(--border); border-radius: 12px; color: white;
+            box-sizing: border-box; transition: 0.3s;
+        }
+        input:focus { border-color: var(--primary); outline: none; box-shadow: 0 0 0 3px rgba(0,123,255,0.2); }
+
+        /* Total Section */
+        .price-panel {
+            background: rgba(0, 123, 255, 0.05); border: 1px dashed var(--primary);
+            padding: 25px; border-radius: 16px; margin-top: 30px; text-align: center;
+        }
+        .price-panel h2 { font-size: 2.5rem; color: var(--primary); margin: 10px 0; }
+
+        .btn-group {
+            display: grid; grid-template-columns: 1.5fr 1fr; gap: 15px; margin-top: 30px;
+        }
+
+        .btn-main {
+            padding: 18px; border: none; border-radius: 12px; font-weight: 700;
+            cursor: pointer; transition: 0.3s; font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary-gradient); color: white; }
+        .btn-secondary { background: #21262d; color: white; border: 1px solid var(--border); }
+        
+        .btn-main:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        @media (max-width: 768px) {
+            .grid-layout { grid-template-columns: 1fr; }
+            .btn-group { grid-template-columns: 1fr; }
+            .header-section h1 { font-size: 1.8rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <a href="index.html" class="back-btn">
+        <i class="fa-solid fa-arrow-left"></i> Quay lại
+    </a>
+
+    <div class="container">
+        <div class="header-section">
+            <h1>Dịch Vụ Tài Xế Riêng</h1>
+            <p>An toàn - Chuyên nghiệp - Tận tâm trên mọi cung đường</p>
+        </div>
+
+        <div class="booking-card">
+            <form id="driver-booking-form" class="form-content">
+                <div class="grid-layout">
+                    <div class="col">
+                        <h3><i class="fa-solid fa-clock"></i> 1. Thời gian phục vụ</h3>
+                        <div class="input-group">
+                            <label>Ngày bắt đầu</label>
+                            <input type="text" id="dr-start-date" placeholder="Chọn ngày đi" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Ngày kết thúc</label>
+                            <input type="text" id="dr-end-date" placeholder="Chọn ngày về" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Yêu cầu tài xế (Vùng miền/Kinh nghiệm)</label>
+                            <select id="driver-pref">
+                                <option value="Tài xế phổ thông">Tài xế phổ thông (Nhiệt tình)</option>
+                                <option value="Tài xế lâu năm">Tài xế > 10 năm kinh nghiệm</option>
+                                <option value="Tài xế biết tiếng Anh">Tài xế biết tiếng Anh</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col">
+                        <h3><i class="fa-solid fa-user"></i> 2. Thông tin liên hệ</h3>
+                        <div class="input-group">
+                            <label>Họ và tên khách hàng</label>
+                            <input type="text" id="cust-name" placeholder="Ví dụ: Nguyễn Văn A" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Số điện thoại</label>
+                            <input type="tel" id="cust-phone" placeholder="Số điện thoại nhận lịch" required>
+                        </div>
+                        <div class="input-group">
+                            <label>Số CCCD</label>
+                            <input type="text" id="cust-cccd" placeholder="Để làm hợp đồng" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="price-panel">
+                    <p style="color: var(--text-muted); margin: 0;">Tổng chi phí dự kiến cho <span id="dr-days-text" style="font-weight: bold; color: white;">1</span> ngày:</p>
+                    <h2 id="dr-total">500.000 VNĐ</h2>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">* Phí chưa bao gồm ăn nghỉ của tài xế nếu đi tỉnh qua đêm</p>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn-main btn-primary">XÁC NHẬN ĐẶT TÀI XẾ</button>
+                    <button type="button" class="btn-main btn-secondary" onclick="BookingDriver.printDriverContract()">
+                        <i class="fa-solid fa-print"></i> IN HỢP ĐỒNG
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    <script src="booking-driver.js"></script> <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Khởi tạo Flatpickr
+            const fpConfig = {
+                minDate: "today",
+                dateFormat: "d/m/Y",
+                locale: "vn",
+                onChange: function() {
+                    BookingDriver.calculateDriverDays();
+                }
+            };
+
+            flatpickr("#dr-start-date", fpConfig);
+            flatpickr("#dr-end-date", fpConfig);
+
+            // Xử lý khi Submit form
+            document.getElementById('driver-booking-form').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = {
+                    custName: document.getElementById('cust-name').value,
+                    phone: document.getElementById('cust-phone').value,
+                    cccd: document.getElementById('cust-cccd').value,
+                    startDate: document.getElementById('dr-start-date').value,
+                    endDate: document.getElementById('dr-end-date').value,
+                    carName: "TÀI XẾ: " + document.getElementById('driver-pref').value,
+                    totalPrice: document.getElementById('dr-total').innerText
+                };
+
+                const result = await BookingDriver.submitOrder(formData);
+                if(result.success) {
+                    alert("✅ Đã gửi yêu cầu đặt tài xế! Chúng tôi sẽ liên hệ bạn ngay.");
+                } else {
+                    alert("❌ Có lỗi xảy ra. Vui lòng thử lại.");
+                }
+            });
+            
+            // Khởi tạo giá tiền ban đầu
+            BookingDriver.updateDriverTotal();
+        });
+    </script>
+</body>
+</html>
