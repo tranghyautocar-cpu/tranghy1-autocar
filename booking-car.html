@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thanh Toán Thuê Xe - TrangHy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+
+    <style>
+        :root {
+            --primary: #007bff;
+            --primary-gradient: linear-gradient(90deg, #007bff, #00d1ff);
+            --dark-bg: #0f1014;
+            --card-bg: #1a1c22;
+            --input-bg: #252830;
+            --text-main: #ffffff;
+            --text-muted: #a0a0a0;
+            --border: #33363f;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* Container chính */
+        .booking-container {
+            max-width: 1000px;
+            width: 100%;
+            background: var(--card-bg);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border: 1px solid var(--border);
+        }
+
+        /* Phần ảnh xe Full */
+        .car-hero-section {
+            position: relative;
+            height: 400px;
+            width: 100%;
+        }
+        .car-hero-section img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .car-hero-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            height: 60%;
+            background: linear-gradient(transparent, var(--card-bg));
+        }
+        .car-info-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            z-index: 2;
+        }
+        .car-info-overlay h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .car-badge {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: var(--primary-gradient);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            z-index: 2;
+        }
+
+        /* Nội dung Form */
+        .booking-form-content {
+            padding: 40px;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 40px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--primary);
+        }
+
+        /* Input & Labels */
+        .input-group { margin-bottom: 20px; }
+        label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        input[type="text"], input[type="tel"], select {
+            width: 100%;
+            padding: 14px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            color: white;
+            box-sizing: border-box;
+            font-size: 1rem;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.2);
+        }
+
+        /* Lịch trình 2 cột */
+        .date-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        /* Radio Options (Hình thức nhận xe) */
+        .delivery-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .delivery-options input[type="radio"] { display: none; }
+        .delivery-options label {
+            padding: 12px;
+            background: var(--input-bg);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+            color: white;
+            margin: 0;
+        }
+        .delivery-options input[type="radio"]:checked + label {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Switch Thuê tài xế */
+        .driver-card {
+            background: rgba(0, 123, 255, 0.1);
+            border: 1px dashed var(--primary);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 25px;
+        }
+        .driver-info i { font-size: 1.5rem; margin-right: 10px; color: var(--primary); }
+
+        /* Upload Ảnh */
+        .upload-zone {
+            border: 2px dashed var(--border);
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .upload-zone:hover { border-color: var(--primary); background: rgba(255,255,255,0.02); }
+        .upload-zone i { font-size: 2rem; color: var(--text-muted); margin-bottom: 10px; }
+
+        /* Footer & Total */
+        .booking-footer {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .price-summary { text-align: center; margin-bottom: 25px; }
+        .price-summary p { color: var(--text-muted); margin: 0; }
+        .price-summary h2 { 
+            font-size: 2.8rem; 
+            margin: 10px 0; 
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn-confirm {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 15px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0,123,255,0.3);
+        }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0,123,255,0.5); }
+
+        .agreement {
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        /* Mobile */
+        @media (max-width: 850px) {
+            .form-grid { grid-template-columns: 1fr; }
+            .car-hero-section { height: 250px; }
+            body { padding: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="booking-container">
+    <div class="car-hero-section">
+        <div class="car-badge">HẠNG SANG</div>
+        <img id="car-img" src="https://images.unsplash.com/photo-1617788138017-80ad40651399?auto=format&fit=crop&q=80&w=1000" alt="Car">
+        <div class="car-info-overlay">
+            <h1 id="car-name">VinFast VF8</h1>
+            <p id="car-price-unit" style="color: var(--text-muted); margin: 5px 0 0 0;">Giá gốc: 1.200.000 VNĐ/ngày</p>
+        </div>
+    </div>
+
+    <form id="rental-form" class="booking-form-content">
+        <div class="form-grid">
+            <div class="col-left">
+                <h3><i class="fa-solid fa-route"></i> 1. Lịch trình & Dịch vụ</h3>
+                
+                <div class="date-row">
+                    <div class="input-group">
+                        <label>Ngày nhận xe</label>
+                        <input type="text" id="pickup-date" placeholder="Chọn ngày" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Ngày trả xe</label>
+                        <input type="text" id="return-date" placeholder="Chọn ngày" required>
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label>Hình thức nhận xe</label>
+                    <div class="delivery-options">
+                        <input type="radio" name="location_type" id="gara" value="Tại Gara" checked>
+                        <label for="gara">Tại Gara</label>
+                        
+                        <input type="radio" name="location_type" id="nha" value="Tại Nhà">
+                        <label for="nha">Tại Nhà</label>
+                    </div>
+                    <input type="text" id="cust-location" placeholder="Địa chỉ cụ thể (nếu nhận tại nhà)" style="margin-top: 10px;">
+                </div>
+
+                <div class="driver-card">
+                    <div class="driver-info">
+                        <i class="fa-solid fa-user-tie"></i>
+                        <span><strong>Thuê kèm tài xế</strong><br><small>+500.000đ/ngày</small></span>
+                    </div>
+                    <input type="checkbox" id="with-driver" style="width: 25px; height: 25px; cursor: pointer;">
+                </div>
+            </div>
+
+            <div class="col-right">
+                <h3><i class="fa-solid fa-id-card"></i> 2. Thông tin khách hàng</h3>
+                
+                <div class="input-group">
+                    <label>Họ và tên</label>
+                    <input type="text" id="cust-fullname" placeholder="NGUYỄN VĂN A" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Số điện thoại</label>
+                    <input type="tel" id="cust-phone" placeholder="09xx xxx xxx" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Số CCCD</label>
+                    <input type="text" id="cust-cccd" placeholder="Số căn cước công dân" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Bằng lái xe (Mặt trước)</label>
+                    <label for="license-upload" class="upload-zone">
+                        <i class="fa-solid fa-cloud-arrow-up"></i>
+                        <p id="file-name">Nhấn để tải ảnh hoặc chụp ảnh</p>
+                        <input type="file" id="license-upload" hidden accept="image/*">
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        <div class="booking-footer">
+            <div class="price-summary">
+                <p>Tổng cộng dự tính (<span id="calc-days-text">1</span> ngày)</p>
+                <h2 id="total-price">0 VNĐ</h2>
+            </div>
+
+            <button type="submit" class="btn-confirm">XÁC NHẬN ĐẶT XE NGAY</button>
+
+            <div class="agreement">
+                <input type="checkbox" id="agree-contract">
+                <label for="agree-contract">Tôi cam kết thông tin trên là chính xác và đồng ý với điều khoản.</label>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+<script>
+    // Toàn bộ logic bookingApp của bạn dán ở đây
+    // (Đã tích hợp các ID mới từ giao diện này)
+    const bookingApp = {
+        state: { selectedCar: null, days: 1, totalPrice: 0 },
+        CONFIG: {
+            BANK_ID: "MB",
+            ACCOUNT_NO: "0353979614",
+            ACCOUNT_NAME: "BUI VAN TRANG",
+            DRIVER_PRICE_PER_DAY: 500000,
+            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
+        },
+
+        async init() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const carId = urlParams.get('id') || "1"; // Demo mặc định id 1
+            await this.loadCarData(carId);
+            this.initDatePickers();
+            this.bindEvents();
+        },
+
+        async loadCarData(id) {
+            try {
+                // Giả lập load car data (Thay bằng fetch('cars.json') của bạn)
+                const mockCars = [{id: "1", name: "VinFast VF8", price: 1200000, image_url: "https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=1000"}];
+                this.state.selectedCar = mockCars.find(c => c.id === id);
+                if(this.state.selectedCar) {
+                    document.getElementById('car-name').innerText = this.state.selectedCar.name;
+                    document.getElementById('car-img').src = this.state.selectedCar.image_url;
+                    document.getElementById('car-price-unit').innerText = `Giá gốc: ${this.formatMoney(this.state.selectedCar.price)}/ngày`;
+                }
+            } catch (e) { console.error(e); }
+        },
+
+        initDatePickers() {
+            const opt = { minDate: "today", dateFormat: "d/m/Y", locale: "vn", onChange: () => this.calculateTotal() };
+            flatpickr("#pickup-date", opt);
+            flatpickr("#return-date", opt);
+        },
+
+        bindEvents() {
+            document.getElementById('with-driver').addEventListener('change', () => this.calculateTotal());
+            document.getElementById('license-upload').addEventListener('change', (e) => {
+                if(e.target.files[0]) document.getElementById('file-name').innerText = "Đã chọn: " + e.target.files[0].name;
+            });
+            document.getElementById('rental-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                this.handleBooking();
+            });
+        },
+
+        calculateTotal() {
+            const start = document.getElementById('pickup-date')._flatpickr?.selectedDates[0];
+            const end = document.getElementById('return-date')._flatpickr?.selectedDates[0];
+            const isDriver = document.getElementById('with-driver').checked;
+
+            if (start && end) {
+                const diff = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
+                this.state.days = diff;
+                let total = diff * (this.state.selectedCar?.price || 0);
+                if (isDriver) total += (diff * this.CONFIG.DRIVER_PRICE_PER_DAY);
+                
+                this.state.totalPrice = total;
+                document.getElementById('total-price').innerText = this.formatMoney(total);
+                document.getElementById('calc-days-text').innerText = diff;
+            }
+        },
+
+        formatMoney(amount) { return new Intl.NumberFormat('vi-VN').format(amount) + " VNĐ"; },
+
+        async handleBooking() {
+            if (!document.getElementById('agree-contract').checked) return alert("Vui lòng đồng ý điều khoản!");
+            
+            const isDriver = document.getElementById('with-driver').checked;
+            const file = document.getElementById('license-upload').files.length;
+            if (!isDriver && file === 0) return alert("Tự lái vui lòng tải ảnh bằng lái!");
+
+            alert("Đã gửi yêu cầu đặt xe! Hệ thống đang chuyển hướng...");
+            // Thực hiện tiếp sendToSheet, generateQR như logic cũ của bạn
+        }
+    };
+
+    document.addEventListener('DOMContentLoaded', () => bookingApp.init());
+</script>
+
+</body>
+</html>
