@@ -13,6 +13,7 @@ const bookingApp = {
         ACCOUNT_NO: "0353979614",
         ACCOUNT_NAME: "BUI VAN TRANG",
         DRIVER_PRICE_PER_DAY: 500000,
+        ZALO_URL: "https://zalo.me/0353979614", // Thêm link Zalo của bạn ở đây
         SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
     },
 
@@ -42,7 +43,6 @@ const bookingApp = {
         };
 
         if (typeof flatpickr !== 'undefined') {
-            // Sử dụng ID pickup-date và return-date thống nhất
             flatpickr("#pickup-date", { 
                 ...commonOptions, 
                 onChange: () => this.calculateTotal() 
@@ -95,13 +95,11 @@ const bookingApp = {
 
     // 7. GẮN SỰ KIỆN
     bindEvents() {
-        // Sự kiện khi thay đổi tùy chọn tài xế
         const driverCheckbox = document.getElementById('with-driver');
         if (driverCheckbox) {
             driverCheckbox.addEventListener('change', () => this.calculateTotal());
         }
 
-        // Sự kiện gửi form đặt xe
         const form = document.getElementById('rental-form');
         if (form) {
             form.addEventListener('submit', (e) => {
@@ -154,13 +152,11 @@ const bookingApp = {
         if (daysEl) daysEl.innerText = days;
     },
 
-    // 9. XỬ LÝ ĐẶT XE & THANH TOÁN
+    // 9. XỬ LÝ ĐẶT XE
     async handleBooking() {
-        // Kiểm tra đồng ý điều khoản
         const agreeCheck = document.getElementById('agree-contract');
         if (agreeCheck && !agreeCheck.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
-        // Lấy giá trị nhập liệu
         const fullname = document.getElementById('cust-fullname')?.value.trim();
         const phone = document.getElementById('cust-phone')?.value.trim();
         const cccd = document.getElementById('cust-cccd')?.value.trim();
@@ -171,17 +167,14 @@ const bookingApp = {
         const fileInput = document.getElementById('license-upload');
         const isDriverSelected = document.getElementById('with-driver')?.checked;
 
-        // Kiểm tra thông tin cơ bản
         if (!fullname || !phone || !cccd || !startDate || !endDate) {
             return alert("⚠️ Vui lòng điền đầy đủ thông tin!");
         }
 
-        // Kiểm soát bằng lái: Nếu tự lái (isDriverSelected = false) thì bắt buộc có ảnh
         if (!isDriverSelected && (!fileInput.files || fileInput.files.length === 0)) {
             return alert("⚠️ Vì quý khách chọn tự lái, vui lòng tải lên ảnh Bằng lái xe để xác thực!");
         }
 
-        // Dữ liệu đơn hàng gửi đi
         const orderData = {
             carName: this.state.selectedCar.name,
             custName: fullname,
@@ -192,35 +185,79 @@ const bookingApp = {
             duration: this.state.days + " ngày",
             totalPrice: this.formatMoney(this.state.totalPrice),
             location: location,
-            type: isDriverSelected ? "Thuê kèm tài xế" : "Tự lái",
-            licenseStatus: (fileInput.files && fileInput.files.length > 0) ? "Đã đính kèm ảnh" : "N/A"
+            type: isDriverSelected ? "Thuê kèm tài xế" : "Tự lái"
         };
 
-        // Lưu đơn cho Admin (LocalStorage)
+        // Gửi dữ liệu
         this.saveToAdmin(orderData);
-
-        // Gửi tới Google Sheets
         this.sendToSheet(orderData);
         
-        // Cập nhật trạng thái đơn hàng cục bộ nếu có hàm hỗ trợ
-        if(typeof this.addOrderToLocal === 'function') {
-             this.addOrderToLocal({
-                customer: fullname,
-                product: orderData.carName,
-                range: `${startDate} ➔ ${endDate}`,
-                status: "Chờ duyệt"
-            });
-        }
-
-        // Tạo mã QR Thanh toán
+        // Tạo mã QR và hiển thị Modal Thanh toán
         const memo = `THUE ${this.state.selectedCar.name.substring(0,10)} ${phone}`;
-        this.generateQR(this.state.totalPrice, memo);
-
-        // Đóng giao diện đặt xe nếu có hàm close
-        if(typeof this.closeCar === 'function') this.closeCar();
+        this.generatePaymentQR(this.state.totalPrice, memo, orderData.type);
     },
 
-    // 10. CÁC HÀM BỔ TRỢ
+    // 10. HỆ THỐNG THANH TOÁN QR & XỬ LÝ SAU THANH TOÁN
+    generatePaymentQR(amount, memo, type) {
+        const bank = this.CONFIG;
+        const url = `https://img.vietqr.io/image/${bank.BANK_ID}-${bank.ACCOUNT_NO}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(bank.ACCOUNT_NAME)}`;
+
+        // Hiển thị mã QR vào giao diện modal
+        const qrImg = document.getElementById('qr-code');
+        if (qrImg) qrImg.src = url;
+
+        const finalAmountEl = document.getElementById('payment-final-amount');
+        if (finalAmountEl) finalAmountEl.innerText = this.formatMoney(amount);
+
+        // Bật Modal (Nếu bạn dùng hàm toggleModal riêng)
+        if (typeof this.toggleModal === 'function') {
+            this.toggleModal('payment-modal', true);
+        } else {
+            // Nếu không có hàm toggle, mở link QR dự phòng
+            const confirmPay = confirm(`Đơn hàng đã ghi nhận. Nhấn OK để xem mã QR chuyển khoản.`);
+            if(confirmPay) window.open(url, '_blank');
+        }
+
+        // Xử lý nút XÁC NHẬN THANH TOÁN
+        const oldBtn = document.getElementById('btn-confirm-payment');
+        if (oldBtn) {
+            const newBtn = oldBtn.cloneNode(true);
+            oldBtn.parentNode.replaceChild(newBtn, oldBtn);
+
+            newBtn.onclick = async () => {
+                if (this.state.isLoading) return;
+                this.state.isLoading = true;
+                newBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+
+                try {
+                    // Gọi hàm tạo hợp đồng & chuyển hướng
+                    await this.processContractAndZalo(type);
+
+                    alert("🎉 CẢM ƠN QUÝ KHÁCH!\nHợp đồng đang được xác nhận. Hệ thống đang chuyển hướng tới Zalo...");
+                    
+                    // Cập nhật trạng thái xe nội bộ
+                    if (this.state.selectedCar) this.state.selectedCar.status = 'busy';
+                    
+                    // Chuyển hướng Zalo
+                    window.location.href = this.CONFIG.ZALO_URL;
+
+                } catch (err) {
+                    console.error("Lỗi:", err);
+                    alert("Có lỗi khi xử lý đơn hàng. Vui lòng liên hệ Hotline!");
+                } finally {
+                    this.state.isLoading = false;
+                    newBtn.innerHTML = 'ĐÃ CHUYỂN KHOẢN';
+                }
+            };
+        }
+    },
+
+    // Hàm giả lập tạo hợp đồng và chờ xử lý
+    async processContractAndZalo(type) {
+        return new Promise(resolve => setTimeout(resolve, 1500));
+    },
+
+    // 11. CÁC HÀM BỔ TRỢ
     formatMoney(amount) {
         return new Intl.NumberFormat('vi-VN').format(amount) + " VNĐ";
     },
@@ -248,17 +285,6 @@ const bookingApp = {
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
         currentOrders.push(adminOrder);
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
-    },
-
-    generateQR(amount, memo) {
-        const bank = this.CONFIG;
-        const qrUrl = `https://img.vietqr.io/image/${bank.BANK_ID}-${bank.ACCOUNT_NO}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(bank.ACCOUNT_NAME)}`;
-        
-        const confirmPay = confirm(`Hệ thống đã ghi nhận đơn hàng.\nTổng tiền: ${this.formatMoney(amount)}\nBạn có muốn xem mã QR để thanh toán ngay không?`);
-        if(confirmPay) {
-            window.open(qrUrl, '_blank');
-        }
-        alert("🎉 Đơn hàng đã được gửi! Chúng tôi sẽ liên hệ bạn sớm.");
     }
 };
 
