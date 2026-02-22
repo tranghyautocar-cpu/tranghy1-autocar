@@ -219,7 +219,7 @@ updateAdminStats: function() {
         </div>`;
     }).join('');
 },
-filterCars(seats) {
+ filterCars(seats) {
     if (seats === 'all') {
         this.renderCars(this.state.cars);
     } else {
@@ -276,47 +276,11 @@ filterCars(seats) {
     // 6. XỬ LÝ MỞ FORM ĐẶT (OPEN MODALS)
     // ============================================================
     openCar(id) {
-        const car = this.state.cars.find(c => c.id === id);
-        if (!car) return;
-        this.state.selectedCar = car;
-
-        document.getElementById('d-img').src = car.image_url || car.image;
-        document.getElementById('d-name').innerText = car.name;
-
-        this.toggleModal('modal-car', true);
-        this.updateTotal();
+       window.location.href = `booking-car.html?id=${id}`;
     },
 
  openDriverBooking(id) {
-    // 1. Ép kiểu cả 2 về String để đảm bảo luôn tìm thấy dù id là số hay chữ
-    const driver = this.state.drivers.find(d => String(d.id) === String(id));
-    
-    if (!driver) {
-        console.error("❌ Không tìm thấy tài xế với ID:", id);
-        return;
-    }
-
-    // 2. Lưu tài xế đang chọn vào state
-    this.state.selectedDriver = driver;
-
-    // 3. Đổ dữ liệu an toàn vào giao diện (Dùng Optional Chaining để tránh lỗi name null)
-    const avatarChar = driver.name ? driver.name.trim().split(' ').pop().charAt(0) : '?';
-    
-    const avatarEl = document.getElementById('dr-avatar');
-    const nameEl = document.getElementById('dr-name');
-    const expEl = document.getElementById('dr-exp'); // Thêm dòng này để hiện kinh nghiệm
-
-    if (avatarEl) avatarEl.innerText = avatarChar;
-    if (nameEl) nameEl.innerText = driver.name;
-    if (expEl) expEl.innerText = `${driver.experience || driver.exp || 0} NĂM KINH NGHIỆM`;
-
-    // 4. Reset ngày và tính toán giá mặc định
-    if (document.getElementById('dr-start-date')) document.getElementById('dr-start-date').value = "";
-    if (document.getElementById('dr-end-date')) document.getElementById('dr-end-date').value = "";
-
-    // 5. Hiển thị Modal và cập nhật giá
-    this.toggleModal('modal-driver', true);
-    this.updateDriverTotal();
+  window.location.href = `booking-driver.html?id=${id}`;
 },
     // ============================================================
     // 7. XỬ LÝ DATE & GIÁ (Thêm Validate Ngày)
@@ -1013,31 +977,31 @@ async fetchInitialData() {
         }));
     },
    getFallbackCars: () => 
-    [
-    { id: 1, name: "Toyota Camry 2024", category: "5", price: 1200000, status: "Sẵn sàng", image_url: "images/toyota2024.jpg", desc: "Sedan hạng D sang trọng." },
-    { id: 2, name: "VinFast VF8", category: "5", price: 1500000, status: "Sẵn sàng", image_url: "images/vinvf8.jpg", desc: "Xe điện thông minh." },
-    { id: 3, name: "Hyundai SantaFe", category: "7", price: 1800000, status: "Sẵn sàng", image_url: "images/santafe.jpg", desc: "SUV 7 chỗ gia đình." },
-    { id: 4, name: "Kia Morning", category: "4", price: 600000, status: "Sẵn sàng", image_url: "images/kiamoning.jpg", desc: "Nhỏ gọn, tiết kiệm." },
-    { id: 5, name: "Mazda 3", category: "5", price: 950000, status: "Sẵn sàng", image_url: "images/mazda3.jpg", desc: "Thiết kế trẻ trung." },
-    { id: 6, name: "Mitsubishi Xpander", category: "7", price: 1000000, status: "Sẵn sàng", image_url: "images/xpander.jpg", desc: "Xe 7 chỗ quốc dân." },
-    { id: 7, name: "Mercedes C200", category: "5", price: 2800000, status: "Sẵn sàng", image_url: "images/e200.jpg", desc: "Xe sang đi sự kiện." },
-    { id: 8, name: "Ford Everest", category: "7", price: 2200000, status: "Sẵn sàng", image_url: "images/foreverret.jpg", desc: "SUV mạnh mẽ." },
-    { id: 9, name: "Honda City", category: "5", price: 800000, status: "Sẵn sàng", image_url: "images/hondaciti.jpg", desc: "Bền bỉ, rộng rãi." },
-    { id: 10, name: "Kia Carnival", category: "7", price: 3500000, status: "Sẵn sàng", image_url: "images/kia_carnival.jpg", desc: "Chuyên cơ mặt đất." },
-    { id: 11, name: "Hyundai Accent", category: "5", price: 750000, status: "Sẵn sàng", image_url: "images/huyndai_acen.jpg", desc: "Lựa chọn kinh tế." },
-    { id: 12, name: "BMW 320i", category: "5", price: 3200000, status: "Sẵn sàng", image_url: "images/bmw_320i.jpg", desc: "Đẳng cấp thể thao." },
-    { id: 13, name: "Toyota Fortuner", category: "7", price: 1700000, status: "Sẵn sàng", image_url: "images/toyota_fortune.jpg", desc: "SUV đa dụng." },
-    { id: 14, name: "VinFast VF9", category: "7", price: 2500000, status: "Sẵn sàng", image_url: "images/vin_vf9.jpg", desc: "SUV điện hạng sang." },
-    { id: 15, name: "Kia Soluto", category: "4", price: 550000, status: "Sẵn sàng", image_url: "images/kia_soluto.jpg", desc: "Giá rẻ bất ngờ." },
-    { id: 16, name: "Toyota Vios", category: "5", price: 700000, status: "Sẵn sàng", image_url: "images/vios_2025.jpg", desc: "Xe chạy phố bền bỉ." },
-    { id: 17, name: "Mazda CX-5", category: "5", price: 1300000, status: "Sẵn sàng", image_url: "images/cx5.jpg", desc: "SUV 5 chỗ thời thượng." },
-    { id: 18, name: "Hyundai Tucson", category: "5", price: 1250000, status: "Sẵn sàng", image_url: "images/tucson.jpg", desc: "Thiết kế phá cách." },
-    { id: 19, name: "Toyota Innova", category: "7", price: 1100000, status: "Sẵn sàng", image_url: "images/toyota_2024.jpg", desc: "Xe điện trẻ trung, năng động." },
-    { id: 21, name: "Kia K3", category: "5", price: 900000, status: "Sẵn sàng", image_url: "images/kia_k3.jpg", desc: "Sedan công nghệ ngập tràn." },
-    { id: 22, name: "Honda CR-V", category: "7", price: 1600000, status: "Sẵn sàng", image_url: "images/cr-v.jpg", desc: "An toàn tuyệt đối." },
-    { id: 23, name: "Hyundai i10", category: "4", price: 500000, status: "Sẵn sàng", image_url: "images/hyun_i10.jpg", desc: "Giá thuê tối ưu nhất." },
-    { id: 24, name: "Mercedes E300", category: "5", price: 4500000, status: "Sẵn sàng", image_url: "images/mercedes_e300.jpg", desc: "Đỉnh cao xe hạng sang." },
-    { id: 25, name: "Ford Ranger", category: "5", price: 1400000, status: "Sẵn sàng", image_url: "images/foer_ranger.jpg", desc: "Bán tải đa dụng." }
+  [
+    { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.5L Dynamic Force", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cửa sổ trời", "Ghế da chỉnh điện", "Hệ thống an toàn TSS"] },
+    { "id": 2, "name": "VinFast VF8", "category": "5 chỗ", "price": 1500000, "image_url": "images/vinvf8.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Hỗ trợ lái ADAS", "Trợ lý ảo thông minh", "Pin 82kWh"] },
+    { "id": 3, "name": "Hyundai SantaFe", "category": "7 chỗ", "price": 1800000, "image_url": "images/santafe.jpg", "transmission": "Tự động", "engine": "2.2L Diesel Smartstream", "fuel": "Dầu", "status": "Đang thuê", "features": ["Dẫn động 4 bánh HTRAC", "Loa Harman Kardon", "Cần số nút bấm"] },
+    { "id": 4, "name": "Kia Morning", "category": "4 chỗ", "price": 600000, "image_url": "images/kiamoning.jpg", "transmission": "Số sàn", "engine": "1.25L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gương chiếu hậu chỉnh điện", "Kết nối Bluetooth", "Kích thước nhỏ gọn"] },
+    { "id": 5, "name": "Mazda 3", "category": "5 chỗ", "price": 950000, "image_url": "images/mazda3.jpg", "transmission": "Tự động", "engine": "1.5L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Màn hình HUD", "Thiết kế KODO", "Phanh tay điện tử"] },
+    { "id": 6, "name": "Mitsubishi Xpander", "category": "7 chỗ", "price": 1000000, "image_url": "images/xpander.jpg", "transmission": "Tự động", "engine": "1.5L MIVEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gầm cao 225mm", "Apple CarPlay", "Nội thất rộng rãi"] },
+    { "id": 7, "name": "Mercedes C200", "category": "5 chỗ", "price": 2800000, "image_url": "images/e200.jpg", "transmission": "Tự động", "engine": "1.5L Turbo Mild-Hybrid", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn LED High Performance", "Màn hình 11.9 inch", "Nội thất ốp gỗ"] },
+    { "id": 8, "name": "Ford Everest", "category": "7 chỗ", "price": 2200000, "image_url": "images/foreverret.jpg", "transmission": "Tự động", "engine": "2.0L Bi-Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Dẫn động 4x4", "Cửa sổ trời toàn cảnh", "Hỗ trợ đỗ xe tự động"] },
+    { "id": 9, "name": "Honda City", "category": "5 chỗ", "price": 800000, "image_url": "images/honda_citi.jpg", "transmission": "Tự động", "engine": "1.5L i-VTEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda SENSING", "Lẫy chuyển số", "Chế độ lái tiết kiệm ECON"] },
+    { "id": 10, "name": "Kia Carnival", "category": "7 chỗ", "price": 3500000, "image_url": "images/kia_carnival.jpg", "transmission": "Tự động", "engine": "2.2L Smartstream D", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Cửa lùa điện", "Ghế thương gia", "Màn hình kép 12.3 inch"] },
+    { "id": 11, "name": "Hyundai Accent", "category": "5 chỗ", "price": 750000, "image_url": "images/huyndai_acen.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cảm biến lùi", "Đèn định vị LED", "Điều hòa tự động"] },
+    { "id": 12, "name": "BMW 320i", "category": "5 chỗ", "price": 3200000, "image_url": "images/bmw_320i.jpg", "transmission": "Tự động", "engine": "2.0L TwinPower Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn Adaptive LED", "Live Cockpit Professional", "Dẫn động cầu sau"] },
+    { "id": 13, "name": "Toyota Fortuner", "category": "7 chỗ", "price": 1700000, "image_url": "images/toyota_fortune.jpg", "transmission": "Tự động", "engine": "2.4L Diesel", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khung gầm rời (Body-on-frame)", "7 túi khí", "Bền bỉ cao"] },
+    { "id": 14, "name": "VinFast VF9", "category": "7 chỗ", "price": 2500000, "image_url": "images/vin_vf9.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Massage ghế", "Màn hình 15.6 inch", "Tầm xa 438 km"] },
+    { "id": 15, "name": "Kia Soluto", "category": "4 chỗ", "price": 550000, "image_url": "images/kia_soluto.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Giá thuê rẻ", "Tiết kiệm nhiên liệu", "Cốp rộng"] },
+    { "id": 16, "name": "Toyota Vios", "category": "5 chỗ", "price": 700000, "image_url": "images/vios_2025.jpg", "transmission": "Số sàn", "engine": "1.5L 2NR-FE", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["7 túi khí", "Điều hòa cực mát", "Hệ thống phanh ABS/EBD"] },
+    { "id": 17, "name": "Mazda CX-5", "category": "5 chỗ", "price": 1300000, "image_url": "images/cx5.jpg", "transmission": "Tự động", "engine": "2.0L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Loa Bose", "i-Activsense", "Cốp điện"] },
+    { "id": 18, "name": "Hyundai Tucson", "category": "5 chỗ", "price": 1250000, "image_url": "images/tucson.jpg", "transmission": "Tự động", "engine": "2.0L Nu MPI", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sạc không dây", "Đèn hậu LED Parametric", "Màn hình giải trí lớn"] },
+    { "id": 19, "name": "Toyota Innova", "category": "7 chỗ", "price": 1100000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.0L Dual VVT-i", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Điều hòa 2 dàn lạnh", "Ghế gập linh hoạt", "Chở đồ tốt"] },
+    { "id": 20, "name": "Kia K3", "category": "5 chỗ", "price": 900000, "image_url": "images/kia_k3.jpg", "transmission": "Tự động", "engine": "1.6L Gamma", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sưởi & làm mát ghế", "Cửa sổ trời", "Màn hình 10.25 inch"] },
+    { "id": 21, "name": "Honda CR-V", "category": "7 chỗ", "price": 1600000, "image_url": "images/cr-v.jpg", "transmission": "Tự động", "engine": "1.5L VTEC Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda Sensing", "Camera LaneWatch", "Cốp điện rảnh tay"] },
+    { "id": 22, "name": "Huyndai i10", "category": "4 chỗ", "price": 500000, "image_url": "images/huyn_i10.jpg", "transmission": "Số sàn", "engine": "1.2L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Dễ đỗ xe", "Tiết kiệm xăng", "Bản đồ dẫn đường tích hợp"] },
+    { "id": 23, "name": "Mercedes E300", "category": "5 chỗ", "price": 4500000, "image_url": "images/e300.jpg", "transmission": "Tự động", "engine": "2.0L Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gói AMG Line", "Cửa hít", "Loa Burmester"] },
+    { "id": 24, "name": "Ford Ranger", "category": "5 chỗ", "price": 1400000, "image_url": "images/foer_ranger.jpg", "transmission": "Tự động", "engine": "2.0L Single Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khả năng lội nước 800mm", "Màn hình dọc 10 inch", "Thùng xe rộng"] }
 ]
 };
 document.addEventListener('DOMContentLoaded', () => app.init());
