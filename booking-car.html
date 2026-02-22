@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thanh Toán Thuê Xe - TrangHy</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
@@ -12,142 +12,202 @@
     <style>
         :root {
             --primary: #007bff;
-            --primary-gradient: linear-gradient(90deg, #007bff, #00d1ff);
-            --dark-bg: #0f1014;
-            --card-bg: #1a1c22;
-            --input-bg: #252830;
+            --primary-light: #3399ff;
+            --primary-gradient: linear-gradient(135deg, #007bff, #00d1ff);
+            --dark-bg: #0b0c10;
+            --card-bg: #161b22;
+            --input-bg: #1f242d;
             --text-main: #ffffff;
-            --text-muted: #a0a0a0;
-            --border: #33363f;
-            --success: #2ecc71;
+            --text-muted: #8b949e;
+            --border: #30363d;
+            --success: #238636;
         }
 
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--dark-bg);
             color: var(--text-main);
             margin: 0;
             padding: 20px;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
         }
 
-        /* Container & Hero */
+        /* Nút quay lại */
+        .back-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            color: white;
+            padding: 10px 18px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn:hover {
+            background: var(--primary);
+            border-color: var(--primary);
+            transform: translateX(-5px);
+        }
+
         .booking-container {
-            max-width: 1000px;
+            max-width: 1100px;
             width: 100%;
             background: var(--card-bg);
-            border-radius: 24px;
+            border-radius: 28px;
             overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
             border: 1px solid var(--border);
+            margin-top: 40px;
         }
 
+        /* Hero Section */
         .car-hero-section {
             position: relative;
-            height: 400px;
+            height: 450px;
             width: 100%;
         }
         .car-hero-section img {
             width: 100%; height: 100%; object-fit: cover;
         }
-        .car-hero-section::after {
-            content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 60%;
-            background: linear-gradient(transparent, var(--card-bg));
-        }
-
-        /* Nút xem thông tin xe */
-        .btn-view-specs {
+        .car-info-overlay {
             position: absolute;
-            bottom: 30px;
-            right: 30px;
-            z-index: 10;
-            padding: 12px 20px;
-            background: rgba(255,255,255,0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 50px;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
+            bottom: 0; left: 0; right: 0;
+            padding: 60px 40px 30px;
+            background: linear-gradient(transparent, rgba(22, 27, 34, 1));
         }
-        .btn-view-specs:hover { background: var(--primary); border-color: var(--primary); }
+        .car-badge {
+            position: absolute;
+            top: 30px; left: 40px;
+            background: var(--primary-gradient);
+            padding: 6px 16px;
+            border-radius: 50px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
 
-        /* Khối thông số kỹ thuật (Ẩn mặc định) */
+        /* Thông số xe */
         #car-specs-panel {
             display: none;
-            padding: 30px;
-            background: #20232a;
+            padding: 25px 40px;
+            background: #0d1117;
             border-bottom: 1px solid var(--border);
-            animation: fadeIn 0.4s ease;
+            animation: slideDown 0.4s ease-out;
         }
         .specs-grid {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 20px;
         }
-        .spec-item { text-align: center; }
-        .spec-item i { color: var(--primary); font-size: 1.5rem; margin-bottom: 8px; display: block; }
-        .spec-item span { font-size: 0.8rem; color: var(--text-muted); }
-        .spec-item b { display: block; margin-top: 4px; }
+        .spec-item {
+            background: var(--input-bg);
+            padding: 15px;
+            border-radius: 16px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .spec-item i { color: var(--primary-light); font-size: 1.2rem; margin-bottom: 5px; }
+        .spec-item span { display: block; font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; }
 
-        /* Form Layout */
+        /* Form Content */
         .booking-form-content { padding: 40px; }
-        .form-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; }
+        .form-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 50px; }
         
-        /* Input Styles (Giữ nguyên phong cách của bạn) */
+        h3 { font-size: 1.2rem; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; color: var(--primary-light); }
+
         .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px; }
+        label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 500; }
+        
         input[type="text"], input[type="tel"], select {
-            width: 100%; padding: 14px; background: var(--input-bg);
-            border: 1px solid var(--border); border-radius: 12px; color: white;
+            width: 100%; padding: 14px 18px; 
+            background: var(--input-bg);
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            color: white;
+            font-family: inherit;
+            transition: 0.3s;
+            box-sizing: border-box;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
         }
 
-        /* Modal Thanh Toán */
+        .driver-card {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0, 123, 255, 0.05);
+            padding: 18px; border-radius: 16px;
+            border: 1px dashed var(--primary);
+            margin-top: 10px;
+        }
+
+        /* Footer & Button */
+        .price-summary { margin-bottom: 25px; }
+        .btn-confirm {
+            width: 100%;
+            padding: 20px;
+            background: var(--primary-gradient);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 123, 255, 0.3);
+        }
+        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(0, 123, 255, 0.4); }
+
+        /* Modal */
         .modal {
-            display: none;
-            position: fixed;
+            display: none; position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
+            background: rgba(0,0,0,0.85); backdrop-filter: blur(5px);
+            z-index: 1000; justify-content: center; align-items: center;
         }
         .modal-content {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            border: 1px solid var(--primary);
-        }
-        #qr-code { width: 100%; border-radius: 15px; margin: 20px 0; }
-        .btn-pay-done {
-            width: 100%; padding: 15px; background: var(--success);
-            border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer;
+            background: var(--card-bg); padding: 40px; border-radius: 30px;
+            width: 90%; max-width: 420px; text-align: center;
+            border: 1px solid var(--border);
         }
 
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes slideDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 850px) {
-            .form-grid { grid-template-columns: 1fr; }
+            .form-grid { grid-template-columns: 1fr; gap: 30px; }
+            .car-hero-section { height: 300px; }
             .specs-grid { grid-template-columns: repeat(2, 1fr); }
+            body { padding: 10px; }
         }
     </style>
 </head>
 <body>
+
+<a href="index.html" class="back-btn">
+    <i class="fa-solid fa-arrow-left"></i> Quay lại
+</a>
 
 <div class="booking-container">
     <div class="car-hero-section">
         <div class="car-badge" id="car-category">HẠNG SANG</div>
         <img id="car-img" src="" alt="Car Image">
         <div class="car-info-overlay">
-            <h1 id="car-name">Đang tải...</h1>
-            <p id="car-price-unit" style="color: var(--text-muted); margin: 5px 0 0 0;">Giá: ...</p>
+            <h1 id="car-name" style="margin:0; font-size: 2.5rem;">Đang tải...</h1>
+            <p id="car-price-unit" style="color: var(--text-muted); font-size: 1.1rem; margin-top: 10px;">Giá: ...</p>
         </div>
-        <button class="btn-view-specs" onclick="bookingApp.toggleSpecs()">
+        <button class="btn-view-specs" onclick="bookingApp.toggleSpecs()" style="position: absolute; bottom: 30px; right: 40px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 10px 20px; border-radius: 50px; cursor: pointer; backdrop-filter: blur(10px);">
             <i class="fa-solid fa-circle-info"></i> Thông số xe
         </button>
     </div>
@@ -156,7 +216,7 @@
         <div class="specs-grid">
             <div class="spec-item"><i class="fa-solid fa-gas-pump"></i><span>Nhiên liệu</span><b id="spec-fuel">Xăng</b></div>
             <div class="spec-item"><i class="fa-solid fa-gear"></i><span>Hộp số</span><b id="spec-transmission">Tự động</b></div>
-            <div class="spec-item"><i class="fa-solid fa-engine"></i><span>Động cơ</span><b id="spec-engine">2.0L</b></div>
+            <div class="spec-item"><i class="fa-solid fa-bolt"></i><span>Động cơ</span><b id="spec-engine">2.0L</b></div>
             <div class="spec-item"><i class="fa-solid fa-chair"></i><span>Chỗ ngồi</span><b id="spec-seats">5 Chỗ</b></div>
         </div>
     </div>
@@ -164,7 +224,7 @@
     <form id="rental-form" class="booking-form-content">
         <div class="form-grid">
             <div class="col-left">
-                <h3><i class="fa-solid fa-route"></i> 1. Lịch trình & Dịch vụ</h3>
+                <h3><i class="fa-solid fa-calendar-days"></i> 1. Lịch trình & Dịch vụ</h3>
                 <div class="date-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
                     <div class="input-group">
                         <label>Ngày nhận xe</label>
@@ -182,49 +242,55 @@
                         <option value="Tại Gara">Tại Gara (Miễn phí)</option>
                         <option value="Tại Nhà">Giao xe tận nhà</option>
                     </select>
-                    <input type="text" id="cust-location" placeholder="Địa chỉ cụ thể" style="margin-top: 10px; display: none;">
+                    <input type="text" id="cust-location" placeholder="Nhập địa chỉ nhận xe của bạn" style="margin-top: 15px; display: none;">
                 </div>
 
-                <div class="driver-card" style="display: flex; justify-content: space-between; align-items: center; background: #252830; padding: 15px; border-radius: 12px; border: 1px dashed var(--primary);">
-                    <div>
-                        <i class="fa-solid fa-user-tie" style="color: var(--primary);"></i>
-                        <span style="margin-left: 10px;">Thuê kèm tài xế (+500k)</span>
+                <div class="driver-card">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <i class="fa-solid fa-user-tie" style="font-size: 1.2rem; color: var(--primary);"></i>
+                        <div>
+                            <div style="font-weight: 600; font-size: 0.9rem;">Thuê kèm tài xế</div>
+                            <div style="font-size: 0.75rem; color: var(--text-muted);">+500.000 VNĐ / ngày</div>
+                        </div>
                     </div>
-                    <input type="checkbox" id="with-driver" style="width: 20px; height: 20px;">
+                    <input type="checkbox" id="with-driver" style="width: 22px; height: 22px; cursor: pointer;">
                 </div>
             </div>
 
             <div class="col-right">
-                <h3><i class="fa-solid fa-id-card"></i> 2. Thông tin cá nhân</h3>
+                <h3><i class="fa-solid fa-address-card"></i> 2. Thông tin khách hàng</h3>
                 <div class="input-group">
                     <label>Họ và tên</label>
-                    <input type="text" id="cust-fullname" placeholder="NGUYỄN VĂN A" required>
+                    <input type="text" id="cust-fullname" placeholder="Ví dụ: Nguyễn Văn A" required>
                 </div>
                 <div class="input-group">
                     <label>Số điện thoại</label>
-                    <input type="tel" id="cust-phone" placeholder="09xx xxx xxx" required>
+                    <input type="tel" id="cust-phone" placeholder="Nhập số điện thoại" required>
                 </div>
                 <div class="input-group">
                     <label>Số CCCD</label>
-                    <input type="text" id="cust-cccd" placeholder="Số căn cước" required>
+                    <input type="text" id="cust-cccd" placeholder="Nhập số căn cước" required>
                 </div>
                 <div class="input-group">
-                    <label>Bằng lái (Mặt trước)</label>
-                    <input type="file" id="license-upload" accept="image/*">
+                    <label>Bằng lái xe (Mặt trước)</label>
+                    <input type="file" id="license-upload" accept="image/*" style="padding: 10px;">
                 </div>
             </div>
         </div>
 
-        <div class="booking-footer" style="text-align: center; margin-top: 40px;">
+        <div class="booking-footer" style="text-align: center; margin-top: 50px; border-top: 1px solid var(--border); padding-top: 40px;">
             <div class="price-summary">
-                <p>Tổng cộng (<span id="calc-days-text">1</span> ngày)</p>
-                <h2 id="total-price" style="font-size: 2.5rem; color: var(--primary);">0 VNĐ</h2>
+                <p style="color: var(--text-muted); margin-bottom: 5px;">Tạm tính cho <span id="calc-days-text" style="color: white; font-weight: bold;">1</span> ngày</p>
+                <h2 id="total-price" style="font-size: 3rem; color: var(--primary); margin: 0;">0 VNĐ</h2>
             </div>
-            <button type="submit" class="btn-confirm" style="width: 100%; max-width: 400px; padding: 18px; background: var(--primary-gradient); border: none; border-radius: 12px; color: white; font-weight: bold; cursor: pointer; font-size: 1.1rem;">
-                XÁC NHẬN ĐẶT XE & THANH TOÁN
+            
+            <button type="submit" class="btn-confirm" style="max-width: 500px;">
+                XÁC NHẬN ĐẶT XE NGAY
             </button>
-            <div class="agreement" style="margin-top: 15px; font-size: 0.8rem; color: var(--text-muted);">
-                <input type="checkbox" id="agree-contract"> Tôi đồng ý với chính sách thuê xe của TrangHy.
+            
+            <div style="margin-top: 20px; display: flex; justify-content: center; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--text-muted);">
+                <input type="checkbox" id="agree-contract" required> 
+                <span>Tôi đồng ý với chính sách và điều khoản thuê xe.</span>
             </div>
         </div>
     </form>
@@ -232,21 +298,36 @@
 
 <div id="payment-modal" class="modal">
     <div class="modal-content">
-        <h3 style="color: var(--primary); margin: 0;">QUÉT MÃ THANH TOÁN</h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted);">Chuyển khoản để hoàn tất đơn hàng</p>
-        <img id="qr-code" src="" alt="QR">
         <div style="margin-bottom: 20px;">
-            <p style="margin: 5px 0;">Số tiền: <b id="modal-total-price">0đ</b></p>
-            <p style="font-size: 0.7rem;">Nội dung: <span id="modal-memo" style="color: var(--primary);">...</span></p>
+            <i class="fa-solid fa-qrcode" style="font-size: 2rem; color: var(--primary);"></i>
+            <h3 style="margin: 10px 0 5px 0;">THANH TOÁN ĐẶT CỌC</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Quét mã để hoàn tất thủ tục</p>
         </div>
-        <button class="btn-pay-done" onclick="bookingApp.confirmPayment()">ĐÃ CHUYỂN KHOẢN</button>
-        <p style="margin-top: 15px; font-size: 0.75rem; cursor: pointer;" onclick="document.getElementById('payment-modal').style.display='none'">Để sau</p>
+        
+        <div style="background: white; padding: 15px; border-radius: 20px; display: inline-block;">
+            <img id="qr-code" src="" alt="QR" style="width: 250px; display: block;">
+        </div>
+
+        <div style="margin: 25px 0; text-align: left; background: var(--input-bg); padding: 15px; border-radius: 12px; font-size: 0.9rem;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                <span>Số tiền:</span>
+                <b id="modal-total-price" style="color: var(--primary);">0đ</b>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+                <span>Nội dung:</span>
+                <b id="modal-memo" style="color: var(--primary);">...</b>
+            </div>
+        </div>
+
+        <button class="btn-confirm" onclick="bookingApp.confirmPayment()" style="padding: 15px;">ĐÃ CHUYỂN KHOẢN</button>
+        <p style="margin-top: 20px; font-size: 0.8rem; color: var(--text-muted); cursor: pointer;" onclick="document.getElementById('payment-modal').style.display='none'">Đóng cửa sổ</p>
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
 <script>
+    // Logic JS giữ nguyên và chỉ sửa đổi nhẹ phần hiển thị
     const bookingApp = {
         state: { selectedCar: null, days: 1, totalPrice: 0 },
         CONFIG: {
@@ -278,10 +359,9 @@
                     this.state.selectedCar = car;
                     document.getElementById('car-name').innerText = car.name;
                     document.getElementById('car-img').src = car.image_url;
-                    document.getElementById('car-price-unit').innerText = `Giá gốc: ${this.formatMoney(car.price)}/ngày`;
+                    document.getElementById('car-price-unit').innerText = `Giá thuê: ${this.formatMoney(car.price)} / ngày`;
                     document.getElementById('car-category').innerText = car.category || "HẠNG SANG";
                     
-                    // Cập nhật thông số ẩn
                     document.getElementById('spec-fuel').innerText = car.fuel || "Xăng";
                     document.getElementById('spec-transmission').innerText = car.transmission || "Tự động";
                     document.getElementById('spec-engine').innerText = car.engine || "N/A";
@@ -333,12 +413,9 @@
         formatMoney(amount) { return new Intl.NumberFormat('vi-VN').format(amount) + " VNĐ"; },
 
         handleBooking() {
-            if (!document.getElementById('agree-contract').checked) return alert("Vui lòng đồng ý điều khoản!");
-            
             const phone = document.getElementById('cust-phone').value;
-            const memo = `THUE XE ${this.state.selectedCar.id} ${phone}`;
+            const memo = `DAT XE ${this.state.selectedCar.id} ${phone}`;
             
-            // Hiển thị Modal QR
             document.getElementById('modal-total-price').innerText = this.formatMoney(this.state.totalPrice);
             document.getElementById('modal-memo').innerText = memo;
             
