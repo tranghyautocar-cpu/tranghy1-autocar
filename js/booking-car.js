@@ -185,21 +185,26 @@ const bookingApp = {
 
         this.state.isLoading = true;
         
-        const orderData = {
-            ThoiGian: new Date().toLocaleString('vi-VN'),
-            carName: this.state.selectedCar.name,
-            custName: fullname,
-            phone: phone,
-            cccd: cccd || "N/A",
-            startDate: startDate,
-            endDate: endDate,
-            totalPrice: this.state.totalPrice,
-            location: getValue('cust-location') || "Tại Gara",
-            status: "Chờ duyệt",
-            licenseNo: getValue('cust-gplx') || (isDriverSelected ? "Có tài xế" : "N/A"),
-            licenseRank: getValue('cust-rank') || "N/A",
-            dob: getValue('cust-dob') || "N/A"
-        };
+   const orderData = {
+    ThoiGian: new Date().toLocaleString('vi-VN'),
+    Xe: this.state.selectedCar.name,              // Đổi carName thành Xe
+    Ten: fullname,                                // Đổi custName thành Ten
+    SDT: phone,                                   // Đổi phone thành SDT
+    CCCD: cccd,                                   // Đổi cccd thành CCCD
+    NgayThue: startDate,                          // Đổi startDate thành NgayThue
+    NgayTra: endDate,                             // Đổi endDate thành NgayTra
+    TongTien: this.formatMoney(this.state.totalPrice),
+    
+    // Cột I: Ghi chú
+    DiaChi: location,
+    GhiChu: isDriverSelected ? "Có tài xế" : "Tự lái",
+    
+    // Các cột nâng cấp
+    GPLX: document.getElementById('cust-gplx').value, // Đổi licenseNo thành GPLX
+    Hang: document.getElementById('cust-rank').value, // Đổi licenseRank thành Hang
+    LinkCheck: "https://gplx.gov.vn/",                // Gửi kèm link check
+    NgaySinh: document.getElementById('cust-dob').value
+};
 
         // Gửi dữ liệu đồng thời
         try {

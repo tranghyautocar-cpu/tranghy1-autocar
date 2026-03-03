@@ -440,27 +440,25 @@ updateAdminStats: function() {
     }
     // ------------------------------------------
 
-    // 4. Gom dữ liệu đơn hàng cho User/Sheet
-  const orderData = {
-    ThoiGian: new Date().toLocaleString('vi-VN'), // Cột A
-    carName: this.state.selectedCar.name,         // Cột B
-    custName: fullname,                          // Cột C
-    phone: phone,                                // Cột D
-    cccd: cccd,                                  // Cột E
-    startDate: startDate,                        // Cột F
-    endDate: endDate,                            // Cột G
-    totalPrice: this.formatMoney(this.state.totalPrice), // Cột H
+ const orderData = {
+    ThoiGian: new Date().toLocaleString('vi-VN'),
+    Xe: this.state.selectedCar.name,              // Đổi carName thành Xe
+    Ten: fullname,                                // Đổi custName thành Ten
+    SDT: phone,                                   // Đổi phone thành SDT
+    CCCD: cccd,                                   // Đổi cccd thành CCCD
+    NgayThue: startDate,                          // Đổi startDate thành NgayThue
+    NgayTra: endDate,                             // Đổi endDate thành NgayTra
+    TongTien: this.formatMoney(this.state.totalPrice),
     
-    // Cột I: Ghi chú (Gộp địa chỉ + loại hình thuê)
-    location: `${isDriverSelected ? "[CÓ TÀI]" : "[TỰ LÁI]"} - Nhận tại: ${location}`, 
+    // Cột I: Ghi chú
+    DiaChi: location,
+    GhiChu: isDriverSelected ? "Có tài xế" : "Tự lái",
     
-    status: "Chờ duyệt",                         // Cột J
-    
-    // CÁC PHẦN NÂNG CẤP MỚI KHỚP VỚI CỘT K, L, M, N
-    licenseNo: document.getElementById('cust-gplx').value,    // Cột K (Số GPLX)
-    licenseRank: document.getElementById('cust-rank').value,  // Cột L (Hạng bằng)
-    checkLink: "",                                            // Cột M (Để trống cho Sheets tự nhảy link)
-    dob: document.getElementById('cust-dob').value            // Cột N (Ngày sinh)
+    // Các cột nâng cấp
+    GPLX: document.getElementById('cust-gplx').value, // Đổi licenseNo thành GPLX
+    Hang: document.getElementById('cust-rank').value, // Đổi licenseRank thành Hang
+    LinkCheck: "https://gplx.gov.vn/",                // Gửi kèm link check
+    NgaySinh: document.getElementById('cust-dob').value
 };
 
     // 5. Gom dữ liệu cho Admin (Local Storage)
