@@ -441,19 +441,27 @@ updateAdminStats: function() {
     // ------------------------------------------
 
     // 4. Gom dữ liệu đơn hàng cho User/Sheet
-    const orderData = {
-        carName: this.state.selectedCar.name,
-        custName: fullname,
-        phone: phone,
-        cccd: cccd,
-        startDate: startDate,
-        endDate: endDate,
-        duration: this.state.days + " ngày",
-        totalPrice: this.formatMoney(this.state.totalPrice),
-        location: location,
-        type: isDriverSelected ? "Thuê kèm tài xế" : "Tự lái", // Thêm loại hình
-        licenseStatus: fileInput.files.length > 0 ? "Đã đính kèm ảnh" : "N/A" // Trạng thái ảnh
-    };
+  const orderData = {
+    ThoiGian: new Date().toLocaleString('vi-VN'), // Cột A
+    carName: this.state.selectedCar.name,         // Cột B
+    custName: fullname,                          // Cột C
+    phone: phone,                                // Cột D
+    cccd: cccd,                                  // Cột E
+    startDate: startDate,                        // Cột F
+    endDate: endDate,                            // Cột G
+    totalPrice: this.formatMoney(this.state.totalPrice), // Cột H
+    
+    // Cột I: Ghi chú (Gộp địa chỉ + loại hình thuê)
+    location: `${isDriverSelected ? "[CÓ TÀI]" : "[TỰ LÁI]"} - Nhận tại: ${location}`, 
+    
+    status: "Chờ duyệt",                         // Cột J
+    
+    // CÁC PHẦN NÂNG CẤP MỚI KHỚP VỚI CỘT K, L, M, N
+    licenseNo: document.getElementById('cust-gplx').value,    // Cột K (Số GPLX)
+    licenseRank: document.getElementById('cust-rank').value,  // Cột L (Hạng bằng)
+    checkLink: "",                                            // Cột M (Để trống cho Sheets tự nhảy link)
+    dob: document.getElementById('cust-dob').value            // Cột N (Ngày sinh)
+};
 
     // 5. Gom dữ liệu cho Admin (Local Storage)
     const adminOrder = {
@@ -491,81 +499,38 @@ updateAdminStats: function() {
     this.closeCar();
 },
     async handleDriverBooking() {
-
         if (!document.getElementById('agree-contract-driver')?.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
-
-
-
         const fullname = document.getElementById('dr-cust-fullname').value.trim();
-
         const phone = document.getElementById('dr-cust-phone').value.trim();
-
-        const cccd = document.getElementById('dr-cust-cccd').value.trim();
-
+      const cccd = document.getElementById('dr-cust-cccd').value.trim();
         const startDate = document.getElementById('dr-start-date').value;
-
         const endDate = document.getElementById('dr-end-date').value;
-
-
-
         if (!fullname || !phone || !cccd || !startDate || !endDate) return alert("⚠️ Vui lòng nhập đầy đủ thông tin!");
-
-
-
         // Dữ liệu Google Sheet (Giữ nguyên)
 
         const orderData = {
-
             carName: "TÀI XẾ: " + this.state.selectedDriver.name,
-
             custName: fullname,
-
             phone: phone,
-
             cccd: cccd,
-
             startDate: startDate,
-
             endDate: endDate,
-
             totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-
             location: "Dịch vụ Tài xế riêng"
-
         };
-
-
-
-        // --- [QUAN TRỌNG] THÊM ĐOẠN NÀY ĐỂ GỬI VỀ ADMIN ---
-
         const adminOrder = {
-
-            id: 'TX' + Math.floor(Math.random() * 10000), // Mã đơn TX
-
+          id: 'TX' + Math.floor(Math.random() * 10000), // Mã đơn TX
             customerName: fullname,
-
             customerPhone: phone,
-
             carName: "Tài xế: " + this.state.selectedDriver.name,
-
             date: `${startDate} -> ${endDate}`,
-
             totalPrice: this.formatMoney(this.state.currentPaymentAmount),
-
-            status: 'pending',
-
+          status: 'pending',
             createdAt: new Date().toISOString()
-
         };
-
-
-
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
-
         currentOrders.push(adminOrder);
-
         localStorage.setItem('tranghy_orders', JSON.stringify(currentOrders));
-
         this.sendToSheet(orderData);
         if(typeof this.addOrderToLocal === 'function') {
             this.addOrderToLocal({
@@ -574,82 +539,42 @@ updateAdminStats: function() {
                 range: `${startDate} ➔ ${endDate}`,
                 status: "Chờ duyệt"
             });
-
         }
         const memo = `TAIXE ${this.state.selectedDriver.name.substring(0,5)} ${phone}`;
         this.generatePaymentQR(this.state.currentPaymentAmount, memo, 'taixe');
         this.closeDriver();
-
     },
-
     sendToSheet(data) {
-
         fetch(this.CONFIG.SCRIPT_URL, {
-
             method: 'POST',
-
             mode: 'no-cors',
-
             headers: { 'Content-Type': 'application/json' },
-
             body: JSON.stringify(data)
-
         }).catch(err => console.error("Lỗi gửi đơn:", err));
-
     },
-
-
-
     addOrderToLocal(data) {
-
         const adminList = document.getElementById('admin-order-list');
-
         const driverList = document.getElementById('driver-order-list');
-
-
-
         if (adminList) {
-
             const adminRow = `
-
                 <tr class="hover:bg-blue-50/50 border-b border-slate-50 animate-pulse">
-
                     <td class="px-8 py-5"><p class="font-black text-slate-900 text-sm italic">${data.customer}</p></td>
-
                     <td class="px-8 py-5 font-black text-blue-600 text-xs uppercase italic">${data.product}</td>
-
                     <td class="px-8 py-5 text-xs font-black text-slate-500 italic">${data.range}</td>
-
                     <td class="px-8 py-4"><span class="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-[9px] font-black uppercase">${data.status}</span></td>
-
                 </tr>`;
-
             adminList.insertAdjacentHTML('afterbegin', adminRow);
-
         }
-
-
-
         if (driverList) {
-
             const driverCard = `
-
                 <div class="p-6 bg-white rounded-3xl border-2 border-orange-400 shadow-xl animate-bounce">
-
                     <div class="flex justify-between mb-2"><span class="bg-orange-400 text-white px-2 py-1 rounded text-[9px] font-black uppercase">Đơn mới phân công</span></div>
-
                     <h5 class="text-lg font-black text-slate-900 uppercase italic leading-tight">${data.product}</h5>
-
                     <p class="text-[11px] text-slate-500 font-bold uppercase mt-2">Khách: ${data.customer}</p>
-
                     <p class="text-[10px] text-blue-600 font-black italic mt-1">Lịch: ${data.range}</p>
-
                 </div>`;
-
             driverList.insertAdjacentHTML('afterbegin', driverCard);
-
         }
-
     },
     // ============================================================
     // 9. THANH TOÁN & HỢP ĐỒNG (Đã tích hợp Logic)

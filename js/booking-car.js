@@ -13,7 +13,7 @@ const bookingApp = {
         ACCOUNT_NO: "0353979614",
         ACCOUNT_NAME: "BUI VAN TRANG",
         DRIVER_PRICE_PER_DAY: 500000,
-        ZALO_URL: "https://zalo.me/0353979614", // Thêm link Zalo của bạn ở đây
+        ZALO_URL: "https://zalo.me/0353979614",
         SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
     },
 
@@ -39,10 +39,10 @@ const bookingApp = {
             minDate: "today", 
             dateFormat: "d/m/Y", 
             locale: "vn",
-            disableMobile: "true"
+            disableMobile: true
         };
 
-        if (typeof flatpickr !== 'undefined') {
+        if (window.flatpickr) {
             flatpickr("#pickup-date", { 
                 ...commonOptions, 
                 onChange: () => this.calculateTotal() 
@@ -51,8 +51,10 @@ const bookingApp = {
                 ...commonOptions, 
                 onChange: () => this.calculateTotal() 
             });
-        } else {
-            console.warn("Flatpickr chưa được tải.");
+            // Thêm lịch cho ngày sinh nếu có field
+            if (document.getElementById('cust-dob')) {
+                flatpickr("#cust-dob", { ...commonOptions, minDate: null, maxDate: "today" });
+            }
         }
     },
 
@@ -67,6 +69,7 @@ const bookingApp = {
                 this.renderCarDetail();
             } else {
                 alert("Xe không tồn tại!");
+                window.location.href = 'index.html';
             }
         } catch (error) {
             console.error("Lỗi fetch data:", error);
@@ -76,17 +79,23 @@ const bookingApp = {
     // 6. HIỂN THỊ GIAO DIỆN CHI TIẾT
     renderCarDetail() {
         const car = this.state.selectedCar;
-        document.getElementById('car-name').innerText = car.name;
-        document.getElementById('car-img').src = car.image_url;
-        document.getElementById('car-price').innerText = this.formatMoney(car.price);
-        
-        document.getElementById('spec-fuel').innerText = car.fuel || "Xăng";
-        document.getElementById('spec-transmission').innerText = car.transmission || "Tự động";
-        document.getElementById('spec-engine').innerText = car.engine || "N/A";
-        document.getElementById('spec-seats').innerText = car.category || "5 chỗ";
+        const setText = (id, val) => {
+            const el = document.getElementById(id);
+            if (el) el.innerText = val;
+        };
+
+        setText('car-name', car.name);
+        setText('car-price', this.formatMoney(car.price));
+        setText('spec-fuel', car.fuel || "Xăng");
+        setText('spec-transmission', car.transmission || "Tự động");
+        setText('spec-engine', car.engine || "N/A");
+        setText('spec-seats', car.category || "5 chỗ");
+
+        const imgEl = document.getElementById('car-img');
+        if (imgEl) imgEl.src = car.image_url;
 
         const featuresContainer = document.getElementById('features-list');
-        if (car.features) {
+        if (featuresContainer && car.features) {
             featuresContainer.innerHTML = car.features.map(f => 
                 `<span class="feature-tag"><i class="fa-solid fa-circle-check"></i> ${f}</span>`
             ).join('');
@@ -95,18 +104,13 @@ const bookingApp = {
 
     // 7. GẮN SỰ KIỆN
     bindEvents() {
-        const driverCheckbox = document.getElementById('with-driver');
-        if (driverCheckbox) {
-            driverCheckbox.addEventListener('change', () => this.calculateTotal());
-        }
-
+        document.getElementById('with-driver')?.addEventListener('change', () => this.calculateTotal());
+        
         const form = document.getElementById('rental-form');
-        if (form) {
-            form.addEventListener('submit', (e) => {
-                e.preventDefault();
-                this.handleBooking();
-            });
-        }
+        form?.addEventListener('submit', (e) => {
+            e.preventDefault();
+            this.handleBooking();
+        });
     },
 
     // 8. LOGIC TÍNH TOÁN TỔNG TIỀN
@@ -122,9 +126,8 @@ const bookingApp = {
                 return;
             }
 
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            this.state.days = diffDays <= 0 ? 1 : diffDays;
+            const diffDays = Math.ceil(Math.abs(end - start) / (1000 * 60 * 60 * 24)) || 1;
+            this.state.days = diffDays;
 
             if (!this.state.selectedCar) return;
 
@@ -141,120 +144,102 @@ const bookingApp = {
     },
 
     updatePriceUI(total, days) {
-        const priceEl = document.getElementById('total-price');
-        const modalPriceEl = document.getElementById('modal-total-price');
-        const daysEl = document.getElementById('calc-days-text');
-
         const formattedPrice = this.formatMoney(total);
+        const elIds = {
+            'total-price': `${formattedPrice} (cho ${days} ngày)`,
+            'modal-total-price': formattedPrice,
+            'calc-days-text': days
+        };
 
-        if (priceEl) priceEl.innerText = `${formattedPrice} (cho ${days} ngày)`;
-        if (modalPriceEl) modalPriceEl.innerText = formattedPrice;
-        if (daysEl) daysEl.innerText = days;
+        for (const [id, val] of Object.entries(elIds)) {
+            const el = document.getElementById(id);
+            if (el) el.innerText = val;
+        }
     },
 
     // 9. XỬ LÝ ĐẶT XE
     async handleBooking() {
+        if (this.state.isLoading) return;
+
         const agreeCheck = document.getElementById('agree-contract');
         if (agreeCheck && !agreeCheck.checked) return alert("⚠️ Vui lòng đồng ý điều khoản!");
 
-        const fullname = document.getElementById('cust-fullname')?.value.trim();
-        const phone = document.getElementById('cust-phone')?.value.trim();
-        const cccd = document.getElementById('cust-cccd')?.value.trim();
-        const location = document.getElementById('cust-location')?.value || "Tại Gara";
-        const startDate = document.getElementById('pickup-date')?.value;
-        const endDate = document.getElementById('return-date')?.value;
+        const getValue = (id) => document.getElementById(id)?.value.trim();
         
-        const fileInput = document.getElementById('license-upload');
+        const fullname = getValue('cust-fullname');
+        const phone = getValue('cust-phone');
+        const cccd = getValue('cust-cccd');
+        const startDate = getValue('pickup-date');
+        const endDate = getValue('return-date');
         const isDriverSelected = document.getElementById('with-driver')?.checked;
 
-        if (!fullname || !phone || !cccd || !startDate || !endDate) {
-            return alert("⚠️ Vui lòng điền đầy đủ thông tin!");
+        if (!fullname || !phone || !startDate || !endDate) {
+            return alert("⚠️ Vui lòng điền đầy đủ thông tin nhận xe!");
         }
 
-        if (!isDriverSelected && (!fileInput.files || fileInput.files.length === 0)) {
-            return alert("⚠️ Vì quý khách chọn tự lái, vui lòng tải lên ảnh Bằng lái xe để xác thực!");
+        // Kiểm tra ảnh bằng lái chỉ khi Tự lái
+        const fileInput = document.getElementById('license-upload');
+        if (!isDriverSelected && (!fileInput?.files || fileInput.files.length === 0)) {
+            return alert("⚠️ Vì quý khách chọn tự lái, vui lòng tải lên ảnh Bằng lái xe!");
         }
 
+        this.state.isLoading = true;
+        
         const orderData = {
+            ThoiGian: new Date().toLocaleString('vi-VN'),
             carName: this.state.selectedCar.name,
             custName: fullname,
             phone: phone,
-            cccd: cccd,
+            cccd: cccd || "N/A",
             startDate: startDate,
             endDate: endDate,
-            duration: this.state.days + " ngày",
-            totalPrice: this.formatMoney(this.state.totalPrice),
-            location: location,
-            type: isDriverSelected ? "Thuê kèm tài xế" : "Tự lái"
+            totalPrice: this.state.totalPrice,
+            location: getValue('cust-location') || "Tại Gara",
+            status: "Chờ duyệt",
+            licenseNo: getValue('cust-gplx') || (isDriverSelected ? "Có tài xế" : "N/A"),
+            licenseRank: getValue('cust-rank') || "N/A",
+            dob: getValue('cust-dob') || "N/A"
         };
 
-        // Gửi dữ liệu
-        this.saveToAdmin(orderData);
-        this.sendToSheet(orderData);
-        
-        // Tạo mã QR và hiển thị Modal Thanh toán
-        const memo = `THUE ${this.state.selectedCar.name.substring(0,10)} ${phone}`;
-        this.generatePaymentQR(this.state.totalPrice, memo, orderData.type);
+        // Gửi dữ liệu đồng thời
+        try {
+            this.saveToAdmin(orderData);
+            await this.sendToSheet(orderData); // Sử dụng await để đợi kết quả nếu cần
+            
+            const memo = `THUE ${this.state.selectedCar.name.substring(0,10).toUpperCase()} ${phone}`;
+            this.generatePaymentQR(this.state.totalPrice, memo);
+        } catch (err) {
+            alert("Lỗi khi gửi đơn hàng, vui lòng thử lại!");
+            this.state.isLoading = false;
+        }
     },
 
-    // 10. HỆ THỐNG THANH TOÁN QR & XỬ LÝ SAU THANH TOÁN
-    generatePaymentQR(amount, memo, type) {
+    // 10. HỆ THỐNG THANH TOÁN
+    generatePaymentQR(amount, memo) {
         const bank = this.CONFIG;
         const url = `https://img.vietqr.io/image/${bank.BANK_ID}-${bank.ACCOUNT_NO}-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(bank.ACCOUNT_NAME)}`;
 
-        // Hiển thị mã QR vào giao diện modal
         const qrImg = document.getElementById('qr-code');
         if (qrImg) qrImg.src = url;
 
         const finalAmountEl = document.getElementById('payment-final-amount');
         if (finalAmountEl) finalAmountEl.innerText = this.formatMoney(amount);
 
-        // Bật Modal (Nếu bạn dùng hàm toggleModal riêng)
+        // Hiển thị Modal hoặc thông báo
         if (typeof this.toggleModal === 'function') {
             this.toggleModal('payment-modal', true);
         } else {
-            // Nếu không có hàm toggle, mở link QR dự phòng
-            const confirmPay = confirm(`Đơn hàng đã ghi nhận. Nhấn OK để xem mã QR chuyển khoản.`);
-            if(confirmPay) window.open(url, '_blank');
+            document.getElementById('payment-modal')?.classList.add('active'); // CSS dự phòng
         }
 
-        // Xử lý nút XÁC NHẬN THANH TOÁN
-        const oldBtn = document.getElementById('btn-confirm-payment');
-        if (oldBtn) {
-            const newBtn = oldBtn.cloneNode(true);
-            oldBtn.parentNode.replaceChild(newBtn, oldBtn);
-
-            newBtn.onclick = async () => {
-                if (this.state.isLoading) return;
-                this.state.isLoading = true;
-                newBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
-
-                try {
-                    // Gọi hàm tạo hợp đồng & chuyển hướng
-                    await this.processContractAndZalo(type);
-
-                    alert("🎉 CẢM ƠN QUÝ KHÁCH!\nHợp đồng đang được xác nhận. Hệ thống đang chuyển hướng tới Zalo...");
-                    
-                    // Cập nhật trạng thái xe nội bộ
-                    if (this.state.selectedCar) this.state.selectedCar.status = 'busy';
-                    
-                    // Chuyển hướng Zalo
-                    window.location.href = this.CONFIG.ZALO_URL;
-
-                } catch (err) {
-                    console.error("Lỗi:", err);
-                    alert("Có lỗi khi xử lý đơn hàng. Vui lòng liên hệ Hotline!");
-                } finally {
-                    this.state.isLoading = false;
-                    newBtn.innerHTML = 'ĐÃ CHUYỂN KHOẢN';
-                }
+        // Cài đặt sự kiện nút xác nhận trong modal
+        const confirmBtn = document.getElementById('btn-confirm-payment');
+        if (confirmBtn) {
+            confirmBtn.onclick = () => {
+                alert("🎉 CẢM ƠN QUÝ KHÁCH!\nHệ thống đang chuyển hướng tới Zalo để xác nhận...");
+                window.location.href = this.CONFIG.ZALO_URL;
             };
         }
-    },
-
-    // Hàm giả lập tạo hợp đồng và chờ xử lý
-    async processContractAndZalo(type) {
-        return new Promise(resolve => setTimeout(resolve, 1500));
     },
 
     // 11. CÁC HÀM BỔ TRỢ
@@ -262,25 +247,28 @@ const bookingApp = {
         return new Intl.NumberFormat('vi-VN').format(amount) + " VNĐ";
     },
 
-    sendToSheet(data) {
-        fetch(this.CONFIG.SCRIPT_URL, {
+    async sendToSheet(data) {
+        // Sử dụng return để bên handleBooking có thể bắt lỗi
+        return fetch(this.CONFIG.SCRIPT_URL, {
             method: 'POST',
             mode: 'no-cors',
             body: JSON.stringify(data)
-        }).catch(e => console.error("Lỗi gửi Sheet:", e));
+        }).catch(e => {
+            console.error("Lỗi gửi Sheet:", e);
+            throw e;
+        });
     },
 
     saveToAdmin(data) {
         const adminOrder = {
-            id: 'DH' + Math.floor(Math.random() * 10000),
+            id: 'DH' + Math.floor(1000 + Math.random() * 9000),
             customerName: data.custName,
             customerPhone: data.phone,
             carName: data.carName,
             date: `${data.startDate} -> ${data.endDate}`,
             totalPrice: data.totalPrice,
             status: 'pending',
-            createdAt: new Date().toISOString(),
-            bookingType: data.type
+            createdAt: new Date().toISOString()
         };
         const currentOrders = JSON.parse(localStorage.getItem('tranghy_orders')) || [];
         currentOrders.push(adminOrder);
@@ -288,7 +276,4 @@ const bookingApp = {
     }
 };
 
-// Khởi chạy khi trang sẵn sàng
-document.addEventListener('DOMContentLoaded', () => {
-    bookingApp.init();
-});
+document.addEventListener('DOMContentLoaded', () => bookingApp.init());
