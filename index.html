@@ -23,157 +23,77 @@
         --dark: #0f172a; 
         --bg: #fdfdfe; 
         --accent: #3b82f6;
-        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    /* 1. RESET & LAYOUT CHUẨN */
-    * {
-        box-sizing: border-box;
-        -webkit-tap-highlight-color: transparent;
+    /* 1. SỬA LỖI KHOẢNG CÁCH HERO SECTION (Ảnh image_3840b5) */
+    header {
+        padding: 120px 0 80px 0 !important; /* Tăng khoảng cách trên dưới để chữ "Lái phong cách" nổi bật */
     }
 
-    body { 
-        font-family: 'Plus Jakarta Sans', sans-serif; 
-        background-color: var(--bg); 
-        color: var(--dark);
-        scroll-behavior: smooth;
-        padding-top: 85px; /* Tăng nhẹ để cân bằng với Nav */
-        overflow-x: hidden;
+    .hero-title {
+        line-height: 1.1;
+        margin-bottom: 24px; /* Khoảng cách giữa tiêu đề và mô tả */
     }
 
-    .container {
-        max-width: 1240px !important; /* Tăng nhẹ để không gian thở tốt hơn */
-        margin: 0 auto;
-        padding: 0 24px;
-        width: 100%;
-    }
-
-    /* 2. NAVIGATION (GLASSMORPHISM) */
-    nav {
-        position: fixed !important;
-        top: 0; left: 0; width: 100%;
-        z-index: 1000;
-        background: rgba(255, 255, 255, 0.75) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(15, 23, 42, 0.05);
-        height: 85px;
-        display: flex;
-        align-items: center;
-    }
-
-    /* 3. CARD NÂNG CẤP (LUXURY LOOK) */
-    .car-card, .driver-card { 
+    /* 2. SỬA THẺ XE - GIỐNG ẢNH MẪU (image_3861c4) */
+    .car-card { 
         background: white;
-        border-radius: 2.5rem;
-        transition: var(--transition);
-        border: 1px solid rgba(15, 23, 42, 0.05);
-        overflow: hidden;
-        position: relative;
+        border-radius: 32px !important; /* Bo tròn mạnh như trong ảnh */
+        padding: 16px; /* Tạo khoảng trống giữa mép thẻ và nội dung bên trong */
+        transition: all 0.3s ease;
+        border: 1px solid #f1f5f9;
+        margin-bottom: 24px; /* Khoảng cách giữa các hàng xe */
     }
 
-    .car-card:hover { 
-        transform: translateY(-12px) scale(1.02);
-        box-shadow: 0 40px 80px -15px rgba(15, 23, 42, 0.12);
-        border-color: var(--accent);
-    }
-
-    /* Hiệu ứng bóng cho hình ảnh trong card */
     .car-card img {
-        transition: var(--transition);
-    }
-    .car-card:hover img {
-        transform: scale(1.1);
+        border-radius: 24px !important; /* Bo góc ảnh bên trong thẻ */
+        margin-bottom: 20px; /* Khoảng cách từ ảnh đến tên xe */
     }
 
-    /* 4. BUTTONS & INTERACTION */
-    .btn-gradient-blue {
-        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-        transition: var(--transition);
-        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .btn-gradient-blue:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.5);
-    }
-
-    .btn-gradient-blue:active {
-        transform: scale(0.96);
-    }
-
-    /* 5. MODAL SYSTEM (TỐI ƯU HIỂN THỊ) */
-    #modal-car, #modal-driver, #payment-modal {
-        display: none;
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        background: rgba(15, 23, 42, 0.6);
-        backdrop-filter: blur(8px);
-        padding: 20px;
-    }
-
-    .modal-active {
-        display: flex !important;
-        animation: modalFadeIn 0.3s ease;
-    }
-
-    @keyframes modalFadeIn {
-        from { opacity: 0; transform: scale(0.9); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* 6. STATUS TAGS */
-    .is-busy {
-        filter: grayscale(0.5) !important;
-        pointer-events: none !important;
-    }
-    
-    .is-busy::after {
-        content: 'ĐÃ ĐƯỢC ĐẶT';
-        position: absolute;
-        top: 20px; right: -30px;
-        background: #ef4444;
-        color: white;
-        padding: 5px 40px;
+    .car-card h3 {
+        margin-bottom: 12px;
         font-weight: 800;
-        font-size: 10px;
-        transform: rotate(45deg);
-        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
-        z-index: 20;
+        font-style: italic; /* Theo style ảnh mẫu "TOYOTA CAMRY 2024" */
     }
 
-    /* 7. SCROLLBAR TÙY CHỈNH */
-    ::-webkit-scrollbar {
-        width: 8px;
-    }
-    ::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-    ::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 10px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-        background: var(--primary);
+    /* 3. Ô TÌM KIẾM & TAB (image_36f5a6) */
+    .search-container {
+        margin: 40px 0 !important; /* Nới rộng khoảng cách giữa thanh search và danh sách xe */
     }
 
-    /* 8. HIỆU ỨNG CHỮ BÓNG BẨY */
-    .shiny-text {
-        background: linear-gradient(120deg, var(--dark) 0%, var(--primary) 50%, var(--dark) 100%);
-        background-size: 200% auto;
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        animation: shine 3s linear infinite;
+    input[type="text"], .input-field {
+        padding: 18px 25px !important; /* Làm ô nhập liệu dày dặn hơn */
+        border-radius: 99px !important; /* Bo tròn hoàn toàn */
+        border: 1px solid #e2e8f0;
+        background-color: #f8fafc;
     }
 
-    @keyframes shine {
-        to { background-position: 200% center; }
+    /* 4. FIX MODAL & INPUT (image_3a20f6) */
+    .modal-content {
+        padding: 40px !important; /* Tăng padding để nội dung trong modal không bị sát mép */
+        border-radius: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px; /* Khoảng cách giữa các ô nhập liệu (Ngày sinh, GPLX...) */
+    }
+
+    /* 5. NÚT LIÊN HỆ VIP (image_36f5fc) */
+    .vip-contact-container {
+        bottom: 40px !important;
+        right: 40px !important;
+        gap: 15px !important;
+    }
+
+    /* FIX LỖI "ĐÃ ĐƯỢC ĐẶT LỊCH" */
+    .is-busy::after {
+        content: 'HẾT XE';
+        top: 20px; 
+        right: 20px;
+        padding: 8px 16px;
+        font-size: 11px;
+        border-radius: 12px;
+        /* Xóa bỏ các thuộc tính gây tràn lề nếu có */
     }
 </style>
   
