@@ -16,87 +16,210 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
     <style>
-    :root { 
-        --primary: #2563eb; 
-        --primary-dark: #1a4bd3;
-        --dark: #0f172a; 
-        --bg: #fdfdfe; 
-        --accent: #3b82f6;
-    }
+        :root { 
+            --primary: #2563eb; 
+            --primary-dark: #1a4bd3;
+            --dark: #0f172a; 
+            --bg: #fdfdfe; 
+            --accent: #3b82f6;
+        }
 
-    /* 1. SỬA LỖI KHOẢNG CÁCH HERO SECTION (Ảnh image_3840b5) */
-    header {
-        padding: 120px 0 80px 0 !important; /* Tăng khoảng cách trên dưới để chữ "Lái phong cách" nổi bật */
-    }
+        /* Lớp tạo khoảng cách lề chuẩn */
+        .container {
+            max-width: 1200px !important;
+            margin-left: auto;
+            margin-right: auto;
+            padding-left: 20px;
+            padding-right: 20px;
+            width: 100%;
+        }
 
-    .hero-title {
-        line-height: 1.1;
-        margin-bottom: 24px; /* Khoảng cách giữa tiêu đề và mô tả */
-    }
+        /* Đảm bảo các thành phần không bị tràn lề */
+        header, main, section {
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark);
+            scroll-behavior: smooth;
+            padding-top: 80px; /* Tránh nội dung bị đè bởi Header cố định */
+        }
 
-    /* 2. SỬA THẺ XE - GIỐNG ẢNH MẪU (image_3861c4) */
-    .car-card { 
-        background: white;
-        border-radius: 32px !important; /* Bo tròn mạnh như trong ảnh */
-        padding: 16px; /* Tạo khoảng trống giữa mép thẻ và nội dung bên trong */
-        transition: all 0.3s ease;
-        border: 1px solid #f1f5f9;
-        margin-bottom: 24px; /* Khoảng cách giữa các hàng xe */
-    }
+        nav {
+            position: fixed !important;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
 
-    .car-card img {
-        border-radius: 24px !important; /* Bo góc ảnh bên trong thẻ */
-        margin-bottom: 20px; /* Khoảng cách từ ảnh đến tên xe */
-    }
+        /* FIX MODAL: Ẩn triệt để khi không sử dụng */
+        #modal-car, #modal-driver, #payment-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
 
-    .car-card h3 {
-        margin-bottom: 12px;
-        font-weight: 800;
-        font-style: italic; /* Theo style ảnh mẫu "TOYOTA CAMRY 2024" */
-    }
+        .modal-active {
+            display: flex !important;
+        }
 
-    /* 3. Ô TÌM KIẾM & TAB (image_36f5a6) */
-    .search-container {
-        margin: 40px 0 !important; /* Nới rộng khoảng cách giữa thanh search và danh sách xe */
-    }
+        .car-card, .driver-card { 
+            background: white;
+            border-radius: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            overflow: hidden;
+            cursor: pointer;
+        }
 
-    input[type="text"], .input-field {
-        padding: 18px 25px !important; /* Làm ô nhập liệu dày dặn hơn */
-        border-radius: 99px !important; /* Bo tròn hoàn toàn */
-        border: 1px solid #e2e8f0;
-        background-color: #f8fafc;
-    }
+        .car-card:hover { 
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.08);
+            border-color: var(--accent);
+        }
 
-    /* 4. FIX MODAL & INPUT (image_3a20f6) */
-    .modal-content {
-        padding: 40px !important; /* Tăng padding để nội dung trong modal không bị sát mép */
-        border-radius: 28px;
-    }
+        .btn-gradient-blue {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
+            cursor: pointer;
+        }
 
-    .form-group {
-        margin-bottom: 20px; /* Khoảng cách giữa các ô nhập liệu (Ngày sinh, GPLX...) */
-    }
+        .btn-gradient-blue:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.4);
+        }
 
-    /* 5. NÚT LIÊN HỆ VIP (image_36f5fc) */
-    .vip-contact-container {
-        bottom: 40px !important;
-        right: 40px !important;
-        gap: 15px !important;
-    }
+        .is-busy {
+            filter: grayscale(0.9) opacity(0.5) !important;
+            pointer-events: none !important;
+            position: relative;
+        }
+       
+        .is-busy::after {
+            content: 'ĐÃ ĐƯỢC ĐẶT LỊCH';
+            position: absolute;
+            top: 25px; right: 25px;
+            background: #ef4444;
+            color: #fff;
+            padding: 6px 14px;
+            font-weight: 800;
+            font-size: 9px;
+            border-radius: 99px;
+            letter-spacing: 1px;
+            z-index: 20;
+        }
 
-    /* FIX LỖI "ĐÃ ĐƯỢC ĐẶT LỊCH" */
-    .is-busy::after {
-        content: 'HẾT XE';
-        top: 20px; 
-        right: 20px;
-        padding: 8px 16px;
-        font-size: 11px;
-        border-radius: 12px;
-        /* Xóa bỏ các thuộc tính gây tràn lề nếu có */
-    }
-</style>
-  
+        .text-luxury {
+            background: linear-gradient(to right, #0f172a, #2563eb);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .terms-scroll::-webkit-scrollbar { width: 4px; }
+        .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .vip-contact-container {
+            position: fixed !important;
+            bottom: 30px !important;
+            right: 30px !important;
+            z-index: 999999 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            align-items: flex-end !important;
+        }
+
+        .vip-btn {
+            width: 60px !important;
+            height: 60px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            position: relative !important;
+            text-decoration: none !important;
+        }
+
+        .icon-box {
+            width: 60px !important;
+            height: 60px !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            position: relative !important;
+            z-index: 5 !important;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .fb-vip .icon-box { background: #1877F2 !important; color: white !important; font-size: 26px !important; }
+        .zalo-vip .icon-box { background: #0068ff !important; color: white !important; font-size: 26px !important; }
+
+        .vip-pulse {
+            position: absolute !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: 60px !important;
+            height: 60px !important;
+            margin-top: -30px !important;
+            margin-left: -30px !important;
+            border-radius: 50% !important;
+            z-index: 1 !important;
+            pointer-events: none !important;
+            animation: vip-pulse-ring-new 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite !important;
+        }
+
+        .fb-vip .vip-pulse { background: rgba(24, 119, 242, 0.7) !important; }
+        .zalo-vip .vip-pulse { background: rgba(0, 104, 255, 0.7) !important; }
+
+        @keyframes vip-pulse-ring-new {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(2.2); opacity: 0; }
+        }
+
+        .btn-label {
+            position: absolute !important;
+            right: 75px !important;
+            background: rgba(0, 0, 0, 0.8) !important;
+            color: white !important;
+            padding: 8px 15px !important;
+            border-radius: 20px !important;
+            font-size: 13px !important;
+            font-weight: bold !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            white-space: nowrap !important;
+            transition: all 0.3s ease !important;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
+        }
+        .vip-btn:hover .btn-label {
+            opacity: 1 !important;
+            visibility: visible !important;
+            right: 80px !important;
+        }
+
+        .vip-btn:hover .icon-box {
+            transform: scale(1.1) rotate(360deg) !important;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
