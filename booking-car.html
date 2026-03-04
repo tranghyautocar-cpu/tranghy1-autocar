@@ -97,6 +97,10 @@
         }
         input:focus, select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
 
+        /* Style cho Picker Ngày Sinh nâng cấp */
+        .flatpickr-current-month .flatpickr-monthDropdown-months { font-weight: 700 !important; }
+        .cur-year { font-weight: 700 !important; color: var(--primary) !important; }
+
         .driver-card {
             display: flex; justify-content: space-between; align-items: center;
             background: #eff6ff; padding: 20px; border-radius: 18px;
@@ -287,7 +291,6 @@
             ACC_NAME: "BUI VAN TRANG",
             DRIVER_FEE: 500000,
             ZALO: "https://zalo.me/0353979614",
-            // Đảm bảo Script URL này đã được Deploy chế độ Anyone
             SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
         },
 
@@ -328,8 +331,20 @@
             });
             const r = flatpickr("#return-date", { ...common, minDate: "today", onChange: () => this.calc() });
             
-            // Picker Ngày sinh (Giới hạn tối đa là năm 2008 - đủ 18 tuổi)
-            flatpickr("#cust-dob", { ...common, maxDate: "01/01/2008", defaultDate: "01/01/1995" });
+            // --- NÂNG CẤP CHỌN NĂM SINH NHANH ---
+            flatpickr("#cust-dob", { 
+                ...common, 
+                maxDate: "today", 
+                defaultDate: "01/01/1995",
+                monthSelectorType: "dropdown", // Cho phép chọn tháng từ danh sách thả xuống
+                onReady: function(selectedDates, dateStr, instance) {
+                    // Biến ô hiển thị năm thành dropdown hoặc cho phép nhập/cuộn nhanh
+                    const yearInput = instance.calendarContainer.querySelector(".numInput.cur-year");
+                    if (yearInput) {
+                        yearInput.removeAttribute("readonly");
+                    }
+                }
+            });
         },
 
         bindEvents() {
@@ -342,10 +357,8 @@
             };
             document.getElementById('rental-form').onsubmit = (e) => { e.preventDefault(); this.submit(); };
             
-            // Tự động viết hoa tên
             document.getElementById('cust-fullname').oninput = (e) => { e.target.value = e.target.value.toUpperCase(); };
             
-            // Chỉ cho nhập số vào các ô định danh
             ['cust-phone', 'cust-cccd', 'cust-license-no'].forEach(id => {
                 document.getElementById(id).oninput = (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); };
             });
@@ -384,12 +397,10 @@
                 NgayTra: document.getElementById('return-date').value,
                 DiaChi: document.getElementById('cust-location').value || "Tại Gara",
                 TongTien: this.fmt(this.state.total),
-                GhiChu: document.getElementById('with-driver').checked ? "THUÊ TÀI XẾ" : "TỰ LÁI",
-                LinkCheck: "https://gplx.gov.vn/" // Link tra cứu sẵn cho admin
+                GhiChu: document.getElementById('with-driver').checked ? "THUÊ TÀI XẾ" : "TỰ LÁI"
             };
 
             try {
-                // Gửi dữ liệu qua Google Sheets (No-Cors)
                 fetch(this.CONFIG.SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
@@ -397,13 +408,11 @@
                 });
             } catch(e) { console.error(e); }
 
-            // Cập nhật thông tin Modal
             const memo = `DAT XE ${this.state.car.id} ${payload.SDT}`;
             document.getElementById('m-car').innerText = payload.Xe;
             document.getElementById('m-total').innerText = payload.TongTien;
             document.getElementById('m-memo').innerText = memo;
             
-            // QR Code
             document.getElementById('qr-code').src = `https://img.vietqr.io/image/${this.CONFIG.BANK_ID}-${this.CONFIG.ACC_NO}-compact2.png?amount=${this.state.total}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(this.CONFIG.ACC_NAME)}`;
             
             document.getElementById('payment-modal').style.display = 'flex';
