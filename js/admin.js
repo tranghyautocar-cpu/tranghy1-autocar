@@ -1,61 +1,73 @@
-// LINK GOOGLE SCRIPT CỦA BẠN (Cái link bạn vừa tìm thấy lúc nãy)
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
+
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbw76mlpSoJlip6iFAncy_fUj7GgVOHJ4dK_CEOGBXbgljweNA6-UYybQlQvVSjWpwfI/exec';
 async function loadRealDashboard() {
+    const revenueEl = document.getElementById('stat-revenue');
+    const ordersEl = document.getElementById('stat-orders');
+
     try {
         console.log("⏳ Đang kết nối Google Sheet...");
         
-        // 1. Lấy dữ liệu Đơn hàng từ Google Sheet
+        // Trạng thái chờ trong khi tải dữ liệu
+        if (revenueEl) revenueEl.innerText = "Đang tính...";
+        if (ordersEl) ordersEl.innerText = "...";
+
+        // Gửi yêu cầu lấy dữ liệu
         const response = await fetch(SCRIPT_URL);
+        if (!response.ok) throw new Error("Không thể kết nối với Script URL");
+        
         const data = await response.json(); 
 
-        console.log("✅ Đã lấy được:", data.length, "đơn hàng");
-
-        // 2. Tính toán số liệu
-        let totalOrders = data.length; // Tổng số đơn
-        let totalRevenue = 0;          // Tổng tiền
-
-        data.forEach(order => {
-            // Xử lý tiền: Xóa chữ "đ", xóa dấu chấm/phẩy để thành số
-            // Ví dụ: "1.500.000đ" -> 1500000
-            let rawPrice = order.price ? order.price.toString() : "0";
-            let cleanPrice = rawPrice.replace(/[^\d]/g, ''); 
-            totalRevenue += parseInt(cleanPrice) || 0;
+        const validOrders = data.filter(order => order['tổng tiền'] || order['tên dịch vụ']);
+        
+        let totalRevenue = 0;
+        validOrders.forEach(order => {
+            // Lấy giá trị từ cột 'tổng tiền', xóa ký tự 'đ', '.', ',' để chuyển về số
+            let priceStr = String(order['tổng tiền'] || "0");
+            let cleanPrice = parseInt(priceStr.replace(/[^\d]/g, '')) || 0;
+            totalRevenue += cleanPrice;
         });
 
-        // 3. Hiển thị lên HTML (Dựa theo ID bạn đã đặt trong code)
-        
-        // Cập nhật DOANH THU (id="stat-revenue")
-        const revenueEl = document.getElementById('stat-revenue');
-        if (revenueEl) {
-            // Định dạng tiền Việt: 134.000.000 vnđ
-            revenueEl.innerHTML = new Intl.NumberFormat('vi-VN').format(totalRevenue) + ' <span class="text-sm text-slate-400 font-medium">vnđ</span>';
-        }
+        console.log(`✅ Thành công: Đã nạp ${validOrders.length} đơn hàng.`);
 
-        // Cập nhật ĐƠN ĐẶT XE (id="stat-orders")
-        const ordersEl = document.getElementById('stat-orders');
+        // HIỂN THỊ LÊN GIAO DIỆN
+        if (revenueEl) {
+            // Định dạng tiền Việt: ví dụ 120.000.000 vnđ
+            revenueEl.innerHTML = new Intl.NumberFormat('vi-VN').format(totalRevenue) + 
+                ' <span class="text-xs text-slate-400 font-medium">vnđ</span>';
+        }
         if (ordersEl) {
-            ordersEl.innerText = totalOrders;
+            ordersEl.innerText = validOrders.length;
         }
 
     } catch (error) {
-        console.error("❌ Lỗi lấy dữ liệu:", error);
-        // Nếu lỗi thì giữ nguyên số 0 hoặc báo lỗi
+        console.error("❌ Lỗi Google Sheet:", error);
+        if (revenueEl) revenueEl.innerText = "Lỗi nạp";
+        if (ordersEl) ordersEl.innerText = "!";
+    }
+}
+async function initAdminSystem() {
+    // 1. Nạp thống kê từ Google Sheet
+    loadRealDashboard();
+
+    // 2. Nạp số lượng xe từ file cars.json (nếu có)
+    try {
+        const resCars = await fetch('cars.json');
+        if (resCars.ok) {
+            const cars = await resCars.json();
+            const carStat = document.getElementById('stat-cars');
+            if (carStat) carStat.innerText = cars.length;
+        }
+    } catch (e) { 
+        console.warn("Chưa tìm thấy file cars.json, số lượng xe sẽ giữ mặc định."); 
+    }
+
+    // 3. Nạp số lượng tài xế (Lấy từ LocalStorage hoặc mặc định là 5)
+    const drivers = JSON.parse(localStorage.getItem('drivers_data')) || [];
+    const driverStat = document.getElementById('stat-drivers');
+    if (driverStat) {
+        driverStat.innerText = drivers.length > 0 ? drivers.length : "5";
     }
 }
 
-// 4. Gọi hàm này chạy ngay khi mở trang Admin
-document.addEventListener('DOMContentLoaded', () => {
-    loadRealDashboard();
-    
-    // Nếu muốn tự động cập nhật số Tổng xe và Tài xế từ file json thì thêm đoạn này:
-    fetch('cars.json').then(res => res.json()).then(cars => {
-        if(document.getElementById('stat-cars')) {
-            document.getElementById('stat-cars').innerText = cars.length;
-        }
-    });
-    
-    // (Giả lập số tài xế vì chưa có file drivers.json, hoặc set cứng)
-    if(document.getElementById('stat-drivers')) {
-        document.getElementById('stat-drivers').innerText = "5"; 
-    }
-});
+// Lắng nghe sự kiện trang web đã sẵn sàng để chạy code
+document.addEventListener('DOMContentLoaded', initAdminSystem);

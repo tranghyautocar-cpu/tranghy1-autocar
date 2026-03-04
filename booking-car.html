@@ -135,7 +135,8 @@
             .form-grid { grid-template-columns: 1fr; gap: 30px; }
             .specs-grid { grid-template-columns: repeat(2, 1fr); padding: 20px; }
             .car-hero-section { height: 250px; }
-            .total-price-tag { font-size: 2rem; }
+            .total-price-tag { font-size: 2.2rem; }
+            body { padding: 10px; }
         }
     </style>
 </head>
@@ -146,9 +147,9 @@
 <div class="booking-container">
     <div class="car-hero-section">
         <div class="car-badge" id="car-category">LUXURY</div>
-        <img id="car-img" src="https://images.unsplash.com/photo-1555215695-3004980ad54e?q=80&w=2070" alt="Car Image">
+        <img id="car-img" src="" alt="Car Image">
         <div class="car-info-overlay">
-            <h1 id="car-name" style="margin:0; font-size: 2.5rem; font-weight: 800;">Đang tải xe...</h1>
+            <h1 id="car-name" style="margin:0; font-size: 2.5rem; font-weight: 800;">Đang tải...</h1>
             <p id="car-price-unit" style="color: #cbd5e1; font-size: 1.1rem; margin-top: 8px;">-- / ngày</p>
         </div>
     </div>
@@ -179,9 +180,9 @@
                     <label>Hình thức nhận xe</label>
                     <select id="location-select">
                         <option value="Tại Gara">Nhận xe tại Gara (Miễn phí)</option>
-                        <option value="Tại Nhà">Giao xe tận nơi (Yêu cầu nhập địa chỉ)</option>
+                        <option value="Tại Nhà">Giao xe tận nơi (Phí thỏa thuận)</option>
                     </select>
-                    <input type="text" id="cust-location" placeholder="Số nhà, tên đường, phường/xã..." style="margin-top: 15px; display: none;">
+                    <input type="text" id="cust-location" placeholder="Nhập địa chỉ nhận xe..." style="margin-top: 15px; display: none;">
                 </div>
 
                 <div class="driver-card">
@@ -199,12 +200,19 @@
                     <label>Họ và tên (In hoa có dấu)</label>
                     <input type="text" id="cust-fullname" placeholder="VÍ DỤ: BÙI VĂN TRANG" style="text-transform: uppercase;" required>
                 </div>
-                <div class="input-group">
-                    <label>Số điện thoại Zalo</label>
-                    <input type="tel" id="cust-phone" placeholder="Nhập số điện thoại" pattern="[0-9]{10}" maxlength="10" required>
+                
+                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 15px;">
+                    <div class="input-group">
+                        <label>Số điện thoại Zalo</label>
+                        <input type="tel" id="cust-phone" placeholder="Số điện thoại" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Ngày sinh</label>
+                        <input type="text" id="cust-dob" placeholder="Chọn ngày" required>
+                    </div>
                 </div>
                 
-                <div style="display: grid; grid-template-columns: 1fr 2.5fr; gap: 15px;">
+                <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 15px;">
                     <div class="input-group">
                         <label>Hạng GPLX</label>
                         <select id="cust-license-type">
@@ -214,18 +222,14 @@
                         </select>
                     </div>
                     <div class="input-group">
-                        <label>Số GPLX (12 chữ số)</label>
-                        <input type="text" id="cust-license-no" placeholder="Số trên thẻ nhựa" pattern="[0-9]{12}" maxlength="12" required>
+                        <label>Số GPLX (12 số)</label>
+                        <input type="text" id="cust-license-no" placeholder="Nhập 12 số GPLX" pattern="[0-9]{12}" maxlength="12" required>
                     </div>
                 </div>
 
                 <div class="input-group">
                     <label>Số CCCD / Định danh</label>
                     <input type="text" id="cust-cccd" placeholder="Nhập 12 số CCCD" pattern="[0-9]{12}" maxlength="12" required>
-                </div>
-                <div style="background: #fffbeb; padding: 12px; border-radius: 12px; border: 1px solid #fef3c7; display: flex; gap: 10px;">
-                    <i class="fa-solid fa-shield-halved" style="color: #d97706; margin-top: 3px;"></i>
-                    <span style="font-size: 0.75rem; color: #92400e; font-weight: 600;">Thông tin sẽ được đối soát tự động với dữ liệu Cục Đường Bộ để đảm bảo tính pháp lý.</span>
                 </div>
             </div>
         </div>
@@ -237,7 +241,7 @@
             <button type="submit" class="btn-confirm" id="submit-btn">TIẾN HÀNH ĐẶT CỌC NGAY</button>
             <div style="margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px;">
                 <input type="checkbox" id="agree" required checked style="width: 18px; height: 18px;">
-                <label for="agree" style="margin: 0; font-size: 0.8rem; cursor: pointer;">Tôi cam kết các thông tin trên là chính xác tuyệt đối.</label>
+                <label for="agree" style="margin: 0; font-size: 0.8rem; cursor: pointer;">Tôi cam kết các thông tin trên là chính xác.</label>
             </div>
         </div>
     </form>
@@ -245,7 +249,7 @@
 
 <div id="payment-modal" class="modal">
     <div class="modal-content">
-        <h2 style="margin: 0 0 25px; font-weight: 800; color: var(--text-main);">XÁC NHẬN THANH TOÁN</h2>
+        <h2 style="margin: 0 0 25px; font-weight: 800; color: var(--text-main);">XÁC NHẬN ĐẶT CỌC</h2>
         
         <div style="background: white; padding: 15px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); display: inline-block; margin-bottom: 25px; border: 1px solid var(--border);">
             <img id="qr-code" src="" alt="Mã QR" style="width: 260px; height: 260px; border-radius: 10px;">
@@ -257,7 +261,7 @@
                 <b id="m-car" style="color: var(--text-main); font-size: 0.9rem;">...</b>
             </div>
             <div style="display: flex; justify-content: space-between; margin-bottom: 10px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                <span style="color: var(--text-muted); font-size: 0.85rem;">Tổng tiền:</span>
+                <span style="color: var(--text-muted); font-size: 0.85rem;">Thành tiền:</span>
                 <b id="m-total" style="color: var(--primary); font-size: 1rem;">0 VNĐ</b>
             </div>
             <div style="display: flex; justify-content: space-between;">
@@ -267,7 +271,7 @@
         </div>
 
         <button class="btn-confirm" onclick="bookingApp.finish()">TÔI ĐÃ CHUYỂN KHOẢN</button>
-        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;">Sau khi nhấn, hệ thống sẽ kết nối trực tiếp với Zalo của chúng tôi.</p>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-top: 15px;">Sau khi nhấn, hệ thống sẽ mở Zalo để bạn gửi ảnh xác nhận.</p>
     </div>
 </div>
 
@@ -283,6 +287,7 @@
             ACC_NAME: "BUI VAN TRANG",
             DRIVER_FEE: 500000,
             ZALO: "https://zalo.me/0353979614",
+            // Đảm bảo Script URL này đã được Deploy chế độ Anyone
             SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
         },
 
@@ -304,32 +309,27 @@
                     document.getElementById('car-name').innerText = car.name;
                     document.getElementById('car-img').src = car.image_url || car.image;
                     document.getElementById('car-price-unit').innerText = `${this.fmt(car.price)} / ngày`;
-                    document.getElementById('car-category').innerText = (car.category || "HẠNG SANG").toUpperCase();
+                    document.getElementById('car-category').innerText = (car.category || "LUXURY").toUpperCase();
                     document.getElementById('spec-fuel').innerText = car.fuel || "Xăng";
                     document.getElementById('spec-transmission').innerText = car.transmission || "Tự động";
                     document.getElementById('spec-engine').innerText = car.engine || "2.0L";
                     document.getElementById('spec-seats').innerText = car.seats || "5 Chỗ";
                     this.calc();
                 }
-            } catch (e) { console.error("Lỗi tải dữ liệu xe:", e); }
+            } catch (e) { console.error("Lỗi tải xe:", e); }
         },
 
         setupPickers() {
-            const opt = { 
-                minDate: "today", 
-                dateFormat: "d/m/Y", 
-                locale: "vn", 
-                disableMobile: true,
-                onChange: () => this.calc() 
-            };
+            const common = { dateFormat: "d/m/Y", locale: "vn", disableMobile: true };
+            
             const p = flatpickr("#pickup-date", { 
-                ...opt, 
-                onChange: (d) => { 
-                    r.set('minDate', d[0]); 
-                    this.calc(); 
-                } 
+                ...common, minDate: "today",
+                onChange: (d) => { r.set('minDate', d[0]); this.calc(); } 
             });
-            const r = flatpickr("#return-date", opt);
+            const r = flatpickr("#return-date", { ...common, minDate: "today", onChange: () => this.calc() });
+            
+            // Picker Ngày sinh (Giới hạn tối đa là năm 2008 - đủ 18 tuổi)
+            flatpickr("#cust-dob", { ...common, maxDate: "01/01/2008", defaultDate: "01/01/1995" });
         },
 
         bindEvents() {
@@ -340,14 +340,15 @@
                 input.style.display = isHome ? 'block' : 'none';
                 input.required = isHome;
             };
-            document.getElementById('rental-form').onsubmit = (e) => { 
-                e.preventDefault(); 
-                this.submit(); 
-            };
-            // Tên tự động viết hoa
-            document.getElementById('cust-fullname').oninput = (e) => {
-                e.target.value = e.target.value.toUpperCase();
-            };
+            document.getElementById('rental-form').onsubmit = (e) => { e.preventDefault(); this.submit(); };
+            
+            // Tự động viết hoa tên
+            document.getElementById('cust-fullname').oninput = (e) => { e.target.value = e.target.value.toUpperCase(); };
+            
+            // Chỉ cho nhập số vào các ô định danh
+            ['cust-phone', 'cust-cccd', 'cust-license-no'].forEach(id => {
+                document.getElementById(id).oninput = (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); };
+            });
         },
 
         calc() {
@@ -369,7 +370,7 @@
         async submit() {
             const btn = document.getElementById('submit-btn');
             btn.disabled = true; 
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ DỮ LIỆU...';
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
 
             const payload = {
                 Ten: document.getElementById('cust-fullname').value,
@@ -377,30 +378,32 @@
                 CCCD: document.getElementById('cust-cccd').value,
                 GPLX: document.getElementById('cust-license-no').value,
                 Hang: document.getElementById('cust-license-type').value,
+                NgaySinh: document.getElementById('cust-dob').value,
                 Xe: this.state.car.name,
                 NgayThue: document.getElementById('pickup-date').value,
                 NgayTra: document.getElementById('return-date').value,
-                HinhThuc: document.getElementById('location-select').value,
-                DiaChi: document.getElementById('cust-location').value || "Gara",
+                DiaChi: document.getElementById('cust-location').value || "Tại Gara",
                 TongTien: this.fmt(this.state.total),
-                GhiChu: document.getElementById('with-driver').checked ? "Có thuê tài xế" : "Tự lái"
+                GhiChu: document.getElementById('with-driver').checked ? "THUÊ TÀI XẾ" : "TỰ LÁI",
+                LinkCheck: "https://gplx.gov.vn/" // Link tra cứu sẵn cho admin
             };
 
             try {
-                // Gửi dữ liệu qua Google Sheets
-                await fetch(this.CONFIG.SCRIPT_URL, { 
+                // Gửi dữ liệu qua Google Sheets (No-Cors)
+                fetch(this.CONFIG.SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
                     body: JSON.stringify(payload) 
                 });
-            } catch(e) { console.warn("Lỗi gửi dữ liệu âm thầm:", e); }
+            } catch(e) { console.error(e); }
 
+            // Cập nhật thông tin Modal
             const memo = `DAT XE ${this.state.car.id} ${payload.SDT}`;
             document.getElementById('m-car').innerText = payload.Xe;
             document.getElementById('m-total').innerText = payload.TongTien;
             document.getElementById('m-memo').innerText = memo;
             
-            // Tạo mã VietQR chuyên nghiệp
+            // QR Code
             document.getElementById('qr-code').src = `https://img.vietqr.io/image/${this.CONFIG.BANK_ID}-${this.CONFIG.ACC_NO}-compact2.png?amount=${this.state.total}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(this.CONFIG.ACC_NAME)}`;
             
             document.getElementById('payment-modal').style.display = 'flex';
@@ -409,8 +412,7 @@
         },
 
         finish() {
-            const phone = document.getElementById('cust-phone').value;
-            alert("Thông tin đặt xe đã được ghi nhận. Hệ thống sẽ chuyển bạn đến Zalo để gửi ảnh hóa đơn xác nhận.");
+            alert("Đã ghi nhận thông tin. Bạn hãy gửi ảnh hóa đơn qua Zalo để chúng tôi xác nhận xe ngay lập tức!");
             window.location.href = this.CONFIG.ZALO;
         }
     };

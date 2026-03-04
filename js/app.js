@@ -69,18 +69,23 @@ const app = {
     // ============================================================
     // 3. XỬ LÝ ĐĂNG NHẬP
     // ============================================================
-    handleLogin: function() {
-        const user = document.getElementById('login-user').value;
-        const pass = document.getElementById('login-pass').value;
+  handleLogin: function() {
+    const user = document.getElementById('login-user').value;
+    const pass = document.getElementById('login-pass').value;
 
-        if (user === 'admin' && pass === '123') {
-            this.showDashboard('ADMIN');
-        } else if (user === 'driver1' && pass === '123') {
-            this.showDashboard('DRIVER');
-        } else {
-            alert("⚠️ Tài khoản hoặc mật khẩu không đúng!");
-        }
-    },
+    if (user === 'admin' && pass === '123') {
+        // 1. Lưu trạng thái đăng nhập vào LocalStorage
+        localStorage.setItem('tranghy_user', JSON.stringify({ name: 'Quản trị viên', role: 'ADMIN' }));
+        
+        // 2. Chuyển hướng sang trang admin
+        window.location.href = 'admin.html'; 
+    } else if (user === 'driver1' && pass === '123') {
+        localStorage.setItem('tranghy_user', JSON.stringify({ name: 'Tài xế 1', role: 'DRIVER' }));
+        window.location.href = 'driver.html'; // Nếu bạn có trang riêng cho tài xế
+    } else {
+        alert("⚠️ Tài khoản hoặc mật khẩu không đúng!");
+    }
+},
 
   showDashboard: function(role) {
     // 1. Đóng modal login (nếu có)

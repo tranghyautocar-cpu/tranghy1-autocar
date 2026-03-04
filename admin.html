@@ -11,11 +11,12 @@
 
     <style>
         body { font-family: 'Montserrat', sans-serif; background: #f8fafc; }
+        .nav-item { color: #94a3b8; transition: all 0.3s; }
+        .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
         .nav-item.active { background-color: #2563eb; color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
         .status-badge { padding: 4px 12px; border-radius: 99px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
         .status-success { background: #dcfce7; color: #166534; }
         .status-warning { background: #fef9c3; color: #854d0e; }
-        .status-danger { background: #fee2e2; color: #991b1b; }
         .custom-scroll::-webkit-scrollbar { width: 5px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         .modal-enter { animation: fade-in-up 0.3s ease-out forwards; }
@@ -36,24 +37,24 @@
         </div>
         
         <nav class="flex-1 px-4 py-8 space-y-2">
-            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all active">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold active">
                 <i class="fas fa-th-large w-5"></i> Tổng quan
             </button>
-            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+            <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold">
                 <i class="fas fa-file-invoice-dollar w-5"></i> Đơn hàng
                 <span class="ml-auto bg-red-500 text-white text-[10px] px-2 py-0.5 rounded-full" id="menu-orders-count">0</span>
             </button>
-            <button onclick="switchTab('cars')" id="nav-cars" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+            <button onclick="switchTab('cars')" id="nav-cars" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold">
                 <i class="fas fa-car w-5"></i> Quản lý Xe
             </button>
-            <button onclick="switchTab('drivers')" id="nav-drivers" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold transition-all">
+            <button onclick="switchTab('drivers')" id="nav-drivers" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-sm font-bold">
                 <i class="fas fa-users w-5"></i> Tài xế
             </button>
         </nav>
 
         <div class="p-4 border-t border-slate-800">
             <button onclick="logout()" class="w-full flex items-center justify-center gap-2 px-4 py-3 text-red-400 hover:bg-red-500/10 rounded-xl text-xs font-bold transition-all">
-                <i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống
+                <i class="fas fa-sign-out-alt"></i> Đăng xuất
             </button>
         </div>
     </aside>
@@ -63,7 +64,7 @@
             <h2 class="text-xl font-black text-slate-800" id="page-title">Tổng quan hệ thống</h2>
             <div class="flex items-center gap-4">
                 <div class="text-right hidden md:block">
-                    <p class="text-xs font-bold">Admin Trang</p>
+                    <p class="text-xs font-bold" id="admin-name">Admin Trang</p>
                     <p class="text-[9px] text-green-500 font-bold uppercase">Trạng thái: Online</p>
                 </div>
                 <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff" class="w-10 h-10 rounded-full border-2 border-white shadow-sm">
@@ -73,20 +74,20 @@
         <div class="p-8">
             <div id="view-dashboard" class="content-view space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh thu (Đã duyệt)</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Doanh thu</p>
                         <h3 class="text-3xl font-black text-blue-600 mt-1" id="stat-revenue">0đ</h3>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đơn hàng mới</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đơn chờ duyệt</p>
                         <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-orders">0</h3>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Đội xe</p>
                         <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-cars">0</h3>
                     </div>
-                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 hover:shadow-md transition-all">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Nhân sự tài xế</p>
+                    <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Tài xế</p>
                         <h3 class="text-3xl font-black text-slate-800 mt-1" id="stat-drivers">0</h3>
                     </div>
                 </div>
@@ -98,9 +99,9 @@
                     </div>
                     <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white shadow-xl relative overflow-hidden">
                         <div class="relative z-10">
-                            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-4">Thông báo hệ thống</h3>
-                            <div class="space-y-4" id="recent-logs">
-                                <p class="text-xs opacity-70 italic">Chưa có hoạt động mới...</p>
+                            <h3 class="text-blue-400 font-bold text-xs uppercase tracking-widest mb-4">Hoạt động gần đây</h3>
+                            <div class="space-y-4 text-xs" id="recent-logs">
+                                <p class="opacity-70 italic">Hệ thống đã sẵn sàng...</p>
                             </div>
                         </div>
                         <i class="fas fa-shield-alt absolute -bottom-10 -right-10 text-9xl opacity-5"></i>
@@ -110,31 +111,25 @@
 
             <div id="view-orders" class="content-view hidden">
                 <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-100 overflow-hidden">
-                    <div class="p-8 border-b border-slate-100 flex justify-between items-center">
-                        <h3 class="font-bold">Danh sách đơn hàng</h3>
-                        <span class="text-xs text-slate-400">Tự động cập nhật khi có khách đặt</span>
-                    </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
-                                <tr>
-                                    <th class="px-8 py-4">Khách hàng</th>
-                                    <th class="px-8 py-4">Dịch vụ</th>
-                                    <th class="px-8 py-4">Tổng tiền</th>
-                                    <th class="px-8 py-4">Trạng thái</th>
-                                    <th class="px-8 py-4 text-right">Thao tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100"></tbody>
-                        </table>
-                    </div>
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
+                            <tr>
+                                <th class="px-8 py-4">Khách hàng</th>
+                                <th class="px-8 py-4">Dịch vụ</th>
+                                <th class="px-8 py-4">Tổng tiền</th>
+                                <th class="px-8 py-4">Trạng thái</th>
+                                <th class="px-8 py-4 text-right">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100"></tbody>
+                    </table>
                 </div>
             </div>
 
             <div id="view-cars" class="content-view hidden">
                 <div class="flex justify-between items-center mb-8">
                     <h3 class="font-bold text-xl uppercase italic">Quản lý Đội xe</h3>
-                    <button onclick="openModal('modal-add-car')" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20">
+                    <button onclick="openModal('modal-add-car')" class="bg-blue-600 text-white px-6 py-3 rounded-2xl font-bold text-xs hover:shadow-lg transition-all">
                         <i class="fas fa-plus mr-2"></i> Thêm xe mới
                     </button>
                 </div>
@@ -143,8 +138,8 @@
 
             <div id="view-drivers" class="content-view hidden">
                 <div class="flex justify-between items-center mb-8">
-                    <h3 class="font-bold text-xl uppercase italic">Quản lý Nhân sự</h3>
-                    <button onclick="openModal('modal-add-driver')" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-xs hover:bg-black transition-all shadow-xl shadow-slate-900/20">
+                    <h3 class="font-bold text-xl uppercase italic">Quản lý Tài xế</h3>
+                    <button onclick="openModal('modal-add-driver')" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-xs">
                         <i class="fas fa-user-plus mr-2"></i> Thêm tài xế
                     </button>
                 </div>
@@ -153,9 +148,9 @@
                         <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400">
                             <tr>
                                 <th class="px-8 py-4">Họ tên</th>
-                                <th class="px-8 py-4">Liên hệ</th>
-                                <th class="px-8 py-4">Trạng thái</th>
-                                <th class="px-8 py-4 text-right">Xóa</th>
+                                <th class="px-8 py-4">Tài khoản</th>
+                                <th class="px-8 py-4">Số điện thoại</th>
+                                <th class="px-8 py-4 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="driver-management-table" class="text-sm divide-y divide-slate-100"></tbody>
@@ -165,74 +160,87 @@
         </div>
     </main>
 
-    <div id="modal-add-car" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-add-car')"></div>
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 modal-enter overflow-hidden">
-            <div class="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-black text-lg uppercase italic text-blue-600">Thêm xe vào hệ thống</h3>
+    <div id="modal-add-car" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden modal-enter">
+            <div class="p-8 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-black text-blue-600 uppercase">Thêm xe mới</h3>
                 <button onclick="closeModal('modal-add-car')"><i class="fas fa-times"></i></button>
             </div>
             <div class="p-8 space-y-4">
-                <input type="text" id="car-name" placeholder="Tên xe (VD: Porsche Panamera)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
-                <input type="text" id="car-type" placeholder="Loại xe (VD: Sedan hạng sang)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <input type="number" id="car-price" placeholder="Giá thuê/ngày (VD: 5000000)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <input type="text" id="car-img" placeholder="Link ảnh xe (Unsplash/Imgur)" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <button onclick="handleSaveCar()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl shadow-blue-600/30">Lưu xe mới</button>
+                <input type="text" id="car-name" placeholder="Tên xe" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <input type="text" id="car-type" placeholder="Loại xe" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <input type="number" id="car-price" placeholder="Giá thuê/ngày" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <input type="text" id="car-img" placeholder="Link ảnh (không bắt buộc)" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <button onclick="handleSaveCar()" class="w-full bg-blue-600 text-white py-4 rounded-2xl font-black">LƯU THÔNG TIN</button>
             </div>
         </div>
     </div>
 
-    <div id="modal-add-driver" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeModal('modal-add-driver')"></div>
-        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl relative z-10 modal-enter overflow-hidden">
-            <div class="p-8 bg-slate-50 border-b border-slate-100 flex justify-between items-center">
-                <h3 class="font-black text-lg uppercase italic text-slate-800">Cấp tài khoản tài xế</h3>
+    <div id="modal-add-driver" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] overflow-hidden modal-enter">
+            <div class="p-8 bg-slate-50 flex justify-between items-center">
+                <h3 class="font-black uppercase">Thêm tài xế</h3>
                 <button onclick="closeModal('modal-add-driver')"><i class="fas fa-times"></i></button>
             </div>
             <div class="p-8 space-y-4">
-                <input type="text" id="dr-name-input" placeholder="Họ và tên" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold focus:ring-2 focus:ring-blue-600 outline-none">
-                <input type="email" id="dr-email-input" placeholder="Email đăng nhập" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <input type="text" id="dr-phone-input" placeholder="Số điện thoại" class="w-full p-4 bg-slate-100 border-none rounded-2xl text-sm font-bold outline-none">
-                <button onclick="handleSaveDriver()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black uppercase text-xs shadow-xl shadow-slate-900/30">Tạo tài khoản</button>
+                <input type="text" id="dr-name-input" placeholder="Họ tên" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <input type="text" id="dr-phone-input" placeholder="Số điện thoại" class="w-full p-4 bg-slate-100 rounded-2xl outline-none">
+                <button onclick="handleSaveDriver()" class="w-full bg-slate-900 text-white py-4 rounded-2xl font-black">TẠO TÀI KHOẢN</button>
             </div>
         </div>
     </div>
 
-  <script>
+<script>
+    // --- 0. KIỂM TRA QUYỀN TRUY CẬP (BẢO MẬT) ---
+    const currentUser = JSON.parse(localStorage.getItem('tranghy_user'));
+    if(!currentUser || currentUser.role !== 'ADMIN') {
+        window.location.href = 'login.html';
+    } else {
+        document.getElementById('admin-name').innerText = currentUser.name;
+    }
+
     // --- 1. QUẢN LÝ DỮ LIỆU ---
     const DB = {
         get: (key) => JSON.parse(localStorage.getItem(key)) || [],
         set: (key, val) => localStorage.setItem(key, JSON.stringify(val))
     };
 
-    /**
-     * HÀM LIÊN KẾT JSON: Lấy dữ liệu từ file nguồn
-     */
-    async function syncDataFromSource() {
-        console.log("⏳ Đang tải dữ liệu từ cars.json và drivers.json...");
-        try {
-            const resCars = await fetch('cars.json');
-            if (resCars.ok) {
-                const carsData = await resCars.json();
-                const normalizedCars = carsData.map(c => ({
-                    ...c,
-                    img: c.image_url || c.img || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70'
-                }));
-                DB.set('tranghy_cars', normalizedCars);
-            }
+    // --- 2. CÁC HÀM XỬ LÝ CHÍNH ---
+    function handleSaveCar() {
+        const name = document.getElementById('car-name').value;
+        const type = document.getElementById('car-type').value;
+        const price = document.getElementById('car-price').value;
+        const img = document.getElementById('car-img').value || 'https://images.unsplash.com/photo-1503376780353-7e6692767b70';
 
-            const resDrivers = await fetch('drivers.json');
-            if (resDrivers.ok) {
-                const driversData = await resDrivers.json();
-                DB.set('drivers_data', driversData);
-            }
-        } catch (error) {
-            console.error("❌ Lỗi khi liên kết tệp JSON:", error);
-        }
+        if(!name || !price) return alert("Vui lòng nhập tên và giá xe!");
+
+        const cars = DB.get('tranghy_cars');
+        cars.push({ name, type, price, img, status: 'ready' });
+        DB.set('tranghy_cars', cars);
+        
+        closeModal('modal-add-car');
         renderAll();
     }
 
-    // --- 2. CÁC HÀM RENDER ---
+    function handleSaveDriver() {
+        const name = document.getElementById('dr-name-input').value;
+        const phone = document.getElementById('dr-phone-input').value;
+        if(!name || !phone) return alert("Vui lòng nhập đủ thông tin!");
+
+        const drivers = DB.get('drivers_data');
+        drivers.push({ name, phone, status: 'Sẵn sàng', password: '123' });
+        DB.set('drivers_data', drivers);
+
+        closeModal('modal-add-driver');
+        renderAll();
+    }
+
+    function copyAccount(email, pass) {
+        navigator.clipboard.writeText(`Email: ${email} | Pass: ${pass}`);
+        alert("Đã sao chép thông tin tài khoản!");
+    }
+
+    // --- 3. RENDER GIAO DIỆN ---
     function renderAll() {
         updateDashboardStats();
         renderOrders();
@@ -244,137 +252,77 @@
         const cars = DB.get('tranghy_cars');
         const drivers = DB.get('drivers_data');
         const orders = DB.get('tranghy_orders');
+        
+        let totalRevenue = orders.reduce((sum, o) => 
+            o.status === 'approved' ? sum + (parseInt(o.totalPrice.toString().replace(/\D/g,'')) || 0) : sum, 0);
 
-        let totalRevenue = 0;
-        orders.forEach(o => {
-            if(o.status === 'approved' && o.totalPrice) {
-                const price = parseInt(o.totalPrice.toString().replace(/[^0-9]/g, '')) || 0;
-                totalRevenue += price;
-            }
-        });
-
-        if(document.getElementById('stat-revenue')) document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + 'đ';
-        if(document.getElementById('stat-orders')) document.getElementById('stat-orders').innerText = orders.filter(o => o.status === 'pending').length;
-        if(document.getElementById('stat-cars')) document.getElementById('stat-cars').innerText = cars.length;
-        if(document.getElementById('stat-drivers')) document.getElementById('stat-drivers').innerText = drivers.length;
-        if(document.getElementById('menu-orders-count')) document.getElementById('menu-orders-count').innerText = orders.filter(o => o.status === 'pending').length;
+        document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString('vi-VN') + 'đ';
+        document.getElementById('stat-orders').innerText = orders.filter(o => o.status === 'pending').length;
+        document.getElementById('stat-cars').innerText = cars.length;
+        document.getElementById('stat-drivers').innerText = drivers.length;
+        document.getElementById('menu-orders-count').innerText = orders.filter(o => o.status === 'pending').length;
     }
 
     function renderCars() {
         const container = document.getElementById('cars-grid');
         const cars = DB.get('tranghy_cars');
-        if (!container) return;
-
         container.innerHTML = cars.map((car, idx) => `
-            <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100 relative group">
-                <img src="${car.img}" onerror="this.src='https://images.unsplash.com/photo-1533473359331-0135ef1b58bf'" 
-                     class="w-full h-40 object-cover rounded-2xl mb-4 grayscale group-hover:grayscale-0 transition-all">
-                <div class="flex justify-between items-start mb-4">
+            <div class="bg-white p-5 rounded-[2rem] shadow-sm border border-slate-100">
+                <img src="${car.img}" class="w-full h-40 object-cover rounded-2xl mb-4">
+                <div class="flex justify-between items-start">
                     <div>
-                        <h4 class="font-black text-slate-800 italic uppercase text-sm">${car.name}</h4>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase">${car.category || car.type || 'N/A'}</p>
+                        <h4 class="font-black text-sm uppercase italic">${car.name}</h4>
+                        <p class="text-[10px] text-slate-400 font-bold">${car.type || 'Hạng sang'}</p>
                     </div>
-                    <span class="status-badge ${car.status === 'busy' ? 'status-warning' : 'status-success'}">
-                        ${car.status === 'busy' ? 'Đang chạy' : 'Sẵn sàng'}
-                    </span>
+                    <span class="status-badge ${car.status === 'ready' ? 'status-success' : 'status-warning'}">${car.status}</span>
                 </div>
-                <div class="flex justify-between items-center pt-4 border-t border-slate-50">
-                    <span class="text-blue-600 font-black text-sm">${parseInt(car.price || 0).toLocaleString('vi-VN')}đ</span>
-                    <button onclick="deleteItem('tranghy_cars', ${idx}, renderCars)" class="text-red-400 hover:text-red-600"><i class="fas fa-trash-alt"></i></button>
+                <div class="mt-4 pt-4 border-t flex justify-between items-center">
+                    <span class="text-blue-600 font-black">${parseInt(car.price).toLocaleString('vi-VN')}đ</span>
+                    <button onclick="deleteItem('tranghy_cars', ${idx}, renderCars)" class="text-red-400"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
         `).join('');
     }
 
- function renderDrivers() {
-    const tbody = document.getElementById('driver-management-table');
-    const drivers = DB.get('drivers_data');
-    if (!tbody) return;
-
-    tbody.innerHTML = drivers.map((d, idx) => {
-        // --- 1. GIỮ NGUYÊN LOGIC EMAIL NGON CỦA BẠN ---
-        let displayEmail = d.email; 
-        if (!displayEmail) {
-            const nameParts = d.name.trim().toLowerCase().split(' ');
-            const lastName = nameParts[nameParts.length - 1]; 
-            const initials = nameParts.slice(0, -1).map(p => p[0]).join(''); 
-            const cleanName = removeVietnameseTones(lastName + "." + initials);
-            displayEmail = `${cleanName}@tranghy.com`;
-        }
-
-        // --- 2. NÂNG CẤP: TỰ ĐỘNG GÁN & HIỂN THỊ MẬT KHẨU MẶC ĐỊNH ---
-        // Nếu trong data chưa có password, mặc định hiển thị 123456
-        const defaultPass = d.password || '123456';
-
-        return `
-            <tr class="hover:bg-slate-50/50 transition-all border-b border-slate-100/10">
-                <td class="px-8 py-5 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 text-white flex items-center justify-center font-black italic shadow-lg">
-                        ${(d.name || '?').charAt(0)}
-                    </div>
-                    <div>
-                        <p class="font-bold uppercase italic text-xs text-white">${d.name}</p>
-                        <p class="text-[9px] text-blue-400 font-bold uppercase">ID: ${d.id || 'TX' + (idx + 1)}</p>
-                    </div>
-                </td>
-                <td class="px-8 py-5">
-                    <p class="text-[11px] font-bold text-slate-300 flex items-center gap-1">
-                        <i class="far fa-envelope text-[10px] text-blue-500"></i> ${displayEmail}
-                    </p>
-                    <p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
-                        <i class="fas fa-key text-[9px]"></i> MK: <span class="text-white font-mono">${defaultPass}</span>
-                    </p>
-                </td>
-                <td class="px-8 py-5">
-                    <p class="text-[10px] font-bold text-blue-400 mb-1">${d.phone || 'Chưa có SĐT'}</p>
-                    <span class="status-badge ${d.status === 'Sẵn sàng' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
-                        ${d.status || 'Sẵn sàng'}
-                    </span>
-                </td>
-                <td class="px-8 py-5 text-right">
-                    <div class="flex justify-end gap-2">
-                        <button onclick="copyAccount('${displayEmail}', '${defaultPass}')" class="text-blue-400 hover:text-blue-300 p-2" title="Copy tài khoản">
-                            <i class="far fa-copy"></i>
-                        </button>
-                        <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400 hover:text-red-600 p-2">
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>`;
-    }).join('');
-}
-
-// Hàm hỗ trợ xóa dấu tiếng Việt để làm email đẹp hơn
-function removeVietnameseTones(str) {
-    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a"); 
-    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e"); 
-    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i"); 
-    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o"); 
-    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u"); 
-    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y"); 
-    str = str.replace(/đ/g,"d");
-    return str;
-}
+    function renderDrivers() {
+        const tbody = document.getElementById('driver-management-table');
+        const drivers = DB.get('drivers_data');
+        tbody.innerHTML = drivers.map((d, idx) => {
+            const email = removeVietnameseTones(d.name.split(' ').pop().toLowerCase()) + "@tranghy.com";
+            return `
+                <tr>
+                    <td class="px-8 py-5 font-bold uppercase italic text-xs">${d.name}</td>
+                    <td class="px-8 py-5">
+                        <p class="text-[11px] font-bold text-blue-600">${email}</p>
+                        <p class="text-[9px] text-slate-400 font-mono">Pass: ${d.password || '123'}</p>
+                    </td>
+                    <td class="px-8 py-5 text-xs">${d.phone}</td>
+                    <td class="px-8 py-5 text-right">
+                        <button onclick="copyAccount('${email}', '123')" class="text-blue-400 mr-3"><i class="far fa-copy"></i></button>
+                        <button onclick="deleteItem('drivers_data', ${idx}, renderDrivers)" class="text-red-400"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+        }).join('');
+    }
 
     function renderOrders() {
-        const tbody = document.getElementById('orders-table-body');
         const orders = DB.get('tranghy_orders');
-        if(!tbody) return;
-        tbody.innerHTML = orders.map((o, idx) => `
-            <tr class="hover:bg-slate-50/50 transition-all">
-                <td class="px-8 py-5"><p class="font-bold">${o.customerName}</p></td>
-                <td class="px-8 py-5"><p class="text-xs font-bold text-blue-600 uppercase italic">${o.carName}</p></td>
-                <td class="px-8 py-5 font-black text-slate-800">${o.totalPrice}</td>
-                <td class="px-8 py-5"><span class="status-badge ${o.status === 'pending' ? 'status-warning' : 'status-success'}">${o.status}</span></td>
-                <td class="px-8 py-5 text-right"><button onclick="deleteItem('tranghy_orders', ${idx}, renderOrders)" class="text-red-400"><i class="fas fa-trash"></i></button></td>
+        document.getElementById('orders-table-body').innerHTML = orders.map((o, idx) => `
+            <tr>
+                <td class="px-8 py-5 font-bold">${o.customerName}</td>
+                <td class="px-8 py-5 text-blue-600 font-bold uppercase italic text-[11px]">${o.carName}</td>
+                <td class="px-8 py-5 font-black">${o.totalPrice}</td>
+                <td class="px-8 py-5"><span class="status-badge status-warning">${o.status}</span></td>
+                <td class="px-8 py-5 text-right">
+                    <button onclick="deleteItem('tranghy_orders', ${idx}, renderOrders)" class="text-red-400"><i class="fas fa-trash"></i></button>
+                </td>
             </tr>
         `).reverse().join('');
     }
 
-    // --- 3. TIỆN ÍCH ---
+    // --- 4. TIỆN ÍCH ---
     function deleteItem(key, idx, callback) {
-        if(confirm('Bạn chắc chắn muốn xóa?')) {
+        if(confirm('Xác nhận xóa?')) {
             const data = DB.get(key);
             data.splice(idx, 1);
             DB.set(key, data);
@@ -388,22 +336,17 @@ function removeVietnameseTones(str) {
         document.getElementById(`view-${tab}`).classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
         document.getElementById(`nav-${tab}`).classList.add('active');
-        document.getElementById('page-title').innerText = tab === 'dashboard' ? 'Tổng quan hệ thống' : 'Quản lý';
+        document.getElementById('page-title').innerText = tab === 'dashboard' ? 'Tổng quan' : 'Quản lý';
     }
 
     function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
     function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function removeVietnameseTones(str) { return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd'); }
+    function logout() { localStorage.removeItem('tranghy_user'); window.location.href = 'login.html'; }
 
-    function logout() {
-        if(confirm("Đăng xuất khỏi hệ thống?")) {
-            localStorage.removeItem('tranghy_user');
-            window.location.href = 'login.html';
-        }
-    }
-
-    // --- 4. KHỞI CHẠY ---
+    // --- 5. KHỞI CHẠY ---
     document.addEventListener('DOMContentLoaded', () => {
-        syncDataFromSource();
+        renderAll();
         const ctx = document.getElementById('revenueChart').getContext('2d');
         new Chart(ctx, {
             type: 'line',
