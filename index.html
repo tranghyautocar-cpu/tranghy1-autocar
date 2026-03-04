@@ -16,210 +16,167 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    
     <style>
-        :root { 
-            --primary: #2563eb; 
-            --primary-dark: #1a4bd3;
-            --dark: #0f172a; 
-            --bg: #fdfdfe; 
-            --accent: #3b82f6;
-        }
+    :root { 
+        --primary: #2563eb; 
+        --primary-dark: #1a4bd3;
+        --dark: #0f172a; 
+        --bg: #fdfdfe; 
+        --accent: #3b82f6;
+        --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
 
-        /* Lớp tạo khoảng cách lề chuẩn */
-        .container {
-            max-width: 1200px !important;
-            margin-left: auto;
-            margin-right: auto;
-            padding-left: 20px;
-            padding-right: 20px;
-            width: 100%;
-        }
+    /* 1. RESET & LAYOUT CHUẨN */
+    * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+    }
 
-        /* Đảm bảo các thành phần không bị tràn lề */
-        header, main, section {
-            width: 100%;
-            box-sizing: border-box;
-        }
-        
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--dark);
-            scroll-behavior: smooth;
-            padding-top: 80px; /* Tránh nội dung bị đè bởi Header cố định */
-        }
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background-color: var(--bg); 
+        color: var(--dark);
+        scroll-behavior: smooth;
+        padding-top: 85px; /* Tăng nhẹ để cân bằng với Nav */
+        overflow-x: hidden;
+    }
 
-        nav {
-            position: fixed !important;
-            top: 0;
-            left: 0;
-            width: 100%;
-            z-index: 1000;
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-        }
+    .container {
+        max-width: 1240px !important; /* Tăng nhẹ để không gian thở tốt hơn */
+        margin: 0 auto;
+        padding: 0 24px;
+        width: 100%;
+    }
 
-        /* FIX MODAL: Ẩn triệt để khi không sử dụng */
-        #modal-car, #modal-driver, #payment-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-        }
+    /* 2. NAVIGATION (GLASSMORPHISM) */
+    nav {
+        position: fixed !important;
+        top: 0; left: 0; width: 100%;
+        z-index: 1000;
+        background: rgba(255, 255, 255, 0.75) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(15, 23, 42, 0.05);
+        height: 85px;
+        display: flex;
+        align-items: center;
+    }
 
-        .modal-active {
-            display: flex !important;
-        }
+    /* 3. CARD NÂNG CẤP (LUXURY LOOK) */
+    .car-card, .driver-card { 
+        background: white;
+        border-radius: 2.5rem;
+        transition: var(--transition);
+        border: 1px solid rgba(15, 23, 42, 0.05);
+        overflow: hidden;
+        position: relative;
+    }
 
-        .car-card, .driver-card { 
-            background: white;
-            border-radius: 2.5rem;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            border: 1px solid rgba(226, 232, 240, 0.6);
-            overflow: hidden;
-            cursor: pointer;
-        }
+    .car-card:hover { 
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 40px 80px -15px rgba(15, 23, 42, 0.12);
+        border-color: var(--accent);
+    }
 
-        .car-card:hover { 
-            transform: translateY(-12px);
-            box-shadow: 0 30px 60px -15px rgba(15, 23, 42, 0.08);
-            border-color: var(--accent);
-        }
+    /* Hiệu ứng bóng cho hình ảnh trong card */
+    .car-card img {
+        transition: var(--transition);
+    }
+    .car-card:hover img {
+        transform: scale(1.1);
+    }
 
-        .btn-gradient-blue {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.2);
-            cursor: pointer;
-        }
+    /* 4. BUTTONS & INTERACTION */
+    .btn-gradient-blue {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        transition: var(--transition);
+        box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.3);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
 
-        .btn-gradient-blue:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 25px -5px rgba(37, 99, 235, 0.4);
-        }
+    .btn-gradient-blue:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 30px -10px rgba(37, 99, 235, 0.5);
+    }
 
-        .is-busy {
-            filter: grayscale(0.9) opacity(0.5) !important;
-            pointer-events: none !important;
-            position: relative;
-        }
-       
-        .is-busy::after {
-            content: 'ĐÃ ĐƯỢC ĐẶT LỊCH';
-            position: absolute;
-            top: 25px; right: 25px;
-            background: #ef4444;
-            color: #fff;
-            padding: 6px 14px;
-            font-weight: 800;
-            font-size: 9px;
-            border-radius: 99px;
-            letter-spacing: 1px;
-            z-index: 20;
-        }
+    .btn-gradient-blue:active {
+        transform: scale(0.96);
+    }
 
-        .text-luxury {
-            background: linear-gradient(to right, #0f172a, #2563eb);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+    /* 5. MODAL SYSTEM (TỐI ƯU HIỂN THỊ) */
+    #modal-car, #modal-driver, #payment-modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.6);
+        backdrop-filter: blur(8px);
+        padding: 20px;
+    }
 
-        .terms-scroll::-webkit-scrollbar { width: 4px; }
-        .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+    .modal-active {
+        display: flex !important;
+        animation: modalFadeIn 0.3s ease;
+    }
 
-        .vip-contact-container {
-            position: fixed !important;
-            bottom: 30px !important;
-            right: 30px !important;
-            z-index: 999999 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 20px !important;
-            align-items: flex-end !important;
-        }
+    @keyframes modalFadeIn {
+        from { opacity: 0; transform: scale(0.9); }
+        to { opacity: 1; transform: scale(1); }
+    }
 
-        .vip-btn {
-            width: 60px !important;
-            height: 60px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            position: relative !important;
-            text-decoration: none !important;
-        }
+    /* 6. STATUS TAGS */
+    .is-busy {
+        filter: grayscale(0.5) !important;
+        pointer-events: none !important;
+    }
+    
+    .is-busy::after {
+        content: 'ĐÃ ĐƯỢC ĐẶT';
+        position: absolute;
+        top: 20px; right: -30px;
+        background: #ef4444;
+        color: white;
+        padding: 5px 40px;
+        font-weight: 800;
+        font-size: 10px;
+        transform: rotate(45deg);
+        box-shadow: 0 5px 15px rgba(239, 68, 68, 0.3);
+        z-index: 20;
+    }
 
-        .icon-box {
-            width: 60px !important;
-            height: 60px !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            justify-content: center !important;
-            align-items: center !important;
-            position: relative !important;
-            z-index: 5 !important;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
-            transition: all 0.3s ease !important;
-        }
+    /* 7. SCROLLBAR TÙY CHỈNH */
+    ::-webkit-scrollbar {
+        width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+        background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary);
+    }
 
-        .fb-vip .icon-box { background: #1877F2 !important; color: white !important; font-size: 26px !important; }
-        .zalo-vip .icon-box { background: #0068ff !important; color: white !important; font-size: 26px !important; }
+    /* 8. HIỆU ỨNG CHỮ BÓNG BẨY */
+    .shiny-text {
+        background: linear-gradient(120deg, var(--dark) 0%, var(--primary) 50%, var(--dark) 100%);
+        background-size: 200% auto;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: shine 3s linear infinite;
+    }
 
-        .vip-pulse {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            width: 60px !important;
-            height: 60px !important;
-            margin-top: -30px !important;
-            margin-left: -30px !important;
-            border-radius: 50% !important;
-            z-index: 1 !important;
-            pointer-events: none !important;
-            animation: vip-pulse-ring-new 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite !important;
-        }
-
-        .fb-vip .vip-pulse { background: rgba(24, 119, 242, 0.7) !important; }
-        .zalo-vip .vip-pulse { background: rgba(0, 104, 255, 0.7) !important; }
-
-        @keyframes vip-pulse-ring-new {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(2.2); opacity: 0; }
-        }
-
-        .btn-label {
-            position: absolute !important;
-            right: 75px !important;
-            background: rgba(0, 0, 0, 0.8) !important;
-            color: white !important;
-            padding: 8px 15px !important;
-            border-radius: 20px !important;
-            font-size: 13px !important;
-            font-weight: bold !important;
-            opacity: 0 !important;
-            visibility: hidden !important;
-            white-space: nowrap !important;
-            transition: all 0.3s ease !important;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2) !important;
-        }
-        .vip-btn:hover .btn-label {
-            opacity: 1 !important;
-            visibility: visible !important;
-            right: 80px !important;
-        }
-
-        .vip-btn:hover .icon-box {
-            transform: scale(1.1) rotate(360deg) !important;
-        }
-    </style>
+    @keyframes shine {
+        to { background-position: 200% center; }
+    }
+</style>
+  
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
