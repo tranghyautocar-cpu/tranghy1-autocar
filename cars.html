@@ -3,353 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chi Tiết & Thanh Toán - TrangHy Luxury</title>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Danh Sách Xe - TrangHy Autocar Premium</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-    <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
-
+    
     <style>
-        :root {
-            --primary: #2563eb;
+        :root { 
+            --primary: #2563eb; 
             --primary-dark: #1e40af;
-            --primary-gradient: linear-gradient(135deg, #2563eb, #7c3aed);
-            --bg-body: #f8fafc;
-            --card-bg: #ffffff;
-            --text-main: #1e293b;
-            --text-muted: #64748b;
-            --border: #e2e8f0;
             --accent: #f59e0b;
-            --success: #22c55e;
+            --dark: #0f172a; 
+            --bg: #f8fafc;
         }
 
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            margin: 0; padding: 20px;
-            background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            padding-top: 80px;
+            color: var(--dark);
         }
 
-        .back-btn {
-            position: absolute; top: 20px; left: 20px; z-index: 100;
-            background: var(--card-bg); border: 1px solid var(--border);
-            color: var(--text-main); padding: 10px 20px; border-radius: 12px;
-            text-decoration: none; font-weight: 700; font-size: 0.9rem;
-            transition: 0.3s; display: flex; align-items: center; gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
-        }
-        .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+        html { scroll-behavior: smooth; }
 
-        .booking-container {
-            max-width: 1100px; width: 100%; background: var(--card-bg);
-            border-radius: 32px; overflow: hidden; margin: 60px auto;
-            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
-            border: 1px solid white;
-            display: none; /* Ẩn đi cho đến khi load xong dữ liệu */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+        .glass-nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.3);
         }
 
-        /* Hero Section */
-        .car-hero-section { position: relative; height: 450px; overflow: hidden; background: #e2e8f0; }
-        .car-hero-section img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .car-info-overlay {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            padding: 80px 40px 40px;
-            background: linear-gradient(transparent, rgba(0,0,0,0.8));
-            color: white;
+        .car-card { 
+            background: white;
+            border-radius: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+            position: relative;
         }
-        .car-badge {
-            position: absolute; top: 30px; left: 40px;
-            background: var(--primary-gradient); color: white;
-            padding: 8px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;
-            box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
+        
+        .car-card:hover { 
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+            border-color: var(--primary);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
             z-index: 10;
+            padding: 0.5rem 1rem;
+            border-radius: 1rem;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
-        /* Specs Grid */
-        .specs-grid { 
-            display: grid; grid-template-columns: repeat(4, 1fr); 
-            gap: 20px; padding: 30px 40px; background: #f1f5f9;
-        }
-        .spec-item {
-            background: white; padding: 15px; border-radius: 16px;
-            text-align: center; border: 1px solid var(--border); transition: 0.3s;
-        }
-        .spec-item i { color: var(--primary); font-size: 1.2rem; margin-bottom: 8px; display: block; }
-        .spec-item span { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; }
-        .spec-item b { display: block; font-size: 1rem; color: var(--text-main); margin-top: 4px; }
-
-        /* Form Layout */
-        .booking-form-content { padding: 40px; }
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-        h3 { 
-            font-size: 1.25rem; font-weight: 800; color: var(--text-main);
-            margin-bottom: 25px; display: flex; align-items: center; gap: 12px;
-            border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
-        }
-        h3 i { color: var(--primary); }
-
-        .input-group { margin-bottom: 20px; }
-        label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-main); margin-bottom: 8px; }
-        input, select {
-            width: 100%; padding: 14px 18px; background: #f8fafc;
-            border: 2px solid var(--border); border-radius: 14px; color: var(--text-main);
-            font-family: inherit; font-size: 1rem; outline: none; transition: 0.3s;
-            box-sizing: border-box;
-        }
-        input:focus, select:focus { border-color: var(--primary); background: white; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
-
-        .driver-card {
-            display: flex; justify-content: space-between; align-items: center;
-            background: #eff6ff; padding: 20px; border-radius: 18px;
-            border: 2px solid #dbeafe; margin-top: 15px;
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            transition: all 0.3s ease;
         }
 
-        /* Summary Section */
-        .summary-box {
-            margin-top: 40px; padding: 40px; border-top: 2px solid var(--border);
-            text-align: center; background: linear-gradient(to bottom, white, #f1f5f9);
-        }
-        .total-price-tag { font-size: 3rem; font-weight: 900; color: var(--primary); margin: 10px 0; letter-spacing: -1px; }
-
-        .btn-confirm {
-            width: 100%; max-width: 400px; padding: 20px; 
-            background: var(--primary-gradient); color: white;
-            border: none; border-radius: 18px; font-weight: 800; font-size: 1.2rem;
-            cursor: pointer; transition: 0.4s; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.4);
-        }
-        .btn-confirm:hover { transform: translateY(-3px); box-shadow: 0 20px 25px -5px rgba(37, 99, 235, 0.5); }
-
-        /* Modal Payment */
-        .modal {
-            display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; padding: 20px;
-        }
-        .modal-content {
-            background: white; padding: 40px; border-radius: 32px;
-            width: 100%; max-width: 450px; text-align: center; position: relative;
+        .btn-gradient:hover {
+            filter: brightness(1.1);
+            transform: scale(1.02);
         }
 
-        @media (max-width: 850px) {
-            .form-grid { grid-template-columns: 1fr; gap: 30px; }
-            .specs-grid { grid-template-columns: repeat(2, 1fr); }
-            .car-hero-section { height: 300px; }
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            animation: fadeIn 0.3s ease;
         }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .active-modal { display: flex !important; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
     </style>
 </head>
-<body>
 
-<a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-left"></i> QUAY LẠI</a>
+<body class="antialiased">
 
-<div id="loading-state" style="text-align: center; margin-top: 100px; color: var(--text-muted);">
-    <i class="fa-solid fa-spinner fa-spin fa-3x"></i>
-    <p>Đang tải dữ liệu xe...</p>
-</div>
+    <nav class="fixed top-0 left-0 w-full z-[1000] glass-nav transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black italic transform group-hover:rotate-12 transition-transform">T</div>
+                <div class="flex flex-col leading-tight">
+                    <span class="font-black text-xl italic uppercase tracking-tighter text-slate-900">TRANGHY</span>
+                    <span class="text-blue-600 font-bold text-[10px] tracking-[0.4em] uppercase">Autocar</span>
+                </div>
+            </a>
+            
+            <div class="hidden md:flex items-center bg-slate-100/50 p-1.5 rounded-2xl border border-slate-200">
+                <a href="index.html" class="px-6 py-2.5 rounded-xl text-slate-500 font-bold text-xs uppercase hover:text-blue-600 transition-all">Trang chủ</a>
+                <a href="car.html" class="px-6 py-2.5 rounded-xl bg-white shadow-sm text-blue-600 font-bold text-xs uppercase">Đội xe</a>
+                <a href="driver.html" class="px-6 py-2.5 rounded-xl text-slate-500 font-bold text-xs uppercase hover:text-blue-600 transition-all">Tài xế</a>
+            </div>
 
-<div class="booking-container" id="main-content">
-    <div class="car-hero-section">
-        <div class="car-badge" id="car-category">LUXURY</div>
-        <img id="car-img" src="" alt="Car Image">
-        <div class="car-info-overlay">
-            <h1 id="car-name" style="margin:0; font-size: 2.5rem; font-weight: 800;">Tên Xe</h1>
-            <p id="car-price-unit" style="color: #cbd5e1; font-size: 1.1rem; margin-top: 8px;">-- / ngày</p>
+            <a href="tel:0905123456" class="btn-gradient text-white px-6 py-3 rounded-2xl font-bold text-xs uppercase shadow-lg shadow-blue-200">
+                Hotline: 0905.123.456
+            </a>
         </div>
-    </div>
+    </nav>
 
-    <div class="specs-grid">
-        <div class="spec-item"><i class="fa-solid fa-gas-pump"></i><span>Nhiên liệu</span><b id="spec-fuel">-</b></div>
-        <div class="spec-item"><i class="fa-solid fa-gear"></i><span>Hộp số</span><b id="spec-transmission">-</b></div>
-        <div class="spec-item"><i class="fa-solid fa-bolt"></i><span>Động cơ</span><b id="spec-engine">-</b></div>
-        <div class="spec-item"><i class="fa-solid fa-chair"></i><span>Chỗ ngồi</span><b id="spec-seats">-</b></div>
-    </div>
+    <main class="py-12">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+                <div>
+                    <span class="text-blue-600 font-extrabold uppercase tracking-widest text-xs mb-2 block">Premium Fleet</span>
+                    <h1 class="text-5xl md:text-7xl font-black text-slate-900 italic uppercase tracking-tighter">
+                        Đội Xe <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-600">Sẵn Có</span>
+                    </h1>
+                </div>
+                <p class="max-w-md text-slate-500 font-medium leading-relaxed border-l-4 border-blue-600 pl-6">
+                    Hơn 50+ dòng xe đời mới từ 2023 - 2025, bảo dưỡng định kỳ, giao xe tận nơi chỉ trong 30 phút.
+                </p>
+            </div>
 
-    <form id="rental-form" class="booking-form-content">
-        <div class="form-grid">
-            <div class="col-left">
-                <h3><i class="fa-solid fa-calendar-days"></i> 1. LỊCH TRÌNH</h3>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                    <div class="input-group"><label>Ngày nhận xe</label><input type="text" id="pickup-date" required></div>
-                    <div class="input-group"><label>Ngày trả xe</label><input type="text" id="return-date" required></div>
+            <div class="bg-white p-4 rounded-[2.5rem] shadow-sm border border-slate-100 flex flex-col lg:flex-row gap-4 mb-12">
+                <div id="filter-container" class="flex gap-2 overflow-x-auto no-scrollbar p-1">
+                    <button onclick="filterCars('all')" class="filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all bg-blue-600 text-white shadow-md shadow-blue-100">Tất cả</button>
+                    <button onclick="filterCars('4 chỗ')" class="filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 hover:bg-slate-100">4 Chỗ</button>
+                    <button onclick="filterCars('5 chỗ')" class="filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 hover:bg-slate-100">5 Chỗ</button>
+                    <button onclick="filterCars('7 chỗ')" class="filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 hover:bg-slate-100">7 Chỗ</button>
                 </div>
-                <div class="input-group">
-                    <label>Hình thức nhận xe</label>
-                    <select id="location-select">
-                        <option value="Tại Gara">Nhận xe tại Gara (Miễn phí)</option>
-                        <option value="Tại Nhà">Giao tận nơi (Phí thỏa thuận)</option>
-                    </select>
-                    <input type="text" id="cust-location" placeholder="Địa chỉ giao xe cụ thể..." style="margin-top:15px; display:none;">
-                </div>
-                <div class="driver-card">
-                    <div><b>Thuê tài xế riêng</b><br><small>+500.000đ/ngày</small></div>
-                    <input type="checkbox" id="with-driver" style="width:24px; height:24px;">
+                
+                <div class="lg:ml-auto relative flex-1 max-w-xl">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="carSearch" onkeyup="searchCars()" placeholder="Tìm kiếm mẫu xe mong muốn..." class="w-full pl-14 pr-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold text-sm transition-all">
                 </div>
             </div>
 
-            <div class="col-right">
-                <h3><i class="fa-solid fa-id-card-clip"></i> 2. KHÁCH HÀNG</h3>
-                <div class="input-group"><label>Họ và tên</label><input type="text" id="cust-fullname" placeholder="NGUYỄN VĂN A" required></div>
-                <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 15px;">
-                    <div class="input-group"><label>Số điện thoại Zalo</label><input type="tel" id="cust-phone" maxlength="10" required></div>
-                    <div class="input-group"><label>Ngày sinh</label><input type="text" id="cust-dob" required></div>
+            <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 </div>
-                <div style="display: grid; grid-template-columns: 1fr 2.5fr; gap: 15px;">
-                    <div class="input-group">
-                        <label>Hạng GPLX</label>
-                        <select id="cust-license-type"><option>B1</option><option selected>B2</option><option>C</option></select>
+        </div>
+    </main>
+
+    <div id="modal-car" class="modal-overlay p-4">
+        <div class="bg-white w-full max-w-5xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative">
+            <button onclick="closeModal()" class="absolute top-6 right-6 z-20 w-12 h-12 bg-white/80 backdrop-blur shadow-lg rounded-full flex items-center justify-center text-slate-900 hover:bg-red-500 hover:text-white transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+            
+            <div class="md:w-5/12 bg-slate-50 p-8 flex flex-col">
+                <div class="flex-grow flex items-center justify-center py-10">
+                    <img id="modal-car-img" src="" class="w-full h-auto object-contain drop-shadow-2xl" alt="Xe">
+                </div>
+                <div id="modal-features" class="grid grid-cols-2 gap-3">
+                </div>
+            </div>
+
+            <div class="md:w-7/12 p-8 md:p-12 overflow-y-auto">
+                <div class="mb-8">
+                    <span id="modal-car-cat" class="text-blue-600 font-bold text-[10px] uppercase tracking-widest">5 Chỗ - Sedan</span>
+                    <h2 id="modal-car-name" class="text-4xl font-black text-slate-900 italic uppercase tracking-tighter mb-2">Tên Xe</h2>
+                    <p class="text-slate-400 text-sm font-medium">Bạn đang tiến hành đặt lịch cho mẫu xe này.</p>
+                </div>
+                
+                <div class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Ngày nhận</label>
+                            <input type="text" id="pickup-date" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="text-[10px] font-black uppercase text-slate-400 ml-2">Ngày trả</label>
+                            <input type="text" id="return-date" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-sm">
+                        </div>
                     </div>
-                    <div class="input-group"><label>Số GPLX</label><input type="text" id="cust-license-no" maxlength="12" required></div>
+
+                    <div class="bg-gradient-to-br from-slate-900 to-blue-900 p-8 rounded-[2.5rem] text-white mt-8 shadow-xl relative overflow-hidden group">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-blue-500/20 rounded-full -mr-16 -mt-16 blur-2xl"></div>
+                        <div class="relative z-10 flex justify-between items-end">
+                            <div>
+                                <p class="text-blue-300 text-[10px] font-black uppercase tracking-widest mb-1">Ước tính (<span id="days-count">1</span> ngày)</p>
+                                <span id="modal-total-price" class="text-4xl font-black italic">0 đ</span>
+                            </div>
+                            <button onclick="goToBookingPage()" class="bg-white text-slate-900 px-8 py-4 rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 hover:text-white transition-all transform active:scale-95">
+                                Tiếp tục đặt xe
+                            </button>
+                        </div>
+                    </div>
+                    <p class="text-center text-[10px] text-slate-400 font-bold uppercase tracking-tighter italic">Hệ thống sẽ chuyển bạn đến trang chi tiết để hoàn tất thông tin</p>
                 </div>
-                <div class="input-group"><label>Số CCCD</label><input type="text" id="cust-cccd" maxlength="12" required></div>
             </div>
         </div>
-
-        <div class="summary-box">
-            <p>Tổng tiền thuê cho <span id="calc-days-text">1</span> ngày</p>
-            <div class="total-price-tag" id="total-price">0 VNĐ</div>
-            <button type="submit" class="btn-confirm" id="submit-btn">ĐẶT CỌC NGAY</button>
-        </div>
-    </form>
-</div>
-
-<div id="payment-modal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-bottom:20px;">XÁC NHẬN ĐẶT CỌC</h2>
-        <img id="qr-code" src="" style="width:250px; height:250px; margin-bottom:20px; border-radius:15px; border:1px solid #eee;">
-        <div style="text-align:left; background:#f8fafc; padding:20px; border-radius:15px; margin-bottom:20px; font-size:0.9rem;">
-            <p>Xe: <b id="m-car">-</b></p>
-            <p>Thành tiền: <b id="m-total" style="color:var(--primary);">-</b></p>
-            <p>Nội dung: <b id="m-memo" style="color:var(--accent);">-</b></p>
-        </div>
-        <button class="btn-confirm" onclick="carApp.finish()">TÔI ĐÃ CHUYỂN KHOẢN</button>
     </div>
-</div>
 
-<script src="cars.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script>
+        const carData = [
+            { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.5L Dynamic Force", "fuel": "Xăng", "status": "Available", "features": ["Cửa sổ trời", "Ghế da", "An toàn TSS"] },
+            { "id": 2, "name": "VinFast VF8", "category": "5 chỗ", "price": 1500000, "image_url": "images/vinvf8.jpg", "transmission": "Tự động", "engine": "300kW Electric", "fuel": "Điện", "status": "Available", "features": ["Hỗ trợ lái ADAS", "Trợ lý ảo", "Pin 82kWh"] },
+            { "id": 3, "name": "Hyundai SantaFe", "category": "7 chỗ", "price": 1800000, "image_url": "images/santafe.jpg", "transmission": "Tự động", "engine": "2.2L Diesel", "fuel": "Dầu", "status": "Busy", "features": ["4 Bánh HTRAC", "Loa Harman", "Cửa sổ trời"] },
+            { "id": 4, "name": "Kia Morning", "category": "4 chỗ", "price": 600000, "image_url": "images/kiamoning.jpg", "transmission": "Số sàn", "engine": "1.25L Kappa", "fuel": "Xăng", "status": "Available", "features": ["Gương chỉnh điện", "Bluetooth", "Tiết kiệm"] },
+            { "id": 5, "name": "Mazda 3", "category": "5 chỗ", "price": 950000, "image_url": "images/mazda3.jpg", "transmission": "Tự động", "engine": "1.5L SkyActiv", "fuel": "Xăng", "status": "Available", "features": ["Màn hình HUD", "Loa Bose", "Phanh điện tử"] },
+            { "id": 6, "name": "Mitsubishi Xpander", "category": "7 chỗ", "price": 1000000, "image_url": "images/xpander.jpg", "transmission": "Tự động", "engine": "1.5L MIVEC", "fuel": "Xăng", "status": "Available", "features": ["Gầm cao 225mm", "7 Chỗ rộng", "Apple CarPlay"] },
+            { "id": 7, "name": "Mercedes C200", "category": "5 chỗ", "price": 2800000, "image_url": "images/e200.jpg", "transmission": "Tự động", "engine": "Mild-Hybrid", "fuel": "Xăng", "status": "Available", "features": ["LED High Perf", "Màn 11.9 inch", "Ốp gỗ"] },
+            { "id": 8, "name": "Ford Everest", "category": "7 chỗ", "price": 2200000, "image_url": "images/foreverret.jpg", "transmission": "Tự động", "engine": "2.0L Bi-Turbo", "fuel": "Dầu", "status": "Available", "features": ["Dẫn động 4x4", "Đỗ xe tự động", "Cửa sổ toàn cảnh"] },
+            { "id": 10, "name": "Kia Carnival", "category": "7 chỗ", "price": 3500000, "image_url": "images/kia_carnival.jpg", "transmission": "Tự động", "engine": "2.2L Diesel", "fuel": "Dầu", "status": "Available", "features": ["Ghế thương gia", "Cửa lùa điện", "Màn hình kép"] },
+            { "id": 12, "name": "BMW 320i LCI", "category": "5 chỗ", "price": 3200000, "image_url": "images/bmw_320i.jpg", "transmission": "Tự động", "engine": "TwinPower Turbo", "fuel": "Xăng", "status": "Available", "features": ["Curved Display", "Cầu sau RWD", "Sport Mode"] },
+            { "id": 23, "name": "Mercedes E300", "category": "5 chỗ", "price": 4500000, "image_url": "images/e300.jpg", "transmission": "Tự động", "engine": "2.0L Turbo", "fuel": "Xăng", "status": "Available", "features": ["Gói AMG Line", "Loa Burmester", "Cửa hít"] }
+        ];
 
-<script>
-    const carApp = {
-        state: { car: null, days: 1, total: 0 },
-        CONFIG: {
-            BANK_ID: "MB",
-            ACC_NO: "0353979614",
-            ACC_NAME: "BUI VAN TRANG",
-            DRIVER_FEE: 500000,
-            ZALO: "https://zalo.me/0353979614",
-            SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
-        },
+        let selectedCar = null;
+        let days = 1;
 
-        init() {
-            const params = new URLSearchParams(window.location.search);
-            const id = params.get('id');
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
 
-            // KIỂM TRA DỮ LIỆU XE TỪ FILE CARS.JS
-            // Nếu file cars.js của bạn đặt tên biến khác CARS_DATA, hãy đổi tên ở đây
-            const sourceData = (typeof CARS_DATA !== 'undefined') ? CARS_DATA : null;
-
-            if (id && sourceData) {
-                const car = sourceData.find(c => String(c.id) === String(id));
-                if (car) {
-                    this.state.car = car;
-                    this.renderUI(car);
-                    this.setupPickers();
-                    this.bindEvents();
+        function renderCars(data) {
+            const list = document.getElementById('car-list');
+            list.innerHTML = data.map(car => {
+                const isBusy = car.status === 'Busy';
+                return `
+                <div class="car-card flex flex-col h-full group">
+                    <span class="status-badge ${isBusy ? 'bg-red-100 text-red-600' : 'bg-green-100 text-green-600'}">
+                        ${isBusy ? '● Đang có khách' : '● Sẵn sàng'}
+                    </span>
+                    <div class="w-full h-48 overflow-hidden bg-slate-100 rounded-t-[2rem] relative">
+                        <img src="${car.image_url}" alt="${car.name}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" onerror="this.src='https://via.placeholder.com/400x250?text=TrangHy+Autocar'">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                    </div>
                     
-                    document.getElementById('loading-state').style.display = 'none';
-                    document.getElementById('main-content').style.display = 'block';
-                } else {
-                    this.error("Không tìm thấy xe này trong danh sách!");
-                }
-            } else {
-                this.error("Thiếu dữ liệu xe hoặc ID không hợp lệ!");
-            }
-        },
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-[9px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg uppercase">${car.category}</span>
+                            <span class="text-[9px] font-bold text-slate-400 uppercase"><i class="fas fa-cog mr-1"></i>${car.transmission}</span>
+                        </div>
+                        
+                        <h3 class="text-lg font-black text-slate-900 uppercase italic mb-4 leading-tight">${car.name}</h3>
+                        
+                        <div class="grid grid-cols-2 gap-2 mb-6">
+                            <div class="flex items-center text-[10px] font-bold text-slate-500">
+                                <i class="fas fa-microchip w-4 text-blue-500"></i> ${car.engine.split(' ')[0]}
+                            </div>
+                            <div class="flex items-center text-[10px] font-bold text-slate-500">
+                                <i class="fas fa-gas-pump w-4 text-blue-500"></i> ${car.fuel}
+                            </div>
+                        </div>
 
-        renderUI(car) {
-            document.getElementById('car-name').innerText = car.name;
-            document.getElementById('car-img').src = car.image_url || car.image;
-            document.getElementById('car-price-unit').innerText = `${this.fmt(car.price)} / ngày`;
-            document.getElementById('car-category').innerText = (car.category || "LUXURY").toUpperCase();
-            document.getElementById('spec-fuel').innerText = car.fuel || "Xăng";
-            document.getElementById('spec-transmission').innerText = car.transmission || "Tự động";
-            document.getElementById('spec-engine').innerText = car.engine || "2.0L";
-            document.getElementById('spec-seats').innerText = car.seats || "5 Chỗ";
-            this.calculateTotal();
-        },
+                        <div class="mt-auto pt-5 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-[9px] font-black text-slate-400 uppercase tracking-tighter">Giá thuê 24h</p>
+                                <p class="text-xl font-black text-slate-900 italic">${formatVND(car.price).replace('₫', '')}<small class="text-xs font-bold text-slate-400">₫</small></p>
+                            </div>
+                            <button onclick="${isBusy ? '' : `openBooking(${car.id})`}" 
+                                class="w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg ${isBusy ? 'bg-slate-200 text-slate-400 cursor-not-allowed' : 'btn-gradient text-white hover:shadow-blue-200'}">
+                                <i class="fas ${isBusy ? 'fa-lock' : 'fa-arrow-right'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
 
-        setupPickers() {
-            const cfg = { dateFormat: "d/m/Y", locale: "vn", disableMobile: true };
-            const p = flatpickr("#pickup-date", { ...cfg, minDate: "today", onChange: (d) => { r.set('minDate', d[0]); this.calculateTotal(); } });
-            const r = flatpickr("#return-date", { ...cfg, minDate: "today", onChange: () => this.calculateTotal() });
-            flatpickr("#cust-dob", { ...cfg, maxDate: "today", defaultDate: "01/01/1995", monthSelectorType: "dropdown" });
-        },
-
-        bindEvents() {
-            document.getElementById('with-driver').onchange = () => this.calculateTotal();
-            document.getElementById('location-select').onchange = (e) => {
-                const isHome = e.target.value === 'Tại Nhà';
-                document.getElementById('cust-location').style.display = isHome ? 'block' : 'none';
-                document.getElementById('cust-location').required = isHome;
-            };
-            ['cust-phone', 'cust-cccd', 'cust-license-no'].forEach(id => {
-                document.getElementById(id).oninput = (e) => e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        function filterCars(cat) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.className = "filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest text-slate-500 bg-slate-50 hover:bg-slate-100";
             });
-            document.getElementById('cust-fullname').oninput = (e) => e.target.value = e.target.value.toUpperCase();
-            document.getElementById('rental-form').onsubmit = (e) => { e.preventDefault(); this.handleBooking(); };
-        },
-
-        calculateTotal() {
-            const s = document.getElementById('pickup-date')._flatpickr?.selectedDates[0];
-            const e = document.getElementById('return-date')._flatpickr?.selectedDates[0];
-            if (s && e && this.state.car) {
-                const days = Math.ceil(Math.abs(e - s) / (86400000)) || 1;
-                this.state.days = days;
-                let total = days * this.state.car.price;
-                if (document.getElementById('with-driver').checked) total += (days * this.CONFIG.DRIVER_FEE);
-                this.state.total = total;
-                document.getElementById('total-price').innerText = this.fmt(total);
-                document.getElementById('calc-days-text').innerText = days;
-            }
-        },
-
-        fmt(n) { return new Intl.NumberFormat('vi-VN').format(n) + " VNĐ"; },
-
-        error(msg) {
-            alert(msg);
-            window.location.href = 'index.html';
-        },
-
-        async handleBooking() {
-            const btn = document.getElementById('submit-btn');
-            btn.disabled = true; btn.innerHTML = 'ĐANG XỬ LÝ...';
+            event.target.className = "filter-btn whitespace-nowrap px-8 py-3.5 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all bg-blue-600 text-white shadow-md shadow-blue-100";
             
-            const payload = {
-                Ten: document.getElementById('cust-fullname').value,
-                SDT: document.getElementById('cust-phone').value,
-                Xe: this.state.car.name,
-                NgayThue: document.getElementById('pickup-date').value,
-                NgayTra: document.getElementById('return-date').value,
-                TongTien: this.fmt(this.state.total)
+            const filtered = cat === 'all' ? carData : carData.filter(c => c.category === cat);
+            renderCars(filtered);
+        }
+
+        function searchCars() {
+            const query = document.getElementById('carSearch').value.toLowerCase();
+            const filtered = carData.filter(c => c.name.toLowerCase().includes(query));
+            renderCars(filtered);
+        }
+
+        function openBooking(id) {
+            selectedCar = carData.find(c => c.id == id);
+            document.getElementById('modal-car-name').innerText = selectedCar.name;
+            document.getElementById('modal-car-img').src = selectedCar.image_url;
+            document.getElementById('modal-car-cat').innerText = `${selectedCar.category} - ${selectedCar.transmission}`;
+            document.getElementById('modal-total-price').innerText = formatVND(selectedCar.price);
+            
+            const featuresBox = document.getElementById('modal-features');
+            featuresBox.innerHTML = selectedCar.features.map(f => `
+                <div class="bg-white p-3 rounded-2xl text-[10px] font-bold text-slate-600 border border-slate-200/50 flex items-center shadow-sm">
+                    <i class="fas fa-star text-blue-600 mr-2 text-[8px]"></i> ${f}
+                </div>
+            `).join('');
+
+            document.getElementById('modal-car').classList.add('active-modal');
+            
+            const config = { 
+                minDate: "today", 
+                defaultValue: new Date(),
+                onChange: calcDays 
             };
+            flatpickr("#pickup-date", config);
+            flatpickr("#return-date", {...config, defaultValue: new Date(Date.now() + 86400000)});
+            calcDays();
+        }
 
-            fetch(this.CONFIG.SCRIPT_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
+        function calcDays() {
+            const p = document.getElementById('pickup-date')._flatpickr.selectedDates[0];
+            const r = document.getElementById('return-date')._flatpickr.selectedDates[0];
+            if(p && r) {
+                const diffTime = r.getTime() - p.getTime();
+                const diffDays = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+                days = diffDays;
+                document.getElementById('days-count').innerText = days;
+                document.getElementById('modal-total-price').innerText = formatVND(selectedCar.price * days);
+            }
+        }
 
-            const memo = `DAT XE ${this.state.car.id} ${payload.SDT}`;
-            document.getElementById('m-car').innerText = payload.Xe;
-            document.getElementById('m-total').innerText = payload.TongTien;
-            document.getElementById('m-memo').innerText = memo;
-            document.getElementById('qr-code').src = `https://img.vietqr.io/image/${this.CONFIG.BANK_ID}-${this.CONFIG.ACC_NO}-compact2.png?amount=${this.state.total}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(this.CONFIG.ACC_NAME)}`;
+        function closeModal() {
+            document.getElementById('modal-car').classList.remove('active-modal');
+        }
+
+        // HÀM QUAN TRỌNG NHẤT: CHUYỂN TRANG VÀ GỬI DỮ LIỆU
+        function goToBookingPage() {
+            if (!selectedCar) return;
             
-            document.getElementById('payment-modal').style.display = 'flex';
-            btn.disabled = false; btn.innerText = "ĐẶT CỌC NGAY";
-        },
+            const pickup = document.getElementById('pickup-date').value;
+            const returnDate = document.getElementById('return-date').value;
+            
+            // Tạo URL chứa thông tin xe và ngày tháng
+            const params = new URLSearchParams({
+                carId: selectedCar.id,
+                carName: selectedCar.name,
+                price: selectedCar.price,
+                pickup: pickup,
+                return: returnDate,
+                days: days
+            });
 
-        finish() { window.location.href = this.CONFIG.ZALO; }
-    };
+            // Chuyển hướng sang trang booking-car.html
+            window.location.href = `booking-car.html?${params.toString()}`;
+        }
 
-    document.addEventListener('DOMContentLoaded', () => carApp.init());
-</script>
+        window.onclick = function(event) {
+            const modal = document.getElementById('modal-car');
+            if (event.target == modal) closeModal();
+        }
+
+        window.onload = () => renderCars(carData);
+    </script>
 </body>
 </html>
