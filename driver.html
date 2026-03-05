@@ -3,16 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Đội Ngũ Tài Xế - TrangHy Autocar</title>
+    <title>Lựa Chọn Tài Xế - TrangHy Autocar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
-        .driver-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; overflow: hidden; }
+        .driver-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; position: relative; }
         .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); border-color: #2563eb; }
-        .btn-rent { background: linear-gradient(135deg, #2563eb, #1e40af); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
-        .btn-rent:hover { opacity: 0.9; transform: scale(1.02); }
-        .avatar-box { background: #f1f5f9; height: 192px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+        .badge-premium { background: linear-gradient(135deg, #f59e0b, #d97706); }
+        .avatar-box { background: #f1f5f9; height: 180px; display: flex; align-items: center; justify-content: center; font-size: 5rem; transition: 0.3s; }
+        .driver-card:hover .avatar-box { background: #eff6ff; transform: scale(0.95); }
+        .filter-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
     </style>
 </head>
 <body>
@@ -28,9 +30,16 @@
     </nav>
 
     <main class="max-w-7xl mx-auto px-6 py-12">
-        <div class="mb-16">
-            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">P.S.P Elite Team</span>
-            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
+            <div>
+                <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">Lựa chọn đối tác tin cậy</span>
+                <h1 class="text-5xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
+            </div>
+            
+            <div class="flex gap-2 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-sm">
+                <button onclick="filterDrivers('all')" class="filter-btn active px-5 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all">Tất cả</button>
+                <button onclick="filterDrivers('premium')" class="filter-btn px-5 py-2.5 rounded-xl text-[10px] font-black uppercase transition-all">Kinh nghiệm > 7 năm</button>
+            </div>
         </div>
 
         <div id="driver-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -39,47 +48,65 @@
 
     <script>
         const driverData = [
-            { "id": "TX01", "name": "Trần Đình Nam", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX02", "name": "Lê Quốc Đức", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX03", "name": "Phạm Minh Tùng", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX04", "name": "Hoàng Thành Thắng", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX05", "name": "Vũ Hữu Tuấn", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX06", "name": "Đặng Văn Sơn", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX07", "name": "Bùi Đình Hải", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX09", "name": "Trần Minh Nam", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX10", "name": "Lê Thành Đức", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX11", "name": "Phạm Hữu Tùng", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX12", "name": "Hoàng Văn Thắng", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX13", "name": "Vũ Đình Tuấn", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" }
+            { "id": "TX01", "name": "Trần Đình Nam", "exp": 6, "price": 500000, "avatar": "👨‍✈️", "type": "Tiêu chuẩn" },
+            { "id": "TX02", "name": "Lê Quốc Đức", "exp": 7, "price": 550000, "avatar": "🧔", "type": "Tiêu chuẩn" },
+            { "id": "TX03", "name": "Phạm Minh Tùng", "exp": 10, "price": 800000, "avatar": "👮‍♂️", "type": "VIP" },
+            { "id": "TX04", "name": "Hoàng Thành Thắng", "exp": 9, "price": 750000, "avatar": "👲", "type": "VIP" },
+            { "id": "TX05", "name": "Vũ Hữu Tuấn", "exp": 5, "price": 500000, "avatar": "🧑‍✈️", "type": "Tiêu chuẩn" },
+            { "id": "TX06", "name": "Đặng Văn Sơn", "exp": 6, "price": 500000, "avatar": "👨‍✈️", "type": "Tiêu chuẩn" },
+            { "id": "TX07", "name": "Bùi Đình Hải", "exp": 12, "price": 900000, "avatar": "🧔", "type": "VIP" },
+            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "exp": 8, "price": 600000, "avatar": "👮‍♂️", "type": "Tiêu chuẩn" }
         ];
 
-        function renderDrivers() {
+        function renderDrivers(data) {
             const list = document.getElementById('driver-list');
-            list.innerHTML = driverData.map(driver => `
-                <div class="driver-card p-6 flex flex-col h-full">
-                    <div class="avatar-box rounded-[2rem] mb-6">
+            list.innerHTML = data.map(driver => `
+                <div class="driver-card p-6 flex flex-col h-full group">
+                    ${driver.type === 'VIP' ? '<span class="absolute top-4 right-4 badge-premium text-white text-[8px] font-black px-3 py-1 rounded-full uppercase z-10 shadow-lg">Premium</span>' : ''}
+                    
+                    <div class="avatar-box rounded-[2rem] mb-6 relative overflow-hidden">
                         ${driver.avatar}
                     </div>
+
                     <div class="flex-grow">
-                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id}</span>
-                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-4 mt-1">${driver.name}</h3>
-                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter italic">${driver.exp} kinh nghiệm</p>
+                        <div class="flex justify-between items-start">
+                            <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id}</span>
+                            <span class="text-[10px] font-bold text-green-600"><i class="fas fa-circle text-[6px] mr-1"></i> Sẵn sàng</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-2 mt-1">${driver.name}</h3>
+                        <div class="flex items-center gap-2 mb-4">
+                            <span class="bg-slate-100 text-slate-600 text-[9px] font-bold px-2 py-1 rounded-md">${driver.exp} Năm EXP</span>
+                            <span class="bg-blue-50 text-blue-600 text-[9px] font-bold px-2 py-1 rounded-md">Hạng B2/D</span>
+                        </div>
                     </div>
+
                     <div class="pt-6 border-t border-slate-100 flex items-center justify-between mt-4">
                         <div>
-                            <p class="text-[10px] text-slate-400 font-bold uppercase">Giá thuê</p>
-                            <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-xs font-medium text-slate-400">/ngày</span></p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1">Công tác phí</p>
+                            <p class="text-lg font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
                         </div>
-                        <a href="booking-driver.html?id=${driver.id}" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-blue-200">
-                            Thuê ngay
+                        <a href="booking-driver.html?driverId=${driver.id}" class="bg-blue-600 hover:bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center transition-all shadow-lg shadow-blue-100">
+                            <i class="fas fa-arrow-right"></i>
                         </a>
                     </div>
                 </div>
             `).join('');
         }
 
-        window.onload = renderDrivers;
+        function filterDrivers(mode) {
+            // Update UI nút bấm
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (mode === 'all') {
+                renderDrivers(driverData);
+            } else {
+                const filtered = driverData.filter(d => d.exp > 7);
+                renderDrivers(filtered);
+            }
+        }
+
+        window.onload = () => renderDrivers(driverData);
     </script>
 </body>
 </html>
