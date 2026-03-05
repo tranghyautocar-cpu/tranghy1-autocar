@@ -8,63 +8,25 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
-        
-        /* Chuyển card thành block có thể click toàn diện */
-        .driver-item-link { display: block; height: 100%; text-decoration: none !important; }
-
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 100px; }
         .driver-card { 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
-            border-radius: 2.5rem; 
-            background: white; 
-            border: 1px solid #e2e8f0; 
-            position: relative;
-            overflow: hidden;
+            border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; 
+            display: flex; flex-direction: column;
         }
-        
-        .driver-item-link:hover .driver-card { 
+        .driver-card:hover { 
             transform: translateY(-12px); 
             box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); 
             border-color: #2563eb; 
         }
-
-        .avatar-circle {
-            width: 110px; height: 110px;
-            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            border-radius: 50%; margin: 0 auto 1.5rem;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 3.5rem; border: 4px solid white;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
-        .driver-item-link:hover .avatar-circle {
-            transform: scale(1.15) rotate(5deg);
-        }
-
-        @keyframes pulse-green {
-            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
-            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
-        }
-        .status-pulse { animation: pulse-green 2s infinite; }
-
-        .btn-rent-circle { 
-            background: #0f172a;
-            color: white;
-            transition: all 0.3s ease; 
-        }
-        
-        .driver-item-link:hover .btn-rent-circle { 
-            background: #2563eb;
-            transform: scale(1.1);
-        }
+        .btn-action { transition: all 0.2s ease; }
+        .btn-action:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-[1000] border-b border-slate-100">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-black text-2xl italic">TRANGHY <span class="text-blue-600 not-italic text-xs tracking-[0.3em]">AUTOCAR</span></div>
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-[1000] border-b border-slate-100 py-4">
+        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+            <div class="font-black text-2xl italic">TRANGHY <span class="text-blue-600">AUTOCAR</span></div>
             <div class="flex gap-8 font-bold text-xs uppercase tracking-widest text-slate-600">
                 <a href="index.html" class="hover:text-blue-600 transition-colors">Trang chủ</a>
                 <a href="cars.html" class="hover:text-blue-600 transition-colors">Xe</a>
@@ -75,13 +37,12 @@
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-16">
-            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px] bg-blue-50 px-3 py-1 rounded-full">Đội ngũ chuyên nghiệp</span>
-            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter mt-4">Chọn <span class="text-blue-600">Tài xế</span></h1>
-            <p class="text-slate-500 font-medium mt-2 max-w-xl">Hệ thống tài xế giàu kinh nghiệm, phục vụ tận tâm 24/7.</p>
+            <span class="text-blue-600 font-extrabold uppercase tracking-[0.2em] text-[10px] bg-blue-50 px-3 py-1 rounded-full">Đội ngũ chuyên gia</span>
+            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter mt-4">P.S.P <span class="text-blue-600">Elite Team</span></h1>
+            <p class="text-slate-500 font-medium mt-2 max-w-2xl">Lựa chọn người đồng hành tin cậy cho chuyến đi của bạn.</p>
         </div>
 
-        <div id="driver-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-            </div>
+        <div id="driver-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"></div>
     </main>
 
     <script>
@@ -104,49 +65,29 @@
         function renderDrivers() {
             const list = document.getElementById('driver-list');
             list.innerHTML = driverData.map(driver => `
-                <a href="booking-driver.html?id=${driver.id}" class="driver-item-link">
-                    <div class="driver-card p-8 flex flex-col h-full relative">
-                        <div class="absolute top-6 right-6">
-                            <span class="status-pulse bg-emerald-500 text-white text-[8px] font-black px-3 py-1 rounded-full flex items-center shadow-lg shadow-emerald-200 uppercase">
-                                Sẵn sàng
-                            </span>
-                        </div>
-
-                        <div class="avatar-circle">
-                            ${driver.avatar}
-                        </div>
-
-                        <div class="text-center flex-grow">
-                            <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-md">${driver.id}</span>
-                            <h3 class="text-2xl font-black text-slate-900 uppercase italic mt-2 mb-1">${driver.name}</h3>
-                            <p class="text-slate-400 font-bold text-[10px] uppercase mb-6 italic">Kinh nghiệm: ${driver.exp}</p>
-                            
-                            <div class="grid grid-cols-2 gap-2 mb-8 text-left">
-                                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                                    <span class="text-[8px] text-slate-400 font-bold uppercase block">Chứng chỉ</span>
-                                    <span class="text-[11px] font-bold text-slate-700 italic">Hạng D, E</span>
-                                </div>
-                                <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100">
-                                    <span class="text-[8px] text-slate-400 font-bold uppercase block">Khu vực</span>
-                                    <span class="text-[11px] font-bold text-slate-700 italic">Toàn quốc</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="pt-6 border-t border-slate-100 flex items-center justify-between mt-auto">
+                <div class="driver-card p-8 text-center h-full">
+                    <div class="text-7xl mb-6 transform transition-transform hover:scale-110 duration-300 drop-shadow-md">${driver.avatar}</div>
+                    <div class="flex-grow">
+                        <span class="text-[10px] font-black text-blue-600 uppercase bg-blue-50 px-3 py-1 rounded-lg mb-3 inline-block tracking-widest">ID: ${driver.id}</span>
+                        <h3 class="text-2xl font-black uppercase italic text-slate-800 leading-tight mb-1">${driver.name}</h3>
+                        <p class="text-slate-400 text-[10px] font-extrabold mb-6 tracking-widest uppercase italic">${driver.exp} kinh nghiệm</p>
+                    </div>
+                    <div class="pt-6 border-t border-slate-50 mt-auto">
+                        <div class="flex justify-between items-end mb-6 text-left">
                             <div>
                                 <p class="text-[9px] text-slate-400 font-bold uppercase">Giá thuê</p>
-                                <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
+                                <p class="text-2xl font-black text-slate-900 leading-none">${driver.price.toLocaleString('vi-VN')}đ<span class="text-[10px] font-medium text-slate-400 italic">/ngày</span></p>
                             </div>
-                            <div class="btn-rent-circle w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg">
-                                <i class="fas fa-chevron-right"></i>
-                            </div>
+                            <i class="fa-solid fa-circle-check text-emerald-500 text-xl"></i>
                         </div>
+                        <a href="booking-driver.html?id=${driver.id}&name=${encodeURIComponent(driver.name)}&price=${driver.price}&avatar=${encodeURIComponent(driver.avatar)}" 
+                           class="btn-action block w-full bg-slate-900 text-white py-4 rounded-[20px] font-black text-xs uppercase tracking-widest hover:bg-blue-600 shadow-lg">
+                            Liên hệ thuê ngay
+                        </a>
                     </div>
-                </a>
+                </div>
             `).join('');
         }
-
         window.onload = renderDrivers;
     </script>
 </body>
