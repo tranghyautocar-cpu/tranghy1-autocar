@@ -10,54 +10,53 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
         
-        /* Đồng bộ hiệu ứng card với cars.html */
         .driver-card { 
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
             border-radius: 2.5rem; 
             background: white; 
             border: 1px solid #e2e8f0; 
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            overflow: hidden;
+            cursor: pointer; /* Biến chuột thành hình bàn tay để báo hiệu ấn được */
         }
         
         .driver-card:hover { 
             transform: translateY(-12px); 
-            box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1); 
+            box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); 
             border-color: #2563eb; 
         }
 
         .avatar-circle {
-            width: 100px; height: 100px;
-            background: #f1f5f9;
+            width: 110px; height: 110px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
             border-radius: 50%; margin: 0 auto 1.5rem;
             display: flex; align-items: center; justify-content: center;
-            font-size: 3rem; border: 4px solid white;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
-            transition: transform 0.3s ease;
+            font-size: 3.5rem; border: 4px solid white;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            transition: transform 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
         .driver-card:hover .avatar-circle {
-            transform: scale(1.1);
+            transform: scale(1.15) rotate(5deg);
         }
 
-        .btn-rent { 
-            background: linear-gradient(135deg, #2563eb, #1e40af); 
+        /* Hiệu ứng nhấp nháy cho trạng thái */
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+        }
+        .status-pulse {
+            animation: pulse-green 2s infinite;
+        }
+
+        .btn-rent-circle { 
+            background: #0f172a;
+            color: white;
             transition: all 0.3s ease; 
         }
         
-        .btn-rent:hover { 
-            opacity: 0.9; 
-            transform: scale(1.02); 
-        }
-
-        .status-dot {
-            height: 8px; width: 8px;
-            background-color: #10b981;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
+        .driver-card:hover .btn-rent-circle { 
+            background: #2563eb;
+            transform: translateX(5px);
         }
     </style>
 </head>
@@ -75,9 +74,9 @@
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-16">
-            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">Professional Drivers</span>
-            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
-            <p class="text-slate-500 font-medium mt-2">Đội ngũ tài xế tận tâm, kinh nghiệm, sẵn sàng đồng hành cùng bạn trên mọi nẻo đường.</p>
+            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px] bg-blue-50 px-3 py-1 rounded-full">Dịch vụ cao cấp</span>
+            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter mt-4">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
+            <p class="text-slate-500 font-medium mt-2 max-w-xl">Lựa chọn người đồng hành tin cậy cho chuyến đi của bạn. Tất cả tài xế đều được đào tạo bài bản và có lý lịch rõ ràng.</p>
         </div>
 
         <div id="driver-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
@@ -104,10 +103,10 @@
         function renderDrivers() {
             const list = document.getElementById('driver-list');
             list.innerHTML = driverData.map(driver => `
-                <div class="driver-card p-8">
+                <div class="driver-card p-8 flex flex-col h-full" onclick="bookDriver('${driver.id}')">
                     <div class="absolute top-6 right-6">
-                        <span class="bg-emerald-50 text-emerald-600 text-[9px] font-black px-3 py-1 rounded-full border border-emerald-100 flex items-center">
-                            <span class="status-dot"></span> ĐANG TRỐNG
+                        <span class="status-pulse bg-emerald-500 text-white text-[8px] font-black px-3 py-1 rounded-full flex items-center shadow-lg shadow-emerald-200 uppercase tracking-tighter">
+                            Sẵn sàng
                         </span>
                     </div>
 
@@ -116,42 +115,40 @@
                     </div>
 
                     <div class="text-center flex-grow">
-                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest">${driver.id}</span>
-                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-1">${driver.name}</h3>
-                        <p class="text-slate-400 font-bold text-[11px] uppercase mb-6">Kinh nghiệm: ${driver.exp}</p>
+                        <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest bg-blue-50 px-2 py-0.5 rounded-md">${driver.id}</span>
+                        <h3 class="text-2xl font-black text-slate-900 uppercase italic mt-2 mb-1">${driver.name}</h3>
+                        <p class="text-slate-400 font-bold text-[10px] uppercase mb-6 tracking-wide italic">Kinh nghiệm chuyên sâu: ${driver.exp}</p>
                         
-                        <div class="flex justify-center gap-4 mb-8">
-                            <div class="flex flex-col">
-                                <span class="text-[9px] text-slate-400 font-bold uppercase">Chứng chỉ</span>
-                                <span class="text-xs font-bold text-slate-700 italic">Hạng D, E</span>
+                        <div class="grid grid-cols-2 gap-2 mb-8 text-left">
+                            <div class="bg-slate-50 p-3 rounded-2xl">
+                                <span class="text-[8px] text-slate-400 font-bold uppercase block">Chứng chỉ</span>
+                                <span class="text-[11px] font-bold text-slate-700 italic">Hạng D, E</span>
                             </div>
-                            <div class="w-[1px] h-8 bg-slate-100"></div>
-                            <div class="flex flex-col">
-                                <span class="text-[9px] text-slate-400 font-bold uppercase">Khu vực</span>
-                                <span class="text-xs font-bold text-slate-700 italic">Toàn quốc</span>
+                            <div class="bg-slate-50 p-3 rounded-2xl">
+                                <span class="text-[8px] text-slate-400 font-bold uppercase block">Khu vực</span>
+                                <span class="text-[11px] font-bold text-slate-700 italic">Đà Nẵng</span>
                             </div>
                         </div>
                     </div>
 
-                    <div class="pt-6 border-t border-slate-50 flex items-center justify-between">
+                    <div class="pt-6 border-t border-slate-100 flex items-center justify-between mt-auto">
                         <div>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase">Phí dịch vụ</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase">Giá thuê</p>
                             <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
                         </div>
-                        <button onclick="bookDriver('${driver.id}')" class="btn-rent text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-200">
-                            <i class="fas fa-arrow-right"></i>
-                        </button>
+                        <div class="btn-rent-circle w-12 h-12 rounded-full flex items-center justify-center shadow-lg">
+                            <i class="fas fa-chevron-right"></i>
+                        </div>
                     </div>
                 </div>
             `).join('');
         }
 
         function bookDriver(id) {
-            // Chuyển sang trang booking-driver.html kèm ID tài xế
-            window.location.href = `booking-driver.html?id=${id}`;
+            // Chuyển trang ngay lập tức
+            window.location.href = 'booking-driver.html?id=' + id;
         }
 
-        // Khởi tạo danh sách khi trang web tải xong
         window.onload = renderDrivers;
     </script>
 </body>
