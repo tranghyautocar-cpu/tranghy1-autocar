@@ -13,171 +13,171 @@
     
     <style>
         :root { --primary: #2563eb; --dark: #0f172a; --bg: #f8fafc; }
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); padding-top: 100px; scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); padding-top: 80px; scroll-behavior: smooth; }
         
+        /* Glassmorphism Navigation */
         nav { 
             position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(15px); 
+            background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); 
             border-bottom: 1px solid rgba(0,0,0,0.05); 
         }
 
         .driver-card { 
-            background: white; border-radius: 2.5rem; 
-            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
-            border: 1px solid rgba(226, 232, 240, 0.8); 
-            position: relative; overflow: hidden;
+            background: white; border-radius: 2rem; 
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+            border: 1px solid rgba(226, 232, 240, 1); 
         }
 
         .driver-card:hover { 
-            transform: translateY(-12px); 
-            box-shadow: 0 40px 80px rgba(15, 23, 42, 0.1); 
+            transform: translateY(-8px); 
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1); 
             border-color: var(--primary); 
         }
 
         .avatar-circle {
-            width: 120px; height: 120px;
+            width: 100px; height: 100px;
             background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-            border-radius: 50%; margin: 0 auto 1.5rem;
+            border-radius: 50%; margin: 0 auto 1rem;
             display: flex; align-items: center; justify-content: center;
-            font-size: 3.5rem; border: 4px solid white;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+            font-size: 3rem; border: 4px solid white;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
         }
 
         .modal-overlay { 
             display: none; position: fixed; inset: 0; 
-            z-index: 2000; background: rgba(15, 23, 42, 0.75); 
-            backdrop-filter: blur(10px); align-items: center; justify-content: center; 
+            z-index: 2000; background: rgba(15, 23, 42, 0.6); 
+            backdrop-filter: blur(8px); align-items: center; justify-content: center; 
+            padding: 1rem;
         }
 
         .status-badge {
             position: absolute; top: 20px; right: 20px;
             background: #dcfce7; color: #166534;
-            padding: 4px 12px; border-radius: 9999px; /* FIXED: rounded-full sang border-radius */
+            padding: 4px 12px; border-radius: 9999px;
             font-size: 10px; font-weight: 800;
-            text-transform: uppercase; letter-spacing: 1px;
+            text-transform: uppercase;
         }
+
+        /* Custom Scrollbar for Modal */
+        .modal-content::-webkit-scrollbar { width: 6px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        input:focus::placeholder { opacity: 0.5; }
     </style>
 </head>
 <body>
 
     <nav class="p-4">
-        <div class="max-w-7xl mx-auto flex justify-between items-center px-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
             <a href="index.html" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black italic group-hover:bg-blue-600 transition-colors">T</div>
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-xl flex items-center justify-center font-black italic group-hover:bg-blue-600 transition-all transform group-hover:rotate-6">T</div>
                 <div class="flex flex-col leading-none">
                     <span class="font-black text-lg italic uppercase text-slate-900">TRANGHY</span>
                     <span class="text-blue-600 font-bold text-[8px] tracking-[0.3em] uppercase">Autocar</span>
                 </div>
             </a>
-          <div class="hidden md:flex bg-slate-100/50 rounded-full p-1 border border-slate-200">
-    <a href="./index.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-all">Trang chủ</a>
-    <a href="./cars.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-all">Xe</a>
-    <a href="./driver.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-all">Tài xế</a>
-    </div>
-            <a href="tel:0905123456" class="bg-slate-900 text-white px-6 py-3 rounded-full font-bold text-[10px] uppercase hover:bg-blue-600 transition-all shadow-lg shadow-slate-200">
-                <i class="fas fa-headset mr-2"></i>Hỗ trợ 24/7
+            <div class="hidden md:flex bg-slate-100/80 rounded-full p-1 border border-slate-200">
+                <a href="./index.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-all">Trang chủ</a>
+                <a href="./cars.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-all">Xe</a>
+                <a href="./driver.html" class="px-6 py-2 rounded-full bg-white text-blue-600 shadow-sm font-bold text-xs uppercase transition-all">Tài xế</a>
+            </div>
+            <a href="tel:0905123456" class="bg-slate-900 text-white px-5 py-3 rounded-xl font-bold text-[10px] uppercase hover:bg-blue-600 transition-all shadow-lg">
+                <i class="fas fa-phone-alt mr-2"></i>Hotline
             </a>
         </div>
     </nav>
 
     <main class="py-12 px-4">
         <div class="max-w-7xl mx-auto">
-            <div class="mb-16">
-                <h1 class="text-4xl md:text-7xl font-black text-slate-900 italic uppercase tracking-tighter mb-4">Đội Ngũ Tài Xế</h1>
-                <div class="flex items-center gap-4">
-                    <div class="h-1 w-20 bg-blue-600"></div>
-                    <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Chuyên nghiệp - An toàn - Tin cậy</p>
+            <div class="mb-12 text-center md:text-left">
+                <h1 class="text-5xl md:text-7xl font-black text-slate-900 italic uppercase tracking-tighter mb-4">Đội Ngũ Tài Xế</h1>
+                <div class="flex items-center justify-center md:justify-start gap-4">
+                    <div class="h-1 w-16 bg-blue-600"></div>
+                    <p class="text-slate-500 font-bold uppercase tracking-widest text-xs">Chuyên nghiệp - Văn minh - Đúng giờ</p>
                 </div>
             </div>
-            <div id="driver-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"></div>
+            <div id="driver-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+                </div>
         </div>
     </main>
 
     <div id="modal-driver" class="modal-overlay">
-        <div class="bg-white w-full max-w-xl rounded-[3rem] p-8 md:p-12 shadow-2xl relative max-h-[95vh] overflow-y-auto">
-            <button onclick="closeModal('modal-driver')" class="absolute top-8 right-8 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 hover:bg-red-50 transition-all">
-                <i class="fas fa-times text-lg"></i>
+        <div class="bg-white w-full max-w-xl rounded-[2.5rem] p-6 md:p-10 shadow-2xl relative max-h-[90vh] overflow-y-auto modal-content">
+            <button onclick="closeModal('modal-driver')" class="absolute top-6 right-6 w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center text-slate-400 hover:text-red-500 transition-all">
+                <i class="fas fa-times"></i>
             </button>
             
             <div class="mb-8">
-                <h2 id="modal-title" class="text-3xl font-black italic uppercase text-slate-900 leading-tight">Đăng ký dịch vụ</h2>
-                <p class="text-blue-600 font-bold text-xs uppercase mt-2">Vui lòng điền thông tin để chúng tôi liên hệ xác nhận</p>
+                <h2 id="modal-title" class="text-3xl font-black italic uppercase text-slate-900 leading-tight">Đặt tài xế</h2>
+                <p class="text-blue-600 font-bold text-[10px] uppercase mt-2 tracking-widest">Hỗ trợ đưa đón tận nơi 24/7</p>
             </div>
             
-            <div class="space-y-5">
-                <div class="group">
-                    <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Họ và tên khách hàng</label>
-                    <input type="text" id="dr-cust-fullname" placeholder="Nhập tên của bạn..." class="w-full p-5 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all">
+            <div class="space-y-4">
+                <div class="relative">
+                    <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Họ và tên</label>
+                    <input type="text" id="dr-cust-fullname" placeholder="Nguyễn Văn A" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-blue-600 focus:bg-white font-bold text-sm outline-none transition-all">
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Số điện thoại</label>
-                        <input type="tel" id="dr-cust-phone" placeholder="Số điện thoại liên lạc" class="w-full p-5 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all">
+                        <input type="tel" id="dr-cust-phone" placeholder="090..." class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-blue-600 focus:bg-white font-bold text-sm outline-none transition-all">
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Số CCCD</label>
-                        <input type="text" id="dr-cust-cccd" placeholder="Số căn cước" class="w-full p-5 bg-slate-50 rounded-2xl border-none font-bold text-sm focus:ring-2 focus:ring-blue-600 outline-none transition-all">
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Số CCCD (Tùy chọn)</label>
+                        <input type="text" id="dr-cust-cccd" placeholder="Số căn cước" class="w-full p-4 bg-slate-50 rounded-2xl border-2 border-transparent focus:border-blue-600 focus:bg-white font-bold text-sm outline-none transition-all">
                     </div>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-5">
+                <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Ngày bắt đầu</label>
-                        <input type="text" id="dr-start-date" class="w-full p-5 bg-slate-50 rounded-2xl border-none font-bold text-sm outline-none cursor-pointer" readonly>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block italic"><i class="far fa-calendar-alt mr-1"></i>Từ ngày</label>
+                        <input type="text" id="dr-start-date" class="w-full p-4 bg-slate-100 rounded-2xl font-bold text-sm outline-none cursor-pointer" readonly>
                     </div>
                     <div>
-                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block">Ngày kết thúc</label>
-                        <input type="text" id="dr-end-date" class="w-full p-5 bg-slate-50 rounded-2xl border-none font-bold text-sm outline-none cursor-pointer" readonly>
+                        <label class="text-[10px] font-black uppercase text-slate-400 ml-4 mb-1 block italic"><i class="fas fa-flag-checkered mr-1"></i>Đến ngày</label>
+                        <input type="text" id="dr-end-date" class="w-full p-4 bg-slate-100 rounded-2xl font-bold text-sm outline-none cursor-pointer" readonly>
                     </div>
                 </div>
 
-                <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-center mb-4 opacity-70">
-                            <span class="text-[10px] font-bold uppercase tracking-widest">Thời gian thuê: <span id="dr-days-text">1 ngày</span></span>
+                <div class="bg-slate-900 rounded-[2rem] p-6 text-white overflow-hidden relative">
+                    <div class="relative z-10 flex justify-between items-center">
+                        <div>
+                            <p class="text-[10px] font-bold uppercase text-blue-400 mb-1">Thời gian: <span id="dr-days-text" class="text-white">1 ngày</span></p>
+                            <p id="dr-total" class="text-3xl font-black italic tracking-tighter">0 đ</p>
                         </div>
-                        <div class="flex justify-between items-end">
-                            <div>
-                                <p class="text-[10px] font-bold uppercase text-blue-400 mb-1">Tổng chi phí dự kiến</p>
-                                <p id="dr-total" class="text-4xl font-black italic tracking-tighter">0 đ</p>
-                            </div>
-                            <i class="fas fa-file-invoice-dollar text-4xl opacity-20"></i>
-                        </div>
+                        <i class="fas fa-wallet text-4xl opacity-20"></i>
                     </div>
                 </div>
 
-                <label class="flex items-center gap-3 px-4 cursor-pointer group">
-                    <input type="checkbox" id="agree-contract-driver" class="w-5 h-5 rounded-lg border-slate-300 accent-blue-600">
-                    <span class="text-[10px] font-bold text-slate-500 uppercase group-hover:text-slate-900 transition-colors">Tôi đồng ý với các điều khoản bảo mật và thuê nhân sự</span>
+                <label class="flex items-start gap-3 px-2 cursor-pointer group">
+                    <input type="checkbox" id="agree-contract-driver" class="mt-1 w-4 h-4 rounded border-slate-300 accent-blue-600">
+                    <span class="text-[9px] font-bold text-slate-500 uppercase leading-relaxed">Tôi xác nhận các thông tin trên là chính xác và đồng ý với điều khoản dịch vụ của TrangHy Autocar.</span>
                 </label>
 
-                <button onclick="handleDriverBooking()" class="w-full py-6 bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-200 active:scale-95">
-                    Xác nhận và Thanh toán
+                <button onclick="handleDriverBooking()" id="btn-submit" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-100 active:scale-[0.98]">
+                    Xác nhận đặt lịch
                 </button>
             </div>
         </div>
     </div>
 
     <div id="payment-modal" class="modal-overlay">
-        <div class="bg-white w-full max-w-md rounded-[3.5rem] p-10 text-center shadow-2xl relative mx-4">
-            <button onclick="closeModal('payment-modal')" class="absolute top-8 right-8 text-slate-300 hover:text-slate-900 transition-colors">
-                <i class="fas fa-times text-xl"></i>
-            </button>
-            <h3 class="text-2xl font-black italic uppercase text-slate-900 mb-2">Thanh Toán QR</h3>
-            <p class="text-[10px] font-black text-blue-600 uppercase mb-8 tracking-[0.2em]">Ngân hàng MB - Bùi Văn Trang</p>
+        <div class="bg-white w-full max-w-sm rounded-[3rem] p-8 text-center shadow-2xl relative">
+            <h3 class="text-xl font-black italic uppercase text-slate-900 mb-1">Quét mã thanh toán</h3>
+            <p class="text-[9px] font-black text-blue-600 uppercase mb-6 tracking-widest">MB BANK - BUI VAN TRANG</p>
             
-            <div class="bg-white p-4 rounded-3xl mb-8 border-2 border-dashed border-slate-200 inline-block">
-                <img id="qr-code" src="" alt="QR Code" class="w-64 h-64 object-contain mx-auto">
+            <div class="bg-slate-50 p-4 rounded-3xl mb-6 border-2 border-dashed border-slate-200">
+                <img id="qr-code" src="" alt="QR Code" class="w-full aspect-square object-contain mx-auto rounded-xl">
             </div>
 
-            <div class="bg-slate-50 p-6 rounded-2xl mb-8">
-                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Số tiền thanh toán</p>
-                <p id="payment-final-amount" class="text-3xl font-black text-slate-900 tracking-tight">0 đ</p>
+            <div class="mb-6">
+                <p class="text-[10px] font-bold text-slate-400 uppercase mb-1">Số tiền cần chuyển</p>
+                <p id="payment-final-amount" class="text-2xl font-black text-slate-900">0 đ</p>
             </div>
 
-            <button onclick="verifyPayment()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-green-600 transition-all">
-                Xác nhận đã chuyển khoản
+            <button onclick="verifyPayment()" class="w-full py-4 bg-slate-900 text-white rounded-xl font-black uppercase text-[10px] tracking-widest hover:bg-green-600 transition-all">
+                Tôi đã chuyển khoản xong
             </button>
         </div>
     </div>
@@ -187,51 +187,43 @@
             BANK_ID: "MB",
             ACCOUNT_NO: "0353979614",
             ACCOUNT_NAME: "BUI VAN TRANG",
-            DRIVER_PRICE_PER_DAY: 500000,
             SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzDi9Cjw1E6cINUdmTn15HpQ3Cebb49fp9PKjJKzgGKzfXs3DQ5dVVwPjLF2YZ5XYlp/exec'
         };
 
         const driverData = [
-            { "id": "TX01", "name": "Trần Đình Nam", "phone": "0905123456", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️", "status": "Sẵn sàng" },
-            { "id": "TX02", "name": "Lê Quốc Đức", "phone": "0912987654", "exp": "7 năm", "price": 500000, "avatar": "🧔", "status": "Sẵn sàng" },
-            { "id": "TX03", "name": "Phạm Minh Tùng", "phone": "0988555777", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️", "status": "Sẵn sàng" },
-            { "id": "TX04", "name": "Hoàng Thành Thắng", "phone": "0977222888", "exp": "9 năm", "price": 500000, "avatar": "👲", "status": "Sẵn sàng" },
-            { "id": "TX05", "name": "Vũ Hữu Tuấn", "phone": "0325999000", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️", "status": "Sẵn sàng" },
-            { "id": "TX06", "name": "Đặng Văn Sơn", "phone": "0934567890", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️", "status": "Sẵn sàng" },
-            { "id": "TX07", "name": "Bùi Đình Hải", "phone": "0909111222", "exp": "7 năm", "price": 500000, "avatar": "🧔", "status": "Sẵn sàng" },
-            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "phone": "0914333444", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️", "status": "Sẵn sàng" },
-            { "id": "TX09", "name": "Trần Minh Nam", "phone": "0966777888", "exp": "9 năm", "price": 500000, "avatar": "👲", "status": "Sẵn sàng" },
-            { "id": "TX10", "name": "Lê Thành Đức", "phone": "0388999111", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️", "status": "Sẵn sàng" },
-            { "id": "TX11", "name": "Phạm Hữu Tùng", "phone": "0989123123", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️", "status": "Sẵn sàng" },
-            { "id": "TX12", "name": "Hoàng Văn Thắng", "phone": "0903456789", "exp": "7 năm", "price": 500000, "avatar": "🧔", "status": "Sẵn sàng" },
-            { "id": "TX13", "name": "Vũ Đình Tuấn", "phone": "0915678901", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️", "status": "Sẵn sàng" }
+            { id: "TX01", name: "Trần Đình Nam", phone: "0905123456", exp: "6 năm", price: 500000, avatar: "👨‍✈️", status: "Sẵn sàng" },
+            { id: "TX02", name: "Lê Quốc Đức", phone: "0912987654", exp: "7 năm", price: 500000, avatar: "🧔", status: "Sẵn sàng" },
+            { id: "TX03", name: "Phạm Minh Tùng", phone: "0988555777", exp: "8 năm", price: 550000, avatar: "👮‍♂️", status: "Sẵn sàng" },
+            { id: "TX04", name: "Hoàng Thành Thắng", phone: "0977222888", exp: "9 năm", price: 600000, avatar: "👲", status: "Sẵn sàng" },
+            { id: "TX05", name: "Vũ Hữu Tuấn", phone: "0325999000", exp: "5 năm", price: 500000, avatar: "🧑‍✈️", status: "Sẵn sàng" },
+            { id: "TX06", name: "Đặng Văn Sơn", phone: "0934567890", exp: "6 năm", price: 500000, avatar: "👨‍✈️", status: "Sẵn sàng" },
         ];
 
         let state = { selectedDriver: null, driverDays: 1, currentAmount: 0 };
+        let startPicker, endPicker;
 
         function formatVND(n) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(n); }
 
         function renderDrivers() {
-            const list = document.getElementById('driver-list');
-            list.innerHTML = driverData.map(d => `
-                <div class="driver-card p-10 flex flex-col items-center text-center">
+            document.getElementById('driver-list').innerHTML = driverData.map(d => `
+                <div class="driver-card p-8 flex flex-col items-center text-center relative">
                     <span class="status-badge">${d.status}</span>
                     <div class="avatar-circle">${d.avatar}</div>
-                    <span class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-2">${d.id}</span>
-                    <h3 class="text-2xl font-black text-slate-900 uppercase italic mb-1">${d.name}</h3>
-                    <p class="text-slate-400 font-bold text-xs mb-8">Kinh nghiệm: ${d.exp}</p>
+                    <span class="text-[9px] font-black text-blue-600 uppercase tracking-tighter mb-1">${d.id}</span>
+                    <h3 class="text-xl font-black text-slate-900 uppercase italic mb-1 leading-tight">${d.name}</h3>
+                    <p class="text-slate-400 font-bold text-[10px] mb-6 tracking-wide">Kinh nghiệm: ${d.exp}</p>
                     
-                    <div class="w-full bg-slate-50 rounded-3xl p-5 mb-8 border border-slate-100">
-                        <p class="text-[9px] font-black text-slate-400 uppercase mb-1">Công tác phí</p>
-                        <p class="text-xl font-black text-slate-900">${formatVND(d.price)}<span class="text-xs font-medium opacity-50">/ngày</span></p>
+                    <div class="w-full bg-slate-50 rounded-2xl p-4 mb-6">
+                        <p class="text-[8px] font-black text-slate-400 uppercase mb-1">Phí phục vụ</p>
+                        <p class="text-lg font-black text-slate-900">${formatVND(d.price)}<span class="text-[10px] font-medium opacity-40">/ngày</span></p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-3 w-full mt-auto">
-                        <a href="tel:${d.phone}" class="flex items-center justify-center h-14 bg-white border border-slate-200 rounded-2xl text-slate-900 hover:bg-slate-50 transition-all shadow-sm">
-                            <i class="fas fa-phone-alt"></i>
+                    <div class="grid grid-cols-4 gap-2 w-full mt-auto">
+                        <a href="tel:${d.phone}" class="flex items-center justify-center h-12 bg-white border border-slate-200 rounded-xl text-slate-900 hover:bg-slate-50 transition-all shadow-sm">
+                            <i class="fas fa-phone-alt text-xs"></i>
                         </a>
-                        <button onclick="openBookingModal('${d.id}')" class="h-14 bg-slate-900 text-white rounded-2xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all shadow-lg shadow-slate-100">
-                            Chọn
+                        <button onclick="openBookingModal('${d.id}')" class="col-span-3 h-12 bg-slate-900 text-white rounded-xl font-black text-[10px] uppercase tracking-widest hover:bg-blue-600 transition-all">
+                            Đặt tài xế này
                         </button>
                     </div>
                 </div>
@@ -242,80 +234,91 @@
             state.selectedDriver = driverData.find(d => d.id === id);
             document.getElementById('modal-title').innerText = "Đặt lịch: " + state.selectedDriver.name;
             updateTotal();
-            document.getElementById('modal-driver').style.display = 'flex'; // FIXED: cssText sang display
+            document.getElementById('modal-driver').style.display = 'flex';
         }
 
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
         function updateTotal() {
-            state.currentAmount = state.driverDays * CONFIG.DRIVER_PRICE_PER_DAY;
+            if (!state.selectedDriver) return;
+            state.currentAmount = state.driverDays * state.selectedDriver.price;
             document.getElementById('dr-total').innerText = formatVND(state.currentAmount);
             document.getElementById('dr-days-text').innerText = state.driverDays + " Ngày";
         }
 
         function initDates() {
-            const opt = { 
+            startPicker = flatpickr("#dr-start-date", { 
                 minDate: "today", 
                 dateFormat: "d/m/Y", 
-                locale: "vn", 
+                locale: "vn",
+                defaultDate: "today",
+                onChange: function(selectedDates) {
+                    endPicker.set('minDate', selectedDates[0]);
+                    calcDays();
+                }
+            });
+            endPicker = flatpickr("#dr-end-date", { 
+                minDate: "today", 
+                dateFormat: "d/m/Y", 
+                locale: "vn",
+                defaultDate: "today",
                 onChange: calcDays 
-            };
-            flatpickr("#dr-start-date", opt);
-            flatpickr("#dr-end-date", opt);
+            });
         }
 
         function calcDays() {
-            const startStr = document.getElementById('dr-start-date').value;
-            const endStr = document.getElementById('dr-end-date').value;
-            if (startStr && endStr) {
-                const parse = (s) => { 
-                    const p = s.split('/'); 
-                    return new Date(p[2], p[1]-1, p[0]); 
-                };
-                const s = parse(startStr), e = parse(endStr);
-                
-                if (e < s) {
-                    alert("Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
-                    document.getElementById('dr-end-date').value = "";
-                    return;
-                }
-                
-                state.driverDays = Math.ceil(Math.abs(e - s) / (1000 * 60 * 60 * 24)) + 1;
+            const s = startPicker.selectedDates[0];
+            const e = endPicker.selectedDates[0];
+            if (s && e) {
+                const diffTime = Math.abs(e - s);
+                state.driverDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
                 updateTotal();
             }
         }
 
         async function handleDriverBooking() {
-            if (!document.getElementById('agree-contract-driver').checked) return alert("Vui lòng đồng ý điều khoản!");
-            const fullname = document.getElementById('dr-cust-fullname').value;
-            const phone = document.getElementById('dr-cust-phone').value;
+            const btn = document.getElementById('btn-submit');
+            const fullname = document.getElementById('dr-cust-fullname').value.trim();
+            const phone = document.getElementById('dr-cust-phone').value.trim();
             
-            if (!fullname || !phone) return alert("Vui lòng điền đầy đủ thông tin!");
-            if (phone.length < 10) return alert("Số điện thoại không hợp lệ!");
+            if (!fullname || !phone) return alert("Vui lòng nhập Tên và Số điện thoại!");
+            if (!document.getElementById('agree-contract-driver').checked) return alert("Vui lòng đồng ý điều khoản!");
 
-            const memo = `TX ${state.selectedDriver.id} - ${phone}`;
+            // Hiệu ứng Loading
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin mr-2"></i> Đang xử lý...';
+            btn.disabled = true;
+
+            const memo = `TX ${state.selectedDriver.id} ${phone}`;
             const qrUrl = `https://img.vietqr.io/image/${CONFIG.BANK_ID}-${CONFIG.ACCOUNT_NO}-compact2.png?amount=${state.currentAmount}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(CONFIG.ACCOUNT_NAME)}`;
             
             document.getElementById('qr-code').src = qrUrl;
             document.getElementById('payment-final-amount').innerText = formatVND(state.currentAmount);
             
-            closeModal('modal-driver');
-            document.getElementById('payment-modal').style.display = 'flex';
+            // Gửi dữ liệu tới Google Sheets
+            try {
+                await fetch(CONFIG.SCRIPT_URL, {
+                    method: 'POST', 
+                    mode: 'no-cors',
+                    body: JSON.stringify({ 
+                        Ten: fullname, 
+                        SDT: phone, 
+                        Xe: "Tài xế: " + state.selectedDriver.name, 
+                        TongTien: formatVND(state.currentAmount),
+                        NgayDat: new Date().toLocaleString('vi-VN')
+                    })
+                });
+            } catch (e) { console.error("Sheet Error:", e); }
 
-            fetch(CONFIG.SCRIPT_URL, {
-                method: 'POST', 
-                mode: 'no-cors',
-                body: JSON.stringify({ 
-                    Ten: fullname, 
-                    SDT: phone, 
-                    Xe: "Tài xế " + state.selectedDriver.name, 
-                    TongTien: formatVND(state.currentAmount) 
-                })
-            });
+            setTimeout(() => {
+                closeModal('modal-driver');
+                document.getElementById('payment-modal').style.display = 'flex';
+                btn.innerHTML = 'Xác nhận đặt lịch';
+                btn.disabled = false;
+            }, 800);
         }
 
         function verifyPayment() {
-            alert("Yêu cầu đã được ghi nhận! TrangHy Autocar sẽ liên hệ xác nhận với bạn trong 5-10 phút.");
+            alert("TrangHy Autocar đã ghi nhận giao dịch của bạn. Chúng tôi sẽ gọi điện xác nhận lịch trình trong 5-10 phút tới. Xin cảm ơn!");
             closeModal('payment-modal');
         }
 
