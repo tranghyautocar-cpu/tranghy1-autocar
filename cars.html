@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Xe - TrangHy Autocar</title>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <script type="text/javascript">
+        (function() { emailjs.init("s8mToEhBNaMyjjVQc"); })();
+    </script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-dark: #1a4bd3;
+            --dark: #0f172a; 
+            --bg: #fdfdfe; 
+            --accent: #3b82f6;
+        }
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            color: var(--dark);
+            padding-top: 100px; /* Chống đè Header */
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* HEADER & NAV */
+        nav {
+            position: fixed !important;
+            top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        /* CARD XE */
+        .car-card { 
+            background: white;
+            border-radius: 2rem;
+            transition: all 0.4s ease;
+            border: 1px solid rgba(226, 232, 240, 0.6);
+            overflow: hidden;
+        }
+        .car-card:hover { 
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
+        }
+
+        /* MODAL */
+        #modal-car, #payment-modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(10px);
+        }
+        .modal-active { display: flex !important; }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
+</head>
+
+<body class="antialiased">
+
+    <nav class="p-4">
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="flex items-center gap-3 group">
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xl italic group-hover:rotate-12 transition-transform">T</div>
+                <div class="flex flex-col">
+                    <span class="font-black text-lg leading-none italic text-slate-900">TRANGHY</span>
+                    <span class="text-[8px] font-bold text-blue-600 tracking-[0.3em] uppercase">Autocar</span>
+                </div>
+            </a>
+
+            <div class="hidden md:flex items-center bg-slate-100/80 rounded-full p-1 border border-slate-200/50">
+                <a href="index.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Trang chủ</a>
+                <a href="#" class="px-6 py-2 rounded-full bg-white text-slate-900 font-bold text-xs uppercase shadow-sm">Xe</a>
+                <a href="index.html#drivers-section" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Tài xế</a>
+            </div>
+
+            <button onclick="window.location.href='login.html'" class="bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase hover:bg-blue-600 transition-all shadow-lg">
+                <i class="fas fa-user-circle mr-2"></i>Đăng nhập
+            </button>
+        </div>
+    </nav>
+
+    <main class="py-10">
+        <div class="container">
+            <div class="mb-12">
+                <h1 class="text-4xl md:text-6xl font-black text-slate-900 italic uppercase tracking-tighter">Đội Xe Sẵn Có</h1>
+                <p class="text-slate-500 font-medium mt-2 border-l-4 border-blue-600 pl-4">Khám phá dàn xe đời mới, đa dạng phân khúc từ 4 - 7 chỗ.</p>
+            </div>
+
+            <div class="flex flex-col lg:flex-row justify-between items-center gap-6 mb-16">
+                <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
+                    <button onclick="app.filterCars('all', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all bg-white shadow text-blue-600">TẤT CẢ XE</button>
+                    <button onclick="app.filterCars('4 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">4 CHỖ</button>
+                    <button onclick="app.filterCars('5 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">5 CHỖ</button>
+                    <button onclick="app.filterCars('7 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">7 CHỖ</button>
+                </div>
+                
+                <div class="relative w-full lg:w-[400px]">
+                    <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="text" id="carSearch" onkeyup="app.searchCar()" placeholder="Tìm kiếm mẫu xe..." class="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold text-sm shadow-inner transition-all">
+                </div>
+            </div>
+
+            <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 min-h-[400px]">
+                </div>
+        </div>
+    </main>
+
+    <div id="modal-car" class="hidden">
+        </div>
+
+    <script>
+        // Đảm bảo đối tượng app của bạn hoạt động ở đây
+        // Nếu app.js nằm riêng, hãy gọi: <script src="app.js"><\/script>
+        
+        // Đoạn code kích hoạt render xe khi vào trang:
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof app !== 'undefined' && app.renderCars) {
+                app.renderCars();
+            }
+        });
+    </script>
+</body>
+</html>
