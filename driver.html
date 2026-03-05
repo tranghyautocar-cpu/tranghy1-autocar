@@ -6,19 +6,23 @@
     <title>Đội Ngũ Tài Xế - TrangHy Autocar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 100px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
         .driver-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; }
-        .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+        .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1); border-color: #2563eb; }
+        .btn-rent { background: linear-gradient(135deg, #2563eb, #1e40af); transition: all 0.3s ease; }
+        .btn-rent:hover { opacity: 0.9; transform: scale(1.02); }
+        .avatar-box { background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
     </style>
 </head>
 <body>
-    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-[1000] border-b border-slate-100 py-4">
-        <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-            <div class="font-black text-2xl italic">TRANGHY <span class="text-blue-600">AUTOCAR</span></div>
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-[1000] border-b border-slate-100">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="font-black text-2xl italic">TRANGHY <span class="text-blue-600 not-italic text-xs tracking-[0.3em]">AUTOCAR</span></div>
             <div class="flex gap-8 font-bold text-xs uppercase tracking-widest text-slate-600">
-                <a href="index.html">Trang chủ</a>
-                <a href="cars.html">Xe</a>
+                <a href="index.html" class="hover:text-blue-600">Trang chủ</a>
+                <a href="cars.html" class="hover:text-blue-600">Đội xe</a>
                 <a href="driver.html" class="text-blue-600 border-b-2 border-blue-600">Tài xế</a>
             </div>
         </div>
@@ -26,51 +30,61 @@
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-16">
-            <span class="text-blue-600 font-extrabold uppercase tracking-[0.2em] text-[10px] bg-blue-50 px-3 py-1 rounded-full">Đội ngũ chuyên gia</span>
-            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter mt-4">P.S.P <span class="text-blue-600">Elite Team</span></h1>
+            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">Elite Professional Team</span>
+            <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
         </div>
 
-        <div id="driver-list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div id="driver-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
             </div>
     </main>
 
     <script>
         const driverData = [
-            { "id": "TX01", "name": "Trần Đình Nam", "phone": "0905.123.456", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX02", "name": "Lê Quốc Đức", "phone": "0912.987.654", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX03", "name": "Phạm Minh Tùng", "phone": "0988.555.777", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX04", "name": "Hoàng Thành Thắng", "phone": "0977.222.888", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX05", "name": "Vũ Hữu Tuấn", "phone": "0325.999.000", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX06", "name": "Đặng Văn Sơn", "phone": "0934.567.890", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX07", "name": "Bùi Đình Hải", "phone": "0909.111.222", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "phone": "0914.333.444", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX09", "name": "Trần Minh Nam", "phone": "0966.777.888", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX10", "name": "Lê Thành Đức", "phone": "0388.999.111", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX11", "name": "Phạm Hữu Tùng", "phone": "0989.123.123", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX12", "name": "Hoàng Văn Thắng", "phone": "0903.456.789", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX13", "name": "Vũ Đình Tuấn", "phone": "0915.678.901", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" }
+            { "id": "TX01", "name": "Trần Đình Nam", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX02", "name": "Lê Quốc Đức", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
+            { "id": "TX03", "name": "Phạm Minh Tùng", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
+            { "id": "TX04", "name": "Hoàng Thành Thắng", "exp": "9 năm", "price": 500000, "avatar": "👲" },
+            { "id": "TX05", "name": "Vũ Hữu Tuấn", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
+            { "id": "TX06", "name": "Đặng Văn Sơn", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX07", "name": "Bùi Đình Hải", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
+            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
+            { "id": "TX09", "name": "Trần Minh Nam", "exp": "9 năm", "price": 500000, "avatar": "👲" },
+            { "id": "TX10", "name": "Lê Thành Đức", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
+            { "id": "TX11", "name": "Phạm Hữu Tùng", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX12", "name": "Hoàng Văn Thắng", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
+            { "id": "TX13", "name": "Vũ Đình Tuấn", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" }
         ];
 
         function renderDrivers() {
             const list = document.getElementById('driver-list');
-            list.innerHTML = driverData.map(d => `
-                <div class="driver-card p-8 text-center flex flex-col h-full">
-                    <div class="text-7xl mb-6">${d.avatar}</div>
-                    <div class="flex-grow">
-                        <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-2 py-1 rounded mb-2 inline-block italic">${d.id}</span>
-                        <h3 class="text-xl font-black uppercase italic text-slate-800">${d.name}</h3>
-                        <p class="text-slate-400 text-xs font-bold mb-6">${d.exp.toUpperCase()} KINH NGHIỆM</p>
+            list.innerHTML = driverData.map(driver => `
+                <div class="driver-card p-6 flex flex-col h-full">
+                    <div class="w-full h-48 avatar-box rounded-[2rem] overflow-hidden mb-6">
+                        ${driver.avatar}
                     </div>
-                    <div class="pt-6 border-t border-slate-50 mt-auto">
-                        <p class="text-2xl font-black text-slate-900 mb-4">${d.price.toLocaleString('vi-VN')}đ<span class="text-xs font-normal text-slate-400">/ngày</span></p>
-                        <a href="booking-driver.html?id=${d.id}&name=${encodeURIComponent(d.name)}&price=${d.price}&avatar=${encodeURIComponent(d.avatar)}" 
-                           class="block w-full bg-slate-900 text-white py-4 rounded-2xl font-black text-xs uppercase tracking-widest hover:bg-blue-600 transition-colors">
-                            Liên hệ thuê ngay
-                        </a>
+                    <div class="flex-grow">
+                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id} | Chuyên nghiệp</span>
+                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-4 mt-1">${driver.name}</h3>
+                        <p class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter italic">${driver.exp} kinh nghiệm</p>
+                    </div>
+                    <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Giá thuê</p>
+                            <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-xs font-medium text-slate-400">/ngày</span></p>
+                        </div>
+                        <button onclick="bookDriver('${driver.id}')" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-blue-200">
+                            Thuê ngay
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
+
+        function bookDriver(id) {
+            // Chuyển sang trang booking-driver kèm ID tài xế
+            window.location.href = `booking-driver.html?id=${id}`;
+        }
+
         window.onload = renderDrivers;
     </script>
 </body>
