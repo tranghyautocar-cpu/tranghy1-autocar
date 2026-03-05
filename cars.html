@@ -14,61 +14,125 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
-    <style>
-        :root { 
-            --primary: #2563eb; 
-            --primary-dark: #1a4bd3;
-            --dark: #0f172a; 
-            --bg: #fdfdfe; 
-            --accent: #3b82f6;
-        }
+  <style>
+    :root { 
+        --primary: #2563eb; 
+        --primary-dark: #1a4bd3;
+        --dark: #0f172a; 
+        --bg: #f8fafc; /* Đổi sang màu xám cực nhẹ để nổi bật thẻ xe trắng */
+        --accent: #3b82f6;
+    }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: var(--bg); 
-            color: var(--dark);
-            padding-top: 100px; /* Chống đè Header */
-        }
+    body { 
+        font-family: 'Plus Jakarta Sans', sans-serif; 
+        background-color: var(--bg); 
+        color: var(--dark);
+        padding-top: 100px;
+        scroll-behavior: smooth;
+    }
 
-        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
 
-        /* HEADER & NAV */
-        nav {
-            position: fixed !important;
-            top: 0; left: 0; width: 100%; z-index: 1000;
-            background: rgba(255, 255, 255, 0.8) !important;
-            backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(0,0,0,0.05);
-        }
+    /* HEADER & NAV - Hiệu ứng kính mờ */
+    nav {
+        position: fixed !important;
+        top: 0; left: 0; width: 100%; z-index: 1000;
+        background: rgba(255, 255, 255, 0.7) !important;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-bottom: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.3s ease;
+    }
 
-        /* CARD XE */
-        .car-card { 
-            background: white;
-            border-radius: 2rem;
-            transition: all 0.4s ease;
-            border: 1px solid rgba(226, 232, 240, 0.6);
-            overflow: hidden;
-        }
-        .car-card:hover { 
-            transform: translateY(-10px);
-            box-shadow: 0 20px 40px rgba(15, 23, 42, 0.05);
-        }
+    /* CARD XE - Nâng cấp Shadow và Zoom ảnh */
+    .car-card { 
+        background: white;
+        border-radius: 2.5rem;
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .car-card:hover { 
+        transform: translateY(-12px) scale(1.02);
+        box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1);
+        border-color: var(--primary);
+    }
 
-        /* MODAL */
-        #modal-car, #payment-modal {
-            display: none;
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            align-items: center;
-            justify-content: center;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(10px);
-        }
-        .modal-active { display: flex !important; }
+    .car-card img {
+        transition: transform 0.6s ease;
+    }
 
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-    </style>
+    .car-card:hover img {
+        transform: scale(1.1) rotate(-2deg);
+    }
+
+    /* MODAL - Tối ưu hiển thị và Cuộn trang */
+    #modal-car, #payment-modal {
+        display: none; /* Mặc định ẩn, app.js sẽ điều khiển */
+        position: fixed;
+        inset: 0;
+        z-index: 9999;
+        align-items: center;
+        justify-content: center;
+        background: rgba(15, 23, 42, 0.8);
+        backdrop-filter: blur(12px);
+        padding: 1rem;
+    }
+
+    /* Khi modal mở (được điều khiển bởi app.js qua class modal-active) */
+    .modal-active { 
+        display: flex !important;
+        animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: scale(0.95); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Form Input - Nâng cấp UI mượt mà */
+    input focus {
+        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+    }
+
+    /* Nút bấm Gradient */
+    .btn-gradient-blue { 
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
+        transition: all 0.3s ease;
+    }
+    
+    .btn-gradient-blue:hover {
+        box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
+        filter: brightness(1.1);
+    }
+
+    /* Tiện ích bổ sung */
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    
+    /* Responsive cho điện thoại nhỏ */
+    @media (max-width: 640px) {
+        body { padding-top: 80px; }
+        .container { padding: 0 15px; }
+        #modal-car > div {
+            border-radius: 2rem !important;
+            max-height: 98vh;
+        }
+    }
+    
+    /* Hiệu ứng Skeleton khi đang load xe (tùy chọn) */
+    .loading-pulse {
+        animation: pulse 1.5s infinite ease-in-out;
+    }
+    @keyframes pulse {
+        0% { background-color: #f1f5f9; }
+        50% { background-color: #e2e8f0; }
+        100% { background-color: #f1f5f9; }
+    }
+</style>
 </head>
 
 <body class="antialiased">
@@ -82,13 +146,11 @@
                     <span class="text-[8px] font-bold text-blue-600 tracking-[0.3em] uppercase">Autocar</span>
                 </div>
             </a>
-
             <div class="hidden md:flex items-center bg-slate-100/80 rounded-full p-1 border border-slate-200/50">
                 <a href="index.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Trang chủ</a>
                 <a href="#" class="px-6 py-2 rounded-full bg-white text-slate-900 font-bold text-xs uppercase shadow-sm">Xe</a>
                 <a href="index.html#drivers-section" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Tài xế</a>
             </div>
-
             <button onclick="window.location.href='login.html'" class="bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase hover:bg-blue-600 transition-all shadow-lg">
                 <i class="fas fa-user-circle mr-2"></i>Đăng nhập
             </button>
@@ -104,10 +166,10 @@
 
             <div class="flex flex-col lg:flex-row justify-between items-center gap-6 mb-16">
                 <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
-                    <button onclick="app.filterCars('all', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all bg-white shadow text-blue-600">TẤT CẢ XE</button>
-                    <button onclick="app.filterCars('4 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">4 CHỖ</button>
-                    <button onclick="app.filterCars('5 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">5 CHỖ</button>
-                    <button onclick="app.filterCars('7 chỗ', event)" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">7 CHỖ</button>
+                    <button onclick="app.filterCars('all')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all bg-white shadow text-blue-600">TẤT CẢ XE</button>
+                    <button onclick="app.filterCars('4 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">4 CHỖ</button>
+                    <button onclick="app.filterCars('5 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">5 CHỖ</button>
+                    <button onclick="app.filterCars('7 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">7 CHỖ</button>
                 </div>
                 
                 <div class="relative w-full lg:w-[400px]">
@@ -122,18 +184,71 @@
     </main>
 
     <div id="modal-car" class="hidden">
-        </div>
+        <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative mx-4">
+            <button onclick="app.closeCar()" class="absolute top-6 right-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-slate-900 hover:bg-red-500 hover:text-white transition-all">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="md:w-1/2 bg-slate-50 p-8 flex items-center justify-center">
+                <img id="modal-car-img" src="https://via.placeholder.com/400x300" class="w-full h-auto object-contain" alt="Xe">
+            </div>
+            <div class="md:w-1/2 p-8 md:p-12 overflow-y-auto">
+                <h2 id="modal-car-name" class="text-3xl font-black text-slate-900 italic uppercase tracking-tighter mb-2 italic">Tên Xe</h2>
+                <div class="space-y-4">
+                    <input type="text" id="cust-fullname" placeholder="Họ và tên khách" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
+                    <input type="tel" id="cust-phone" placeholder="Số điện thoại" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
+                    <input type="text" id="cust-cccd" placeholder="Số CCCD" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="cust-gplx" placeholder="Số GPLX" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
+                        <input type="text" id="cust-rank" placeholder="Hạng (B1/B2)" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
+                    </div>
+                    <input type="date" id="cust-dob" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
 
-    <script>
-        // Đảm bảo đối tượng app của bạn hoạt động ở đây
-        // Nếu app.js nằm riêng, hãy gọi: <script src="app.js"><\/script>
-        
-        // Đoạn code kích hoạt render xe khi vào trang:
+                    <div class="grid grid-cols-2 gap-4">
+                        <input type="text" id="modal-start-date" placeholder="Ngày nhận" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
+                        <input type="text" id="modal-end-date" placeholder="Ngày trả" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
+                    </div>
+
+                    <div class="bg-blue-50 p-4 rounded-2xl flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-600 uppercase">Tổng (<span id="calc-days-text">1</span> ngày):</span>
+                        <span id="modal-total-price" class="font-black text-blue-600 text-xl">0đ</span>
+                    </div>
+
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" id="agree-contract" class="w-4 h-4 accent-blue-600">
+                        <span class="text-[10px] font-bold text-slate-500 uppercase">Đồng ý điều khoản thuê xe</span>
+                    </label>
+
+                    <button onclick="app.handleBooking()" class="w-full py-5 btn-gradient-blue text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-200">Xác nhận đặt ngay</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="payment-modal" class="hidden">
+        <div class="bg-white w-full max-w-md rounded-[3rem] p-8 text-center relative mx-4">
+            <h3 class="text-2xl font-black text-slate-900 italic uppercase mb-2">Quét mã thanh toán</h3>
+            <div class="bg-slate-50 p-4 rounded-3xl mb-6 inline-block border-2 border-dashed border-slate-200">
+                <img id="qr-code" src="" class="w-64 h-64 mx-auto" alt="QR">
+            </div>
+            <div class="flex justify-between text-xs font-black uppercase mb-8 bg-slate-50 p-4 rounded-2xl">
+                <span class="text-slate-400">Cần thanh toán:</span>
+                <span id="payment-final-amount" class="text-blue-600 text-lg">0đ</span>
+            </div>
+            <button id="btn-confirm-payment" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs">Tôi đã chuyển khoản thành công</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
+    <script src="app.js"></script> <script>
+        // Kích hoạt render ban đầu
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof app !== 'undefined' && app.renderCars) {
-                app.renderCars();
+            if (typeof app !== 'undefined' && app.init) {
+                app.init();
             }
         });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 </body>
 </html>
