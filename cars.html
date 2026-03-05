@@ -5,250 +5,308 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Xe - TrangHy Autocar</title>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    <script type="text/javascript">
-        (function() { emailjs.init("s8mToEhBNaMyjjVQc"); })();
-    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     
-  <style>
-    :root { 
-        --primary: #2563eb; 
-        --primary-dark: #1a4bd3;
-        --dark: #0f172a; 
-        --bg: #f8fafc; /* Đổi sang màu xám cực nhẹ để nổi bật thẻ xe trắng */
-        --accent: #3b82f6;
-    }
-
-    body { 
-        font-family: 'Plus Jakarta Sans', sans-serif; 
-        background-color: var(--bg); 
-        color: var(--dark);
-        padding-top: 100px;
-        scroll-behavior: smooth;
-    }
-
-    .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
-
-    /* HEADER & NAV - Hiệu ứng kính mờ */
-    nav {
-        position: fixed !important;
-        top: 0; left: 0; width: 100%; z-index: 1000;
-        background: rgba(255, 255, 255, 0.7) !important;
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-        border-bottom: 1px solid rgba(0,0,0,0.05);
-        transition: all 0.3s ease;
-    }
-
-    /* CARD XE - Nâng cấp Shadow và Zoom ảnh */
-    .car-card { 
-        background: white;
-        border-radius: 2.5rem;
-        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-        border: 1px solid rgba(226, 232, 240, 0.8);
-        overflow: hidden;
-        display: flex;
-        flex-direction: column;
-    }
-    
-    .car-card:hover { 
-        transform: translateY(-12px) scale(1.02);
-        box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1);
-        border-color: var(--primary);
-    }
-
-    .car-card img {
-        transition: transform 0.6s ease;
-    }
-
-    .car-card:hover img {
-        transform: scale(1.1) rotate(-2deg);
-    }
-
-    /* MODAL - Tối ưu hiển thị và Cuộn trang */
-    #modal-car, #payment-modal {
-        display: none; /* Mặc định ẩn, app.js sẽ điều khiển */
-        position: fixed;
-        inset: 0;
-        z-index: 9999;
-        align-items: center;
-        justify-content: center;
-        background: rgba(15, 23, 42, 0.8);
-        backdrop-filter: blur(12px);
-        padding: 1rem;
-    }
-
-    /* Khi modal mở (được điều khiển bởi app.js qua class modal-active) */
-    .modal-active { 
-        display: flex !important;
-        animation: fadeIn 0.3s ease-out;
-    }
-
-    @keyframes fadeIn {
-        from { opacity: 0; transform: scale(0.95); }
-        to { opacity: 1; transform: scale(1); }
-    }
-
-    /* Form Input - Nâng cấp UI mượt mà */
-    input focus {
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
-    }
-
-    /* Nút bấm Gradient */
-    .btn-gradient-blue { 
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
-        box-shadow: 0 10px 20px rgba(37, 99, 235, 0.2);
-        transition: all 0.3s ease;
-    }
-    
-    .btn-gradient-blue:hover {
-        box-shadow: 0 15px 25px rgba(37, 99, 235, 0.3);
-        filter: brightness(1.1);
-    }
-
-    /* Tiện ích bổ sung */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    
-    /* Responsive cho điện thoại nhỏ */
-    @media (max-width: 640px) {
-        body { padding-top: 80px; }
-        .container { padding: 0 15px; }
-        #modal-car > div {
-            border-radius: 2rem !important;
-            max-height: 98vh;
+    <style>
+        :root { 
+            --primary: #2563eb; 
+            --primary-dark: #1a4bd3;
+            --dark: #0f172a; 
+            --bg: #f8fafc;
         }
-    }
-    
-    /* Hiệu ứng Skeleton khi đang load xe (tùy chọn) */
-    .loading-pulse {
-        animation: pulse 1.5s infinite ease-in-out;
-    }
-    @keyframes pulse {
-        0% { background-color: #f1f5f9; }
-        50% { background-color: #e2e8f0; }
-        100% { background-color: #f1f5f9; }
-    }
-</style>
+
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: var(--bg); 
+            padding-top: 100px;
+        }
+
+        nav {
+            position: fixed !important;
+            top: 0; left: 0; width: 100%; z-index: 1000;
+            background: rgba(255, 255, 255, 0.8) !important;
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .car-card { 
+            background: white;
+            border-radius: 2.5rem;
+            transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .car-card:hover { 
+            transform: translateY(-12px);
+            box-shadow: 0 30px 60px rgba(15, 23, 42, 0.1);
+            border-color: var(--primary);
+        }
+
+        .car-img-container {
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #f1f5f9;
+        }
+
+        .car-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .car-card:hover img {
+            transform: scale(1.1);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(12px);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .active-modal { display: flex !important; }
+        
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+    </style>
 </head>
 
 <body class="antialiased">
 
     <nav class="p-4">
-        <div class="container flex justify-between items-center">
-            <a href="index.html" class="flex items-center gap-3 group">
-                <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black text-xl italic group-hover:rotate-12 transition-transform">T</div>
-                <div class="flex flex-col">
-                    <span class="font-black text-lg leading-none italic text-slate-900">TRANGHY</span>
-                    <span class="text-[8px] font-bold text-blue-600 tracking-[0.3em] uppercase">Autocar</span>
+        <div class="max-w-7xl mx-auto flex justify-between items-center px-4">
+            <a href="index.html" class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-slate-900 text-white rounded-full flex items-center justify-center font-black italic">T</div>
+                <div class="flex flex-col leading-none">
+                    <span class="font-black text-lg italic uppercase text-slate-900">TRANGHY</span>
+                    <span class="text-blue-600 font-bold text-[8px] tracking-[0.3em] uppercase">Autocar</span>
                 </div>
             </a>
-            <div class="hidden md:flex items-center bg-slate-100/80 rounded-full p-1 border border-slate-200/50">
-                <a href="index.html" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Trang chủ</a>
-                <a href="#" class="px-6 py-2 rounded-full bg-white text-slate-900 font-bold text-xs uppercase shadow-sm">Xe</a>
-                <a href="index.html#drivers-section" class="px-6 py-2 rounded-full text-slate-500 hover:text-blue-600 font-bold text-xs uppercase transition-colors">Tài xế</a>
+            <div class="hidden md:flex bg-slate-100 rounded-full p-1">
+                <a href="index.html" class="px-6 py-2 rounded-full text-slate-500 font-bold text-xs uppercase">Trang chủ</a>
+                <a href="car.html" class="px-6 py-2 rounded-full bg-white shadow text-slate-900 font-bold text-xs uppercase">Xe</a>
+                <a href="driver.html" class="px-6 py-2 rounded-full text-slate-500 font-bold text-xs uppercase">Tài xế</a>
             </div>
-            <button onclick="window.location.href='login.html'" class="bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase hover:bg-blue-600 transition-all shadow-lg">
-                <i class="fas fa-user-circle mr-2"></i>Đăng nhập
-            </button>
+            <a href="tel:0905123456" class="bg-slate-900 text-white px-5 py-2.5 rounded-full font-bold text-xs uppercase">Hotline</a>
         </div>
     </nav>
 
     <main class="py-10">
-        <div class="container">
+        <div class="max-w-7xl mx-auto px-4">
             <div class="mb-12">
-                <h1 class="text-4xl md:text-6xl font-black text-slate-900 italic uppercase tracking-tighter">Đội Xe Sẵn Có</h1>
-                <p class="text-slate-500 font-medium mt-2 border-l-4 border-blue-600 pl-4">Khám phá dàn xe đời mới, đa dạng phân khúc từ 4 - 7 chỗ.</p>
+                <h1 class="text-4xl md:text-6xl font-black text-slate-900 italic uppercase tracking-tighter mb-4">Đội Xe Sẵn Có</h1>
+                <p class="text-slate-500 font-medium border-l-4 border-blue-600 pl-4">Khám phá dàn xe đời mới 2024-2025, đa dạng phân khúc.</p>
             </div>
 
             <div class="flex flex-col lg:flex-row justify-between items-center gap-6 mb-16">
                 <div id="filter-container" class="flex p-2 bg-slate-100 rounded-[2rem] gap-2 overflow-x-auto no-scrollbar w-full lg:w-auto">
-                    <button onclick="app.filterCars('all')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest transition-all bg-white shadow text-blue-600">TẤT CẢ XE</button>
-                    <button onclick="app.filterCars('4 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">4 CHỖ</button>
-                    <button onclick="app.filterCars('5 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">5 CHỖ</button>
-                    <button onclick="app.filterCars('7 chỗ')" class="filter-btn px-10 py-4 rounded-[1.5rem] text-[11px] font-black uppercase tracking-widest text-slate-500 hover:bg-white/50">7 CHỖ</button>
+                    <button onclick="filterCars('all')" class="filter-btn px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest transition-all bg-white shadow text-blue-600">Tất cả</button>
+                    <button onclick="filterCars('4 chỗ')" class="filter-btn px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-slate-500">4 Chỗ</button>
+                    <button onclick="filterCars('5 chỗ')" class="filter-btn px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-slate-500">5 Chỗ</button>
+                    <button onclick="filterCars('7 chỗ')" class="filter-btn px-8 py-3 rounded-full text-[11px] font-black uppercase tracking-widest text-slate-500">7 Chỗ</button>
                 </div>
                 
                 <div class="relative w-full lg:w-[400px]">
                     <i class="fas fa-search absolute left-6 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                    <input type="text" id="carSearch" onkeyup="app.searchCar()" placeholder="Tìm kiếm mẫu xe..." class="w-full pl-14 pr-8 py-5 rounded-[2rem] bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold text-sm shadow-inner transition-all">
+                    <input type="text" id="carSearch" onkeyup="searchCars()" placeholder="Tìm mẫu xe (Vd: Camry, VF8...)" class="w-full pl-14 pr-8 py-4 rounded-full bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold text-sm shadow-inner transition-all">
                 </div>
             </div>
 
-            <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 min-h-[400px]">
+            <div id="car-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
                 </div>
         </div>
     </main>
 
-    <div id="modal-car" class="hidden">
-        <div class="bg-white w-full max-w-4xl max-h-[90vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative mx-4">
-            <button onclick="app.closeCar()" class="absolute top-6 right-6 z-10 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-slate-900 hover:bg-red-500 hover:text-white transition-all">
+    <div id="modal-car" class="modal-overlay">
+        <div class="bg-white w-full max-w-4xl max-h-[95vh] rounded-[3rem] overflow-hidden shadow-2xl flex flex-col md:flex-row relative mx-4">
+            <button onclick="closeModal()" class="absolute top-6 right-6 z-10 w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-900 hover:bg-red-500 hover:text-white transition-all">
                 <i class="fas fa-times"></i>
             </button>
-            <div class="md:w-1/2 bg-slate-50 p-8 flex items-center justify-center">
-                <img id="modal-car-img" src="https://via.placeholder.com/400x300" class="w-full h-auto object-contain" alt="Xe">
+            
+            <div class="md:w-1/2 bg-slate-50 p-8 flex flex-col items-center justify-center">
+                <img id="modal-car-img" src="" class="w-full h-auto object-contain mb-6" alt="Xe">
+                <div id="modal-features" class="grid grid-cols-2 gap-2 w-full">
+                    </div>
             </div>
+
             <div class="md:w-1/2 p-8 md:p-12 overflow-y-auto">
-                <h2 id="modal-car-name" class="text-3xl font-black text-slate-900 italic uppercase tracking-tighter mb-2 italic">Tên Xe</h2>
+                <h2 id="modal-car-name" class="text-3xl font-black text-slate-900 italic uppercase tracking-tighter mb-6">Tên Xe</h2>
+                
                 <div class="space-y-4">
-                    <input type="text" id="cust-fullname" placeholder="Họ và tên khách" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
-                    <input type="tel" id="cust-phone" placeholder="Số điện thoại" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
-                    <input type="text" id="cust-cccd" placeholder="Số CCCD" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 outline-none focus:ring-2 focus:ring-blue-600 font-bold">
+                    <input type="text" id="cust-name" placeholder="Họ và tên khách hàng" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold">
+                    <input type="tel" id="cust-phone" placeholder="Số điện thoại" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold">
+                    <input type="text" id="cust-cccd" placeholder="Số CCCD" class="w-full px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 focus:ring-2 focus:ring-blue-600 outline-none font-bold">
                     
                     <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="cust-gplx" placeholder="Số GPLX" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
-                        <input type="text" id="cust-rank" placeholder="Hạng (B1/B2)" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
-                    </div>
-                    <input type="date" id="cust-dob" class="w-full px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
-
-                    <div class="grid grid-cols-2 gap-4">
-                        <input type="text" id="modal-start-date" placeholder="Ngày nhận" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
-                        <input type="text" id="modal-end-date" placeholder="Ngày trả" class="px-6 py-4 rounded-2xl bg-slate-50 ring-1 ring-slate-200 font-bold text-xs">
+                        <input type="text" id="pickup-date" placeholder="Ngày nhận" class="px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-xs">
+                        <input type="text" id="return-date" placeholder="Ngày trả" class="px-6 py-4 rounded-2xl bg-slate-50 border-none ring-1 ring-slate-200 font-bold text-xs">
                     </div>
 
-                    <div class="bg-blue-50 p-4 rounded-2xl flex justify-between items-center">
-                        <span class="text-xs font-bold text-slate-600 uppercase">Tổng (<span id="calc-days-text">1</span> ngày):</span>
-                        <span id="modal-total-price" class="font-black text-blue-600 text-xl">0đ</span>
+                    <div class="bg-blue-50 p-6 rounded-[2rem] border border-blue-100 mt-6">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-xs font-bold text-blue-600 uppercase italic">Thanh toán (<span id="days-count">1</span> ngày):</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span id="modal-total-price" class="text-3xl font-black text-slate-900 italic">0 đ</span>
+                        </div>
                     </div>
 
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="agree-contract" class="w-4 h-4 accent-blue-600">
-                        <span class="text-[10px] font-bold text-slate-500 uppercase">Đồng ý điều khoản thuê xe</span>
-                    </label>
-
-                    <button onclick="app.handleBooking()" class="w-full py-5 btn-gradient-blue text-white rounded-2xl font-black uppercase tracking-widest text-xs shadow-xl shadow-blue-200">Xác nhận đặt ngay</button>
+                    <button onclick="submitBooking()" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase text-xs tracking-widest hover:bg-blue-600 transition-all shadow-xl">
+                        Xác nhận đặt ngay
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="payment-modal" class="hidden">
-        <div class="bg-white w-full max-w-md rounded-[3rem] p-8 text-center relative mx-4">
-            <h3 class="text-2xl font-black text-slate-900 italic uppercase mb-2">Quét mã thanh toán</h3>
-            <div class="bg-slate-50 p-4 rounded-3xl mb-6 inline-block border-2 border-dashed border-slate-200">
-                <img id="qr-code" src="" class="w-64 h-64 mx-auto" alt="QR">
-            </div>
-            <div class="flex justify-between text-xs font-black uppercase mb-8 bg-slate-50 p-4 rounded-2xl">
-                <span class="text-slate-400">Cần thanh toán:</span>
-                <span id="payment-final-amount" class="text-blue-600 text-lg">0đ</span>
-            </div>
-            <button id="btn-confirm-payment" class="w-full py-5 bg-slate-900 text-white rounded-2xl font-black uppercase tracking-widest text-xs">Tôi đã chuyển khoản thành công</button>
-        </div>
-    </div>
-
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script src="https://npmcdn.com/flatpickr/dist/l10n/vn.js"></script>
-    <script src="app.js"></script> <script>
-        // Kích hoạt render ban đầu
-        document.addEventListener('DOMContentLoaded', () => {
-            if (typeof app !== 'undefined' && app.init) {
-                app.init();
+    <script>
+        const carData = [
+            { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.5L Dynamic Force", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cửa sổ trời", "Ghế da chỉnh điện", "Hệ thống an toàn TSS"] },
+            { "id": 2, "name": "VinFast VF8", "category": "5 chỗ", "price": 1500000, "image_url": "images/vinvf8.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Hỗ trợ lái ADAS", "Trợ lý ảo thông minh", "Pin 82kWh"] },
+            { "id": 3, "name": "Hyundai SantaFe", "category": "7 chỗ", "price": 1800000, "image_url": "images/santafe.jpg", "transmission": "Tự động", "engine": "2.2L Diesel Smartstream", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Dẫn động 4 bánh HTRAC", "Loa Harman Kardon", "Cần số nút bấm"] },
+            { "id": 4, "name": "Kia Morning", "category": "4 chỗ", "price": 600000, "image_url": "images/kiamoning.jpg", "transmission": "Số sàn", "engine": "1.25L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gương chiếu hậu chỉnh điện", "Kết nối Bluetooth", "Kích thước nhỏ gọn"] },
+            { "id": 5, "name": "Mazda 3", "category": "5 chỗ", "price": 950000, "image_url": "images/mazda3.jpg", "transmission": "Tự động", "engine": "1.5L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Màn hình HUD", "Thiết kế KODO", "Phanh tay điện tử"] },
+            { "id": 6, "name": "Mitsubishi Xpander", "category": "7 chỗ", "price": 1000000, "image_url": "images/xpander.jpg", "transmission": "Tự động", "engine": "1.5L MIVEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gầm cao 225mm", "Apple CarPlay", "Nội thất rộng rãi"] },
+            { "id": 7, "name": "Mercedes C200", "category": "5 chỗ", "price": 2800000, "image_url": "images/e200.jpg", "transmission": "Tự động", "engine": "1.5L Turbo Mild-Hybrid", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn LED High Performance", "Màn hình 11.9 inch", "Nội thất ốp gỗ"] },
+            { "id": 8, "name": "Ford Everest", "category": "7 chỗ", "price": 2200000, "image_url": "images/foreverret.jpg", "transmission": "Tự động", "engine": "2.0L Bi-Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Dẫn động 4x4", "Cửa sổ trời toàn cảnh", "Hỗ trợ đỗ xe tự động"] },
+            { "id": 9, "name": "Honda City", "category": "5 chỗ", "price": 800000, "image_url": "images/honda_citi.jpg", "transmission": "Tự động", "engine": "1.5L i-VTEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda SENSING", "Lẫy chuyển số", "Chế độ lái tiết kiệm ECON"] },
+            { "id": 10, "name": "Kia Carnival", "category": "7 chỗ", "price": 3500000, "image_url": "images/kia_carnival.jpg", "transmission": "Tự động", "engine": "2.2L Smartstream D", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Cửa lùa điện", "Ghế thương gia", "Màn hình kép 12.3 inch"] },
+            { "id": 11, "name": "Hyundai Accent", "category": "5 chỗ", "price": 750000, "image_url": "images/huyndai_acen.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cảm biến lùi", "Đèn định vị LED", "Điều hòa tự động"] },
+            { "id": 12, "name": "BMW 320i", "category": "5 chỗ", "price": 3200000, "image_url": "images/bmw_320i.jpg", "transmission": "Tự động", "engine": "2.0L TwinPower Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn Adaptive LED", "Live Cockpit Professional", "Dẫn động cầu sau"] },
+            { "id": 13, "name": "Toyota Fortuner", "category": "7 chỗ", "price": 1700000, "image_url": "images/toyota_fortune.jpg", "transmission": "Tự động", "engine": "2.4L Diesel", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khung gầm rời (Body-on-frame)", "7 túi khí", "Bền bỉ cao"] },
+            { "id": 14, "name": "VinFast VF9", "category": "7 chỗ", "price": 2500000, "image_url": "images/vin_vf9.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Massage ghế", "Màn hình 15.6 inch", "Tầm xa 438 km"] },
+            { "id": 15, "name": "Kia Soluto", "category": "4 chỗ", "price": 550000, "image_url": "images/kia_soluto.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Giá thuê rẻ", "Tiết kiệm nhiên liệu", "Cốp rộng"] },
+            { "id": 16, "name": "Toyota Vios", "category": "5 chỗ", "price": 700000, "image_url": "images/vios_2025.jpg", "transmission": "Số sàn", "engine": "1.5L 2NR-FE", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["7 túi khí", "Điều hòa cực mát", "Hệ thống phanh ABS/EBD"] },
+            { "id": 17, "name": "Mazda CX-5", "category": "5 chỗ", "price": 1300000, "image_url": "images/cx5.jpg", "transmission": "Tự động", "engine": "2.0L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Loa Bose", "i-Activsense", "Cốp điện"] },
+            { "id": 18, "name": "Hyundai Tucson", "category": "5 chỗ", "price": 1250000, "image_url": "images/tucson.jpg", "transmission": "Tự động", "engine": "2.0L Nu MPI", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sạc không dây", "Đèn hậu LED Parametric", "Màn hình giải trí lớn"] },
+            { "id": 19, "name": "Toyota Innova", "category": "7 chỗ", "price": 1100000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.0L Dual VVT-i", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Điều hòa 2 dàn lạnh", "Ghế gập linh hoạt", "Chở đồ tốt"] },
+            { "id": 20, "name": "Kia K3", "category": "5 chỗ", "price": 900000, "image_url": "images/kia_k3.jpg", "transmission": "Tự động", "engine": "1.6L Gamma", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sưởi & làm mát ghế", "Cửa sổ trời", "Màn hình 10.25 inch"] },
+            { "id": 21, "name": "Honda CR-V", "category": "7 chỗ", "price": 1600000, "image_url": "images/cr-v.jpg", "transmission": "Tự động", "engine": "1.5L VTEC Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda Sensing", "Camera LaneWatch", "Cốp điện rảnh tay"] },
+            { "id": 22, "name": "Huyndai i10", "category": "4 chỗ", "price": 500000, "image_url": "images/huyn_i10.jpg", "transmission": "Số sàn", "engine": "1.2L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Dễ đỗ xe", "Tiết kiệm xăng", "Bản đồ dẫn đường tích hợp"] },
+            { "id": 23, "name": "Mercedes E300", "category": "5 chỗ", "price": 4500000, "image_url": "images/e300.jpg", "transmission": "Tự động", "engine": "2.0L Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gói AMG Line", "Cửa hít", "Loa Burmester"] },
+            { "id": 24, "name": "Ford Ranger", "category": "5 chỗ", "price": 1400000, "image_url": "images/foer_ranger.jpg", "transmission": "Tự động", "engine": "2.0L Single Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khả năng lội nước 800mm", "Màn hình dọc 10 inch", "Thùng xe rộng"] }
+        ];
+
+        let selectedCar = null;
+        let days = 1;
+
+        function formatVND(amount) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount);
+        }
+
+        function renderCars(data) {
+            const list = document.getElementById('car-list');
+            list.innerHTML = data.map(car => `
+                <div class="car-card">
+                    <div class="car-img-container">
+                        <img src="${car.image_url}" alt="${car.name}" onerror="this.src='https://via.placeholder.com/400x250?text=TrangHy+Autocar'">
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <div class="flex justify-between items-start mb-2">
+                            <span class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-widest">${car.category}</span>
+                            <span class="text-[10px] font-bold text-slate-400 uppercase">${car.transmission}</span>
+                        </div>
+                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-4">${car.name}</h3>
+                        <div class="space-y-2 mb-6 flex-grow">
+                            <div class="flex items-center text-xs font-medium text-slate-500">
+                                <i class="fas fa-microchip w-5 text-blue-600"></i> ${car.engine}
+                            </div>
+                            <div class="flex items-center text-xs font-medium text-slate-500">
+                                <i class="fas fa-gas-pump w-5 text-blue-600"></i> ${car.fuel}
+                            </div>
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <p class="text-[10px] font-black text-slate-400 uppercase">Giá thuê ngày</p>
+                                <p class="text-lg font-black text-slate-900 italic">${formatVND(car.price)}</p>
+                            </div>
+                            <button onclick="openBooking('${car.id}')" class="bg-slate-900 text-white w-12 h-12 rounded-2xl flex items-center justify-center hover:bg-blue-600 transition-all shadow-lg">
+                                <i class="fas fa-arrow-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterCars(cat) {
+            // Update UI buttons
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-white', 'shadow', 'text-blue-600');
+                btn.classList.add('text-slate-500');
+            });
+            event.target.classList.add('bg-white', 'shadow', 'text-blue-600');
+            
+            const filtered = cat === 'all' ? carData : carData.filter(c => c.category === cat);
+            renderCars(filtered);
+        }
+
+        function searchCars() {
+            const query = document.getElementById('carSearch').value.toLowerCase();
+            const filtered = carData.filter(c => c.name.toLowerCase().includes(query));
+            renderCars(filtered);
+        }
+
+        function openBooking(id) {
+            selectedCar = carData.find(c => c.id == id);
+            document.getElementById('modal-car-name').innerText = selectedCar.name;
+            document.getElementById('modal-car-img').src = selectedCar.image_url;
+            document.getElementById('modal-total-price').innerText = formatVND(selectedCar.price);
+            
+            // Render features
+            const featuresBox = document.getElementById('modal-features');
+            featuresBox.innerHTML = selectedCar.features.map(f => `
+                <div class="bg-white p-2 rounded-xl text-[10px] font-bold text-slate-600 border border-slate-100">
+                    <i class="fas fa-check text-blue-600 mr-1"></i> ${f}
+                </div>
+            `).join('');
+
+            document.getElementById('modal-car').classList.add('active-modal');
+            
+            // Init date pickers
+            flatpickr("#pickup-date", { minDate: "today", onChange: calcDays });
+            flatpickr("#return-date", { minDate: "today", onChange: calcDays });
+        }
+
+        function calcDays() {
+            const p = document.getElementById('pickup-date')._flatpickr.selectedDates[0];
+            const r = document.getElementById('return-date')._flatpickr.selectedDates[0];
+            if(p && r && r >= p) {
+                const diff = Math.ceil((r - p) / (1000 * 60 * 60 * 24)) + 1;
+                days = diff;
+                document.getElementById('days-count').innerText = days;
+                document.getElementById('modal-total-price').innerText = formatVND(selectedCar.price * days);
             }
-        });
+        }
+
+        function closeModal() {
+            document.getElementById('modal-car').classList.remove('active-modal');
+        }
+
+        function submitBooking() {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            if(!name || !phone) return alert("Vui lòng nhập đủ thông tin!");
+            
+            alert(`Cảm ơn ${name}! Yêu cầu đặt xe ${selectedCar.name} đã được gửi. Chúng tôi sẽ gọi cho bạn qua số ${phone} ngay!`);
+            closeModal();
+        }
+
+        // Khởi tạo trang
+        window.onload = () => renderCars(carData);
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/vn.js"></script>
 </body>
 </html>
