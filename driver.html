@@ -30,7 +30,7 @@
 
     <main class="max-w-7xl mx-auto px-6 py-12">
         <div class="mb-16">
-            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">Elite Professional Team</span>
+            <span class="text-blue-600 font-extrabold uppercase tracking-widest text-[10px]">P.S.P Elite Team</span>
             <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
         </div>
 
@@ -39,6 +39,7 @@
     </main>
 
     <script>
+        // Danh sách 13 tài xế của bạn
         const driverData = [
             { "id": "TX01", "name": "Trần Đình Nam", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
             { "id": "TX02", "name": "Lê Quốc Đức", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
@@ -63,7 +64,7 @@
                         ${driver.avatar}
                     </div>
                     <div class="flex-grow">
-                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id} | Chuyên nghiệp</span>
+                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest italic">${driver.id}</span>
                         <h3 class="text-xl font-black text-slate-900 uppercase italic mb-4 mt-1">${driver.name}</h3>
                         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter italic">${driver.exp} kinh nghiệm</p>
                     </div>
@@ -72,16 +73,16 @@
                             <p class="text-[10px] text-slate-400 font-bold uppercase">Giá thuê</p>
                             <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-xs font-medium text-slate-400">/ngày</span></p>
                         </div>
-                        <button onclick="bookDriver('${driver.id}')" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-blue-200">
-                            Thuê ngay
+                        <button onclick="bookDriver('${driver.id}')" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg">
+                            Thuê tài xế
                         </button>
                     </div>
                 </div>
             `).join('');
         }
 
+        // Logic điều hướng mượn từ hàm bookCar(id)
         function bookDriver(id) {
-            // Chuyển sang trang booking-driver kèm ID tài xế
             window.location.href = `booking-driver.html?id=${id}`;
         }
 
