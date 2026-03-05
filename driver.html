@@ -6,14 +6,13 @@
     <title>Đội Ngũ Tài Xế - TrangHy Autocar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
-        .driver-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; }
-        .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(0,0,0,0.1); border-color: #2563eb; }
-        .btn-rent { background: linear-gradient(135deg, #2563eb, #1e40af); transition: all 0.3s ease; }
+        .driver-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 2.5rem; background: white; border: 1px solid #e2e8f0; overflow: hidden; }
+        .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.15); border-color: #2563eb; }
+        .btn-rent { background: linear-gradient(135deg, #2563eb, #1e40af); transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
         .btn-rent:hover { opacity: 0.9; transform: scale(1.02); }
-        .avatar-box { background: #f1f5f9; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
+        .avatar-box { background: #f1f5f9; height: 192px; display: flex; align-items: center; justify-content: center; font-size: 5rem; }
     </style>
 </head>
 <body>
@@ -21,8 +20,8 @@
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
             <div class="font-black text-2xl italic">TRANGHY <span class="text-blue-600 not-italic text-xs tracking-[0.3em]">AUTOCAR</span></div>
             <div class="flex gap-8 font-bold text-xs uppercase tracking-widest text-slate-600">
-                <a href="index.html" class="hover:text-blue-600">Trang chủ</a>
-                <a href="cars.html" class="hover:text-blue-600">Đội xe</a>
+                <a href="index.html" class="hover:text-blue-600 transition-colors">Trang chủ</a>
+                <a href="cars.html" class="hover:text-blue-600 transition-colors">Đội xe</a>
                 <a href="driver.html" class="text-blue-600 border-b-2 border-blue-600">Tài xế</a>
             </div>
         </div>
@@ -39,7 +38,6 @@
     </main>
 
     <script>
-        // Danh sách 13 tài xế của bạn
         const driverData = [
             { "id": "TX01", "name": "Trần Đình Nam", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
             { "id": "TX02", "name": "Lê Quốc Đức", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
@@ -60,30 +58,25 @@
             const list = document.getElementById('driver-list');
             list.innerHTML = driverData.map(driver => `
                 <div class="driver-card p-6 flex flex-col h-full">
-                    <div class="w-full h-48 avatar-box rounded-[2rem] overflow-hidden mb-6">
+                    <div class="avatar-box rounded-[2rem] mb-6">
                         ${driver.avatar}
                     </div>
                     <div class="flex-grow">
-                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest italic">${driver.id}</span>
+                        <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id}</span>
                         <h3 class="text-xl font-black text-slate-900 uppercase italic mb-4 mt-1">${driver.name}</h3>
                         <p class="text-slate-400 text-[10px] font-bold uppercase tracking-tighter italic">${driver.exp} kinh nghiệm</p>
                     </div>
-                    <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
+                    <div class="pt-6 border-t border-slate-100 flex items-center justify-between mt-4">
                         <div>
                             <p class="text-[10px] text-slate-400 font-bold uppercase">Giá thuê</p>
                             <p class="text-xl font-black text-slate-900">${driver.price.toLocaleString('vi-VN')}đ<span class="text-xs font-medium text-slate-400">/ngày</span></p>
                         </div>
-                        <button onclick="bookDriver('${driver.id}')" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg">
-                            Thuê tài xế
-                        </button>
+                        <a href="booking-driver.html?id=${driver.id}" class="btn-rent text-white px-6 py-3 rounded-2xl font-black uppercase text-[10px] shadow-lg shadow-blue-200">
+                            Thuê ngay
+                        </a>
                     </div>
                 </div>
             `).join('');
-        }
-
-        // Logic điều hướng mượn từ hàm bookCar(id)
-        function bookDriver(id) {
-            window.location.href = `booking-driver.html?id=${id}`;
         }
 
         window.onload = renderDrivers;
