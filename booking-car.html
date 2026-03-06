@@ -34,6 +34,7 @@
             background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
         }
 
+        /* Giao diện Container */
         .booking-container {
             max-width: 1100px; width: 100%; background: var(--card-bg);
             border-radius: 32px; overflow: hidden; margin: 60px auto;
@@ -81,17 +82,13 @@
         .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
         h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
 
-        .input-group { margin-bottom: 20px; position: relative; }
+        .input-group { margin-bottom: 20px; }
         label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
         input, select {
             width: 100%; padding: 14px 18px; background: #f8fafc;
             border: 2px solid var(--border); border-radius: 14px; outline: none; transition: 0.3s;
-            box-sizing: border-box;
         }
         input:focus { border-color: var(--primary); background: white; }
-        
-        /* Cải thiện ô nhập ngày sinh */
-        #cust-dob { cursor: text; background: #ffffff; }
 
         .driver-card {
             display: flex; justify-content: space-between; align-items: center;
@@ -121,17 +118,10 @@
             background: white; padding: 40px; border-radius: 32px; width: 100%; max-width: 450px; text-align: center;
         }
 
-        /* Fix lỗi tràn lề lịch */
-        .flatpickr-calendar.static {
-            top: 105% !important;
-            z-index: 999;
-        }
-
         @media (max-width: 850px) {
             .form-grid { grid-template-columns: 1fr; }
             .specs-grid { grid-template-columns: repeat(2, 1fr); }
             body { padding: 10px; }
-            .total-price-tag { font-size: 2rem; }
         }
     </style>
 </head>
@@ -202,7 +192,7 @@
                         <input type="tel" id="cust-phone" placeholder="Số điện thoại" pattern="[0-9]{10}" maxlength="10" required>
                     </div>
                     <div class="input-group">
-                        <label>Ngày sinh (Nhập tay hoặc chọn)</label>
+                        <label>Ngày sinh (Trên 18 tuổi)</label>
                         <input type="text" id="cust-dob" placeholder="DD/MM/YYYY" required>
                     </div>
                 </div>
@@ -274,6 +264,7 @@
             const id = new URLSearchParams(window.location.search).get('id');
             if (!id) return window.location.href = 'index.html';
             
+            // Fix favicon error logic
             console.log("🚀 System Ready | P.S.P Elite Team");
             
             await this.loadCar(id);
@@ -306,13 +297,7 @@
         },
 
         setupPickers() {
-            // Cấu hình chung chống tràn lề cho tất cả lịch
-            const common = { 
-                dateFormat: "d/m/Y", 
-                locale: "vn", 
-                disableMobile: true,
-                static: true // FIX: Luôn hiển thị lịch bên dưới ô input
-            };
+            const common = { dateFormat: "d/m/Y", locale: "vn", disableMobile: true };
             
             const p = flatpickr("#pickup-date", { 
                 ...common, 
@@ -329,7 +314,7 @@
                 onChange: () => this.calc() 
             });
 
-            // FIX: Cấu hình cho Ngày sinh tự nhập và chọn năm nhanh
+            // Nâng cấp: Chặn khách dưới 18 tuổi
             const today = new Date();
             const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
             
@@ -337,12 +322,14 @@
                 ...common, 
                 maxDate: minAgeDate, 
                 defaultDate: new Date(1995, 0, 1),
-                allowInput: true, // FIX: Cho phép gõ từ bàn phím
-                monthSelectorType: "dropdown", // FIX: Chọn tháng nhanh qua dropdown
+                monthSelectorType: "dropdown",
+                yearRange: [1930, today.getFullYear() - 18],
+                static: true,
                 onReady: (d, s, instance) => {
                     const yr = instance.calendarContainer.querySelector(".numInput.cur-year");
-                    if(yr) yr.removeAttribute("readonly"); // Mở khóa gõ năm trực tiếp trên lịch
-                }
+                    if(yr) yr.removeAttribute("readonly");
+                },
+                onChange: () => document.getElementById('cust-license-no').focus()
             });
         },
 
@@ -365,15 +352,6 @@
                 e.target.value = e.target.value.toUpperCase(); 
             };
             
-            // Tự động thêm dấu "/" khi nhập ngày sinh
-            document.getElementById('cust-dob').oninput = (e) => {
-                let v = e.target.value.replace(/\D/g, '');
-                if (v.length > 8) v = v.substring(0, 8);
-                if (v.length > 4) v = v.substring(0, 2) + '/' + v.substring(2, 4) + '/' + v.substring(4);
-                else if (v.length > 2) v = v.substring(0, 2) + '/' + v.substring(2);
-                e.target.value = v;
-            };
-
             ['cust-phone', 'cust-cccd', 'cust-license-no'].forEach(id => {
                 document.getElementById(id).oninput = (e) => { 
                     e.target.value = e.target.value.replace(/[^0-9]/g, ''); 
@@ -405,9 +383,10 @@
 
         async submit() {
             const btn = document.getElementById('submit-btn');
+            
+            // Validate Địa chỉ nếu chọn "Tại nhà"
             const locType = document.getElementById('location-select').value;
             const locVal = document.getElementById('cust-location').value;
-            
             if (locType === "Tại Nhà" && !locVal.trim()) {
                 alert("Vui lòng nhập địa chỉ nhận xe cụ thể!");
                 document.getElementById('cust-location').focus();
@@ -433,6 +412,7 @@
             };
 
             try {
+                // Sử dụng try-catch để bắt lỗi fetch
                 await fetch(this.CONFIG.SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
@@ -440,6 +420,7 @@
                     body: JSON.stringify(payload) 
                 });
                 
+                // Sau khi gửi thông tin thành công (hoặc no-cors bypass), hiện QR
                 const memo = `DAT XE ${this.state.car.id} ${payload.SDT}`;
                 document.getElementById('m-car').innerText = payload.Xe;
                 document.getElementById('m-total').innerText = payload.TongTien;
