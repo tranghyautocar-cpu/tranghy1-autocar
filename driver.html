@@ -9,11 +9,26 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; padding-top: 90px; }
-        .driver-card { transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); border-radius: 2.5rem; cursor: pointer; position: relative; }
+        
+        /* Hiệu ứng mượt cho Card */
+        .driver-card { 
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
+            border-radius: 2.5rem; 
+            cursor: pointer; 
+            position: relative; 
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         .driver-card:hover { transform: translateY(-12px); box-shadow: 0 30px 60px -12px rgba(37, 99, 235, 0.2); border-color: #2563eb; }
         .avatar-box { background: #f1f5f9; height: 180px; display: flex; align-items: center; justify-content: center; font-size: 5rem; transition: 0.3s; }
         .driver-card:hover .avatar-box { background: #eff6ff; transform: scale(0.92); }
-        .filter-btn.active { background: #2563eb; color: white; border-color: #2563eb; }
+        
+        .filter-btn.active { background: #2563eb; color: white; border-color: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+        
         .status-pulse { height: 8px; width: 8px; background: #22c55e; border-radius: 50%; display: inline-block; box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
     </style>
@@ -21,10 +36,12 @@
 <body>
     <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-[1000] border-b border-slate-100">
         <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-            <div class="font-black text-2xl italic uppercase">TRANGHY <span class="text-blue-600 not-italic text-xs tracking-[0.3em]">AUTOCAR</span></div>
-            <div class="flex gap-8 font-bold text-xs uppercase tracking-widest text-slate-600">
-                <a href="index.html" class="hover:text-blue-600">Trang chủ</a>
-                <a href="cars.html" class="hover:text-blue-600">Đội xe</a>
+            <a href="index.html" class="font-black text-2xl italic uppercase tracking-tighter hover:opacity-80 transition-opacity">
+                TRANGHY <span class="text-blue-600 not-italic text-xs tracking-[0.3em]">AUTOCAR</span>
+            </a>
+            <div class="flex gap-8 font-bold text-[11px] uppercase tracking-widest text-slate-600">
+                <a href="index.html" class="hover:text-blue-600 transition-colors">Trang chủ</a>
+                <a href="cars.html" class="hover:text-blue-600 transition-colors">Đội xe</a>
                 <a href="driver.html" class="text-blue-600 border-b-2 border-blue-600">Tài xế</a>
             </div>
         </div>
@@ -34,15 +51,15 @@
         <div class="flex flex-col lg:flex-row lg:items-end justify-between mb-16 gap-6">
             <div>
                 <span class="text-blue-600 font-extrabold uppercase tracking-[0.3em] text-[10px]">P.S.P Elite Driver Team</span>
-                <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
+                <h1 class="text-6xl font-black italic uppercase text-slate-900 tracking-tighter leading-tight">Đội ngũ <span class="text-blue-600">Tài xế</span></h1>
             </div>
             
-            <div class="flex flex-wrap gap-3">
+            <div class="flex flex-wrap gap-3 items-center">
                 <div class="relative">
-                    <input type="text" id="driverSearch" onkeyup="searchDrivers()" placeholder="Tìm tên tài xế..." class="pl-10 pr-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold focus:border-blue-500 outline-none w-64 shadow-sm">
+                    <input type="text" id="driverSearch" onkeyup="filterSystem()" placeholder="Tìm tên tài xế..." class="pl-10 pr-4 py-3 rounded-2xl border border-slate-200 text-xs font-bold focus:border-blue-500 outline-none w-64 shadow-sm transition-all">
                     <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
                 </div>
-                <button onclick="filterByExp(7, this)" class="filter-btn px-6 py-3 rounded-2xl border border-slate-200 text-[10px] font-black uppercase transition-all shadow-sm">Kinh nghiệm > 7 năm</button>
+                <button onclick="setExpFilter(7, this)" class="filter-btn exp-btn px-6 py-3 rounded-2xl border border-slate-200 text-[10px] font-black uppercase transition-all shadow-sm">Kinh nghiệm > 7 năm</button>
                 <button onclick="resetFilter(this)" class="filter-btn active px-6 py-3 rounded-2xl border border-slate-200 text-[10px] font-black uppercase transition-all shadow-sm">Tất cả</button>
             </div>
         </div>
@@ -53,30 +70,36 @@
 
     <script>
         const driverData = [
-            { "id": "TX01", "name": "Trần Đình Nam", "phone": "0905.123.456", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX02", "name": "Lê Quốc Đức", "phone": "0912.987.654", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX03", "name": "Phạm Minh Tùng", "phone": "0988.555.777", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX04", "name": "Hoàng Thành Thắng", "phone": "0977.222.888", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX05", "name": "Vũ Hữu Tuấn", "phone": "0325.999.000", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX06", "name": "Đặng Văn Sơn", "phone": "0934.567.890", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX07", "name": "Bùi Đình Hải", "phone": "0909.111.222", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "phone": "0914.333.444", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" },
-            { "id": "TX09", "name": "Trần Minh Nam", "phone": "0966.777.888", "exp": "9 năm", "price": 500000, "avatar": "👲" },
-            { "id": "TX10", "name": "Lê Thành Đức", "phone": "0388.999.111", "exp": "5 năm", "price": 500000, "avatar": "🧑‍✈️" },
-            { "id": "TX11", "name": "Phạm Hữu Tùng", "phone": "0989.123.123", "exp": "6 năm", "price": 500000, "avatar": "👨‍✈️" },
-            { "id": "TX12", "name": "Hoàng Văn Thắng", "phone": "0903.456.789", "exp": "7 năm", "price": 500000, "avatar": "🧔" },
-            { "id": "TX13", "name": "Vũ Đình Tuấn", "phone": "0915.678.901", "exp": "8 năm", "price": 500000, "avatar": "👮‍♂️" }
+            { "id": "TX01", "name": "Trần Đình Nam", "phone": "0905.123.456", "exp": 6, "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX02", "name": "Lê Quốc Đức", "phone": "0912.987.654", "exp": 7, "price": 500000, "avatar": "🧔" },
+            { "id": "TX03", "name": "Phạm Minh Tùng", "phone": "0988.555.777", "exp": 8, "price": 500000, "avatar": "👮‍♂️" },
+            { "id": "TX04", "name": "Hoàng Thành Thắng", "phone": "0977.222.888", "exp": 9, "price": 500000, "avatar": "👲" },
+            { "id": "TX05", "name": "Vũ Hữu Tuấn", "phone": "0325.999.000", "exp": 5, "price": 500000, "avatar": "🧑‍✈️" },
+            { "id": "TX06", "name": "Đặng Văn Sơn", "phone": "0934.567.890", "exp": 6, "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX07", "name": "Bùi Đình Hải", "phone": "0909.111.222", "exp": 7, "price": 500000, "avatar": "🧔" },
+            { "id": "TX08", "name": "Nguyễn Quốc Hùng", "phone": "0914.333.444", "exp": 8, "price": 500000, "avatar": "👮‍♂️" },
+            { "id": "TX09", "name": "Trần Minh Nam", "phone": "0966.777.888", "exp": 9, "price": 500000, "avatar": "👲" },
+            { "id": "TX10", "name": "Lê Thành Đức", "phone": "0388.999.111", "exp": 5, "price": 500000, "avatar": "🧑‍✈️" },
+            { "id": "TX11", "name": "Phạm Hữu Tùng", "phone": "0989.123.123", "exp": 6, "price": 500000, "avatar": "👨‍✈️" },
+            { "id": "TX12", "name": "Hoàng Văn Thắng", "phone": "0903.456.789", "exp": 7, "price": 500000, "avatar": "🧔" },
+            { "id": "TX13", "name": "Vũ Đình Tuấn", "phone": "0915.678.901", "exp": 8, "price": 500000, "avatar": "👮‍♂️" }
         ];
+
+        let currentExpFilter = 0;
 
         function renderDrivers(data) {
             const list = document.getElementById('driver-list');
+            if (data.length === 0) {
+                list.innerHTML = `<div class="col-span-full py-20 text-center font-bold text-slate-400">Không tìm thấy tài xế phù hợp...</div>`;
+                return;
+            }
             list.innerHTML = data.map(driver => `
                 <div onclick="window.location.href='booking-driver.html?driverId=${driver.id}'" 
                      class="driver-card p-6 bg-white border border-slate-100 flex flex-col h-full group">
                     
                     <div class="avatar-box rounded-[2.5rem] mb-6 relative">
                         ${driver.avatar}
-                        <div class="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-full shadow-sm flex items-center gap-2 border border-slate-50">
+                        <div class="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-full shadow-md flex items-center gap-2 border border-slate-50">
                             <span class="status-pulse"></span>
                             <span class="text-[9px] font-bold text-slate-600 uppercase">Sẵn sàng</span>
                         </div>
@@ -84,15 +107,15 @@
 
                     <div class="flex-grow">
                         <span class="text-[9px] font-black text-blue-600 uppercase tracking-widest">${driver.id}</span>
-                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-1 mt-1">${driver.name}</h3>
+                        <h3 class="text-xl font-black text-slate-900 uppercase italic mb-1 mt-1 group-hover:text-blue-600 transition-colors">${driver.name}</h3>
                         <p class="text-slate-400 text-[10px] font-bold uppercase italic mb-4">
-                            <i class="fa-solid fa-briefcase mr-1"></i> ${driver.exp} kinh nghiệm
+                            <i class="fa-solid fa-briefcase mr-1 text-blue-400"></i> ${driver.exp} năm kinh nghiệm
                         </p>
                     </div>
 
                     <div class="pt-6 border-t border-slate-100 flex items-center justify-between">
                         <div>
-                            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1">Giá phục vụ</p>
+                            <p class="text-[9px] text-slate-400 font-bold uppercase mb-1">Công tác phí</p>
                             <p class="text-lg font-black text-slate-900">
                                 ${driver.price.toLocaleString('vi-VN')}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span>
                             </p>
@@ -105,25 +128,29 @@
             `).join('');
         }
 
-        // Chức năng tìm kiếm
-        function searchDrivers() {
-            const val = document.getElementById('driverSearch').value.toLowerCase();
-            const filtered = driverData.filter(d => d.name.toLowerCase().includes(val));
+        // Hệ thống lọc kết hợp (Vừa search vừa filter exp)
+        function filterSystem() {
+            const searchTerm = document.getElementById('driverSearch').value.toLowerCase();
+            const filtered = driverData.filter(d => {
+                const matchName = d.name.toLowerCase().includes(searchTerm);
+                const matchExp = d.exp >= currentExpFilter;
+                return matchName && matchExp;
+            });
             renderDrivers(filtered);
         }
 
-        // Chức năng lọc kinh nghiệm
-        function filterByExp(years, btn) {
+        function setExpFilter(years, btn) {
+            currentExpFilter = years;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            const filtered = driverData.filter(d => parseInt(d.exp) >= years);
-            renderDrivers(filtered);
+            filterSystem();
         }
 
         function resetFilter(btn) {
+            currentExpFilter = 0;
+            document.getElementById('driverSearch').value = '';
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
-            document.getElementById('driverSearch').value = '';
             renderDrivers(driverData);
         }
 
