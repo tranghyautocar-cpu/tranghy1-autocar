@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/material_blue.css">
 
-<style>
+ <style>
     :root {
         --primary: #2563eb;
         --primary-dark: #1e40af;
@@ -24,7 +24,6 @@
         --border: #e2e8f0;
         --accent: #f59e0b;
         --success: #22c55e;
-        --danger: #ef4444;
     }
 
     body {
@@ -32,11 +31,9 @@
         background-color: var(--bg-body);
         color: var(--text-main);
         margin: 0; padding: 20px;
-        background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), 
-                          radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
+        background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
     }
 
-    /* Layout chính */
     .booking-container {
         max-width: 1100px; width: 100%; background: var(--card-bg);
         border-radius: 32px; 
@@ -48,9 +45,22 @@
         position: relative;
     }
 
+    .flatpickr-calendar {
+        z-index: 99999 !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+    }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Header & Hero */
+    .back-btn {
+        position: absolute; top: 20px; left: 20px; z-index: 100;
+        background: var(--card-bg); border: 1px solid var(--border);
+        color: var(--text-main); padding: 10px 20px; border-radius: 12px;
+        text-decoration: none; font-weight: 700; font-size: 0.9rem;
+        transition: 0.3s; display: flex; align-items: center; gap: 8px;
+    }
+    .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
+
     .car-hero-section { 
         position: relative; 
         height: 400px; 
@@ -65,11 +75,28 @@
         background: linear-gradient(transparent, rgba(0,0,0,0.8));
         color: white;
     }
+    
+    .car-badge {
+        position: absolute; top: 30px; left: 40px;
+        background: var(--primary-gradient); color: white;
+        padding: 8px 20px; border-radius: 50px; font-size: 0.8rem; font-weight: 800;
+    }
 
-    /* Form & Input */
+    .specs-grid { 
+        display: grid; grid-template-columns: repeat(4, 1fr); 
+        gap: 20px; padding: 30px 40px; background: #f1f5f9;
+    }
+    .spec-item {
+        background: white; padding: 15px; border-radius: 16px;
+        text-align: center; border: 1px solid var(--border);
+    }
+    .spec-item i { color: var(--primary); margin-bottom: 8px; display: block; }
+
     .booking-form-content { padding: 40px; }
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 50px; }
-    .input-group { margin-bottom: 20px; }
+    h3 { font-size: 1.25rem; font-weight: 800; margin-bottom: 25px; display: flex; align-items: center; gap: 12px; }
+
+    .input-group { margin-bottom: 20px; position: relative; }
     label { display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 8px; }
     input, select {
         width: 100%; padding: 14px 18px; background: #f8fafc;
@@ -77,7 +104,27 @@
     }
     input:focus { border-color: var(--primary); background: white; }
 
-    /* Nâng cấp Modal Thanh Toán (Phần bạn cần nhất) */
+    .driver-card {
+        display: flex; justify-content: space-between; align-items: center;
+        background: #eff6ff; padding: 20px; border-radius: 18px; border: 2px solid #dbeafe;
+    }
+
+    .summary-box {
+        margin-top: 40px; padding: 40px; border-top: 2px solid var(--border);
+        text-align: center; background: linear-gradient(to bottom, white, #f1f5f9);
+    }
+    .total-price-tag { font-size: 3rem; font-weight: 900; color: var(--primary); }
+
+    .btn-confirm {
+        width: 100%; max-width: 400px; padding: 20px; 
+        background: var(--primary-gradient); color: white;
+        border: none; border-radius: 18px; font-weight: 800; font-size: 1.2rem;
+        cursor: pointer; transition: 0.4s;
+    }
+    .btn-confirm:hover:not(:disabled) { transform: translateY(-3px); opacity: 0.9; }
+    .btn-confirm:disabled { background: #cbd5e1; cursor: not-allowed; }
+
+    /* --- PHẦN NÂNG CẤP HIỂN THỊ QR (MODAL) --- */
     .modal {
         display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85);
         backdrop-filter: blur(10px); z-index: 10000; justify-content: center; align-items: center; padding: 20px;
@@ -86,55 +133,50 @@
     .modal-content {
         background: white;
         padding: 0 !important;
-        border-radius: 28px;
+        border-radius: 32px;
         width: 100%;
         max-width: 480px;
         text-align: center;
         overflow: hidden;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
         border: none;
-        animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        animation: modalScaleUp 0.4s cubic-bezier(0.17, 0.67, 0.41, 0.99);
     }
 
-    @keyframes modalSlideUp {
-        from { opacity: 0; transform: translateY(30px) scale(0.95); }
-        to { opacity: 1; transform: translateY(0) scale(1); }
+    @keyframes modalScaleUp {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
     }
 
     .modal-header {
         background: var(--primary-gradient);
         color: white;
         padding: 25px;
-        font-size: 1.3rem;
+        font-size: 1.4rem;
         font-weight: 800;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 12px;
         letter-spacing: 0.5px;
     }
 
     .modal-body { padding: 30px; }
 
-    .qr-wrapper {
+    .qr-container {
         background: #fff;
-        padding: 12px;
+        padding: 15px;
         border-radius: 24px;
         display: inline-block;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.06);
         border: 1px solid #f1f5f9;
         margin-bottom: 25px;
-        position: relative;
     }
 
-    .qr-wrapper img {
+    .qr-container img {
         display: block;
         width: 240px;
         height: 240px;
         border-radius: 12px;
     }
 
-    .info-box {
+    .payment-info-card {
         text-align: left;
         background: #f8fafc;
         padding: 20px;
@@ -143,43 +185,32 @@
         border: 1px dashed #cbd5e1;
     }
 
-    .info-row {
+    .info-line {
         display: flex;
         justify-content: space-between;
-        align-items: center;
         margin-bottom: 12px;
+        font-size: 0.95rem;
     }
-
-    .info-row:last-child { margin-bottom: 0; }
-
-    .info-row span { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; }
-    .info-row b { color: var(--text-main); font-size: 1rem; }
-
-    .info-row b.price-highlight { color: var(--danger); font-size: 1.2rem; font-weight: 900; }
-    .info-row b.memo-highlight { 
+    .info-line:last-child { margin-bottom: 0; }
+    .info-line span { color: var(--text-muted); font-weight: 600; }
+    .info-line b { color: var(--text-main); }
+    .info-line b.highlight-red { color: #ef4444; font-size: 1.1rem; }
+    .info-line b.highlight-blue { 
         color: var(--primary); 
         background: #dbeafe; 
-        padding: 4px 12px; 
-        border-radius: 10px;
-        font-family: monospace;
-        font-size: 1.1rem;
+        padding: 2px 10px; 
+        border-radius: 8px; 
     }
-
-    .btn-confirm {
-        width: 100%; max-width: 400px; padding: 18px; 
-        background: var(--primary-gradient); color: white;
-        border: none; border-radius: 18px; font-weight: 800; font-size: 1.1rem;
-        cursor: pointer; transition: 0.3s;
-        display: flex; align-items: center; justify-content: center; gap: 10px;
-    }
-    .btn-confirm:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -5px rgba(37, 99, 235, 0.4); }
-
-    /* Responsive */
     @media (max-width: 850px) {
-        .form-grid { grid-template-columns: 1fr; gap: 30px; }
-        .booking-container { margin: 20px auto; border-radius: 24px; }
-        .car-hero-section { height: 250px; }
-        .modal-content { max-width: 95%; }
+        .form-grid { grid-template-columns: 1fr; }
+        .specs-grid { grid-template-columns: repeat(2, 1fr); }
+        body { padding: 10px; }
+        .booking-container { margin: 20px auto; }
+        
+        .flatpickr-calendar {
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+        }
     }
 </style>
 </head>
