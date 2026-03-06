@@ -316,46 +316,92 @@ updateAdminStats: function() {
         }
     },
 
-    calculateDriverDays() {
-        const start = document.getElementById('dr-start-date')._flatpickr?.selectedDates[0];
-        const end = document.getElementById('dr-end-date')._flatpickr?.selectedDates[0];
-        if (start && end) {
-            if (end < start) {
-                alert("⚠️ Ngày kết thúc không được nhỏ hơn ngày bắt đầu!");
-                document.getElementById('dr-end-date')._flatpickr.clear();
-                return;
-            }
-            const diffTime = Math.abs(end - start);
-            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-            this.state.driverDays = diffDays <= 0 ? 1 : diffDays;
-            this.updateDriverTotal();
-        }
-    },
+ // Đảm bảo phần này nằm trong đối tượng app = { ... }
 
-    updateTotal() {
-        if (!this.state.selectedCar) return;
-        const total = this.state.days * Number(this.state.selectedCar.price_per_day || this.state.selectedCar.price || 0);
-        this.state.totalPrice = total;
-
-        const priceEl = document.getElementById('modal-total-price');
-        const daysEl = document.getElementById('calc-days-text');
-
-        if (priceEl) priceEl.innerText = this.formatMoney(total);
-        if (daysEl) daysEl.innerText = this.state.days;
-    },
-
-    updateDriverTotal() {
-        const total = this.state.driverDays * this.CONFIG.DRIVER_PRICE_PER_DAY;
-        this.state.currentPaymentAmount = total;
-
-        const totalEl = document.getElementById('dr-total');
-        const daysEl = document.getElementById('dr-days-text');
-
-        if (totalEl) totalEl.innerText = this.formatMoney(total);
-        if (daysEl) daysEl.innerText = this.state.driverDays;
-    },
-
+calculateDriverDays() {
+    const startInput = document.getElementById('dr-start-date');
+    const endInput = document.getElementById('dr-end-date');
     
+    // Lấy object date từ Flatpickr
+    const start = startInput._flatpickr?.selectedDates[0];
+    const end = endInput._flatpickr?.selectedDates[0];
+
+    if (start && end) {
+        if (end < start) {
+            Swal.fire("Lỗi", "Ngày kết thúc không thể trước ngày bắt đầu", "error");
+            endInput._flatpickr.clear();
+            return;
+        }
+
+        // Tính số ngày (bao gồm cả ngày bắt đầu và kết thúc)
+        const diffTime = Math.abs(end - start);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1; 
+
+        // Lưu vào state
+        this.state.driverDays = diffDays;
+        
+        // Cập nhật giao diện ngay lập tức
+        this.updateDriverTotal();
+    }
+},
+
+updateDriverTotal() {
+    // Nếu CONFIG chưa định nghĩa, mặc định 500.000đ
+    const pricePerDay = (this.CONFIG && this.CONFIG.DRIVER_PRICE_PER_DAY) ? this.CONFIG.DRIVER_PRICE_PER_DAY : 500000;
+    
+    const total = (this.state.driverDays || 1) * pricePerDay;
+    this.state.currentPaymentAmount = total;
+
+    const totalEl = document.getElementById('dr-total');
+    const daysEl = document.getElementById('dr-days-text');
+
+    if (totalEl) totalEl.innerText = this.formatMoney(total);
+    if (daysEl) daysEl.innerText = this.state.driverDays || 1;
+},
+
+handleDriverBooking() {
+    const name = document.getElementById('dr-cust-fullname').value;
+    const phone = document.getElementById('dr-cust-phone').value;
+    
+    // Kiểm tra input
+    if (!name || !phone) {
+        Swal.fire("Thông báo", "Vui lòng điền đầy đủ thông tin liên lạc", "warning");
+        return;
+    }
+
+    if (!this.state.driverDays) {
+        Swal.fire("Thông báo", "Vui lòng chọn ngày lịch trình", "warning");
+        return;
+    }
+
+    // Tạo nội dung QR
+    const amount = this.state.currentPaymentAmount;
+    const description = `THUE TAI XE ${phone}`;
+    
+    // Gọi hàm tạo QR (giả sử bạn dùng VietQR)
+    const qrUrl = `https://img.vietqr.io/image/MB-123456789-compact2.png?amount=${amount}&addInfo=${encodeURIComponent(description)}`;
+    
+    const qrImg = document.getElementById('qr-code');
+    const finalAmountEl = document.getElementById('payment-final-amount');
+    const modal = document.getElementById('payment-modal');
+
+    if (qrImg) qrImg.src = qrUrl;
+    if (finalAmountEl) finalAmountEl.innerText = this.formatMoney(amount);
+    
+    // Hiện Modal
+    if (modal) {
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    }
+},
+
+closePay() {
+    const modal = document.getElementById('payment-modal');
+    if (modal) {
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+    }
+},
     // --- 2. HÀM XỬ LÝ ĐẶT XE (ĐÃ CẬP NHẬT) ---
   saveBookingToLocal(id, type = 'car') {
         const key = type === 'driver' ? 'booked_driver_ids' : 'booked_car_ids';
