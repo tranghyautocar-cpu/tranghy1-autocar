@@ -318,19 +318,21 @@
             const today = new Date();
             const minAgeDate = new Date(today.getFullYear() - 18, today.getMonth(), today.getDate());
             
-            flatpickr("#cust-dob", { 
-                ...common, 
-                maxDate: minAgeDate, 
-                defaultDate: new Date(1995, 0, 1),
-                monthSelectorType: "dropdown",
-                yearRange: [1930, today.getFullYear() - 18],
-                static: true,
-                onReady: (d, s, instance) => {
-                    const yr = instance.calendarContainer.querySelector(".numInput.cur-year");
-                    if(yr) yr.removeAttribute("readonly");
-                },
-                onChange: () => document.getElementById('cust-license-no').focus()
-            });
+           flatpickr("#cust-dob", { 
+    ...common, 
+    maxDate: minAgeDate, 
+    defaultDate: new Date(1995, 0, 1),
+    allowInput: true,             
+    monthSelectorType: "dropdown",
+    static: true,                  
+    onReady: (d, s, instance) => {
+        const yr = instance.calendarContainer.querySelector(".numInput.cur-year");
+        if(yr) yr.removeAttribute("readonly"); 
+    },
+    onChange: (selectedDates, dateStr, instance) => {
+        if(dateStr) document.getElementById('cust-license-no').focus();
+    }
+});
         },
 
         bindEvents() {
