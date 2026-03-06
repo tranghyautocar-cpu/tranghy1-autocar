@@ -13,7 +13,9 @@
     <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
- <style>
+ <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+
+<style>
     :root {
         --primary: #007bff;
         --primary-light: #00d1ff;
@@ -28,21 +30,22 @@
         --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
-    /* Reset & chống tràn ngang */
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
     
+    /* Ẩn thanh cuộn mặc định cho toàn bộ trang nhưng vẫn cuộn được */
+    ::-webkit-scrollbar { width: 0px; background: transparent; }
+
     body {
         font-family: 'Plus Jakarta Sans', sans-serif;
         background-color: var(--dark-bg);
         background-image: radial-gradient(circle at 50% -20%, #1c2d4d, var(--dark-bg));
         color: var(--text-main);
-        margin: 0; padding: 10px; /* Giảm padding body để rộng chỗ hơn trên mobile */
+        margin: 0; padding: 10px;
         min-height: 100vh;
         display: flex; flex-direction: column; align-items: center;
         overflow-x: hidden;
     }
 
-    /* Nút Quay lại: Chuyển sang Absolute trên mobile để không đè giao diện */
     .back-btn {
         position: absolute; top: 15px; left: 15px; z-index: 100;
         background: rgba(255, 255, 255, 0.05);
@@ -62,7 +65,7 @@
 
     .header-section { text-align: center; margin-bottom: 30px; padding: 0 15px; }
     .header-section h1 { 
-        font-size: clamp(1.8rem, 5vw, 2.8rem); font-weight: 800;
+        font-size: clamp(1.8rem, 5vw, 2.5rem); font-weight: 800;
         background: var(--primary-gradient);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
@@ -71,35 +74,65 @@
 
     .booking-card {
         background: var(--card-bg);
-        border-radius: 24px; /* Giảm bo góc một chút trên mobile */
+        border-radius: 24px;
         border: 1px solid var(--border);
         overflow: hidden;
         box-shadow: var(--shadow);
         position: relative;
     }
-    .booking-card::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px; background: var(--primary-gradient); }
 
-    .form-content { padding: clamp(15px, 4vw, 40px); }
-    .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .form-content { padding: clamp(15px, 4vw, 35px); }
+    .grid-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
     
-    h3 { color: var(--primary-light); font-size: 1rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+    h3 { color: var(--primary-light); font-size: 0.95rem; margin-bottom: 20px; display: flex; align-items: center; gap: 10px; text-transform: uppercase; border-bottom: 1px solid var(--border); padding-bottom: 10px; letter-spacing: 1px; }
 
     .input-group { margin-bottom: 18px; }
-    label { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 500; }
+    label { display: block; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; }
     
     input {
         width: 100%; padding: 14px; background: var(--input-bg);
         border: 1px solid var(--border); border-radius: 12px; color: white;
         transition: var(--transition); font-size: 0.95rem; outline: none;
     }
-    input:focus { border-color: var(--primary); background: #252a33; box-shadow: 0 0 10px rgba(0,123,255,0.15); }
+    input:focus { border-color: var(--primary); background: #252a33; box-shadow: 0 0 15px rgba(0,123,255,0.1); }
 
-    .price-panel {
-        background: linear-gradient(135deg, rgba(0, 123, 255, 0.1), rgba(0, 209, 255, 0.05));
-        border: 1px solid rgba(0, 123, 255, 0.2);
-        padding: 20px; border-radius: 20px; margin-top: 25px; text-align: center;
+    /* MODAL CHUYÊN NGHIỆP */
+    #payment-modal {
+        position: fixed; inset: 0; background: rgba(0,0,0,0.8);
+        z-index: 9999; display: none; align-items: center; justify-content: center;
+        backdrop-filter: blur(8px); padding: 15px;
+        animation: fadeIn 0.3s ease;
     }
-    .price-panel h2 { font-size: clamp(2rem, 8vw, 3rem); color: var(--primary-light); margin: 5px 0; font-weight: 800; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    .modal-box {
+        background: #1c2128; padding: 0; border-radius: 28px; 
+        max-width: 420px; width: 100%; text-align: center; border: 1px solid var(--border);
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+        max-height: 95vh; overflow-y: auto;
+        scrollbar-width: none; /* Ẩn cho Firefox */
+    }
+    .modal-box::-webkit-scrollbar { display: none; } /* Ẩn cho Chrome/Safari */
+
+    .modal-header { padding: 20px; border-bottom: 1px solid var(--border); }
+    .modal-header h3 { border: none; margin: 0; justify-content: center; font-size: 1.1rem; }
+
+    .modal-body { padding: 25px; }
+
+    /* Container đựng QR */
+    .qr-wrapper {
+        background: #ffffff; padding: 15px; border-radius: 20px;
+        display: inline-block; margin-bottom: 20px;
+        box-shadow: 0 0 25px rgba(0, 123, 255, 0.2);
+    }
+    #qr-code { max-width: 100%; height: auto; display: block; border-radius: 5px; }
+
+    .amount-tag {
+        background: var(--input-bg); padding: 15px; border-radius: 16px;
+        margin-bottom: 25px; border: 1px solid var(--border);
+    }
+    .amount-tag span { display: block; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 5px; }
+    .amount-tag strong { font-size: 1.6rem; color: var(--primary-light); font-weight: 800; }
 
     .btn-group { display: grid; grid-template-columns: 1.8fr 1fr; gap: 15px; margin-top: 30px; }
     .btn-main {
@@ -108,29 +141,23 @@
         display: flex; align-items: center; justify-content: center; gap: 10px;
     }
     .btn-primary { background: var(--primary-gradient); color: white; }
-    .btn-secondary { background: #21262d; color: white; border: 1px solid var(--border); text-decoration: none; }
+    .btn-primary:hover { filter: brightness(1.1); transform: translateY(-2px); }
 
-    /* Fix lỗi Modal tràn màn hình */
-    #payment-modal {
-        position: fixed; inset: 0; background: rgba(0,0,0,0.9);
-        z-index: 9999; display: none; align-items: center; justify-content: center;
-        backdrop-filter: blur(12px); padding: 15px;
+    /* TÙY CHỈNH LỊCH FLATICKR DARK MODE */
+    .flatpickr-calendar {
+        background: #1f242d !important;
+        border: 1px solid #30363d !important;
+        box-shadow: 0 15px 30px rgba(0,0,0,0.5) !important;
     }
-    .modal-box {
-        background: var(--card-bg); padding: 25px; border-radius: 24px; 
-        max-width: 400px; width: 100%; text-align: center; border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-        max-height: 90vh; 
-        overflow-y: auto;
-    }
-    /* QR Image Fix */
-    #qr-code { max-width: 240px; width: 100%; height: auto; border-radius: 12px; }
+    .flatpickr-day.selected { background: var(--primary) !important; border-color: var(--primary) !important; }
+    .flatpickr-months .flatpickr-month { background: var(--primary) !important; color: white !important; }
+    .flatpickr-current-month .flatpickr-monthDropdown-months { background: var(--primary) !important; }
+    .flatpickr-weekday { color: var(--primary-light) !important; }
 
-    /* Responsive cho Mobile */
     @media (max-width: 850px) {
         .grid-layout { grid-template-columns: 1fr; gap: 10px; }
         .btn-group { grid-template-columns: 1fr; }
-        h3 { margin-top: 15px; }
+        .back-btn { padding: 8px 14px; font-size: 0.8rem; }
     }
 </style>
 </head>
