@@ -360,116 +360,171 @@
     }
     .animate-slow-pan { animation: slow-pan 20s infinite alternate linear; }
     
-    /* Sửa lỗi trắng trang: Ép hiển thị nếu AOS chưa load */
-    [data-aos] { opacity: 1 !important; transform: none !important; }
-    .aos-init[data-aos] { opacity: 0; }
-    .aos-animate[data-aos] { opacity: 1; transform: translate(0); }
+    /* Sửa lỗi hiển thị AOS */
+    [data-aos] { pointer-events: none; }
+    .aos-animate { pointer-events: auto; }
+    
+    .glass-card {
+        background: rgba(255, 255, 255, 0.03);
+        backdrop-filter: blur(10px);
+        border: 1px border rgba(255, 255, 255, 0.1);
+    }
+    
+    .text-gradient-gold {
+        background: linear-gradient(to right, #bf953f, #fcf6ba, #b38728, #fbf5b7, #aa771c);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+    }
 </style>
 
-<main class="relative bg-slate-50 overflow-x-hidden selection:bg-blue-600 selection:text-white">
+<main class="relative bg-[#0a0a0a] overflow-x-hidden selection:bg-blue-600 selection:text-white">
+
     <section class="min-h-screen flex flex-col lg:flex-row relative">
-        <a href="cars.html" class="relative flex-1 group cursor-pointer overflow-hidden min-h-[60vh] lg:min-h-screen border-b lg:border-b-0 lg:border-r border-white/10 block">
-            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[4000ms] ease-out group-hover:scale-110 animate-slow-pan" alt="Self Drive">
-            <div class="absolute inset-0 bg-slate-900/80 group-hover:bg-blue-900/40 transition-colors duration-700"></div>
+        <a href="cars.html" class="relative flex-1 group cursor-pointer overflow-hidden min-h-[60vh] lg:min-h-screen border-b lg:border-b-0 lg:border-r border-white/5 block">
+            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[4000ms] group-hover:scale-110 animate-slow-pan" alt="Self Drive">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-blue-900/40 transition-all duration-700"></div>
             
             <div class="relative h-full p-8 lg:p-20 flex flex-col justify-between z-10">
                 <div data-aos="fade-down">
-                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md text-white font-bold tracking-[0.2em] text-[10px] uppercase border border-white/20">
-                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 animate-ping"></span> Option 01
+                    <span class="inline-flex items-center px-4 py-2 rounded-full glass-card text-white font-bold tracking-[0.2em] text-[10px] uppercase border border-white/20">
+                        <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-2 animate-ping"></span> Exclusive Choice
                     </span>
                 </div>
                 
                 <div class="space-y-6">
-                    <h2 class="text-white text-6xl lg:text-8xl font-black italic leading-none tracking-tighter" data-aos="zoom-out-up">
-                        SELF<br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-blue-200 drop-shadow-2xl">DRIVE</span>
+                    <h2 class="text-white text-6xl lg:text-8xl font-black italic leading-none tracking-tighter uppercase" data-aos="zoom-out-up">
+                        Self<br><span class="text-blue-500">Drive</span>
                     </h2>
-                    <p class="text-white/70 max-w-sm text-base lg:text-lg leading-relaxed lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 lg:translate-y-4 lg:group-hover:translate-y-0">
-                        Trải nghiệm cảm giác tự do tuyệt đối. Làm chủ những siêu phẩm công nghệ mới nhất 2025.
+                    <p class="text-white/60 max-w-sm text-base lg:text-lg leading-relaxed lg:translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                        Tự do chinh phục mọi cung đường trên những siêu phẩm tốc độ đời mới nhất.
                     </p>
                     <div class="flex items-center gap-4 text-white font-black uppercase text-[10px] tracking-[0.4em]">
-                        <span class="w-12 h-[3px] bg-blue-500 group-hover:w-20 transition-all duration-500"></span> 
-                        <span>Khám phá ngay</span>
+                        <span class="w-12 h-[2px] bg-blue-500 group-hover:w-20 transition-all"></span> 
+                        <span>Explore Fleet</span>
                     </div>
                 </div>
             </div>
         </a>
 
         <a href="driver.html" class="relative flex-1 group cursor-pointer overflow-hidden min-h-[60vh] lg:min-h-screen block">
-            <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1200" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[4000ms] ease-out group-hover:scale-110" alt="VIP Chauffeur">
-            <div class="absolute inset-0 bg-blue-950/90 group-hover:bg-slate-900/60 transition-colors duration-700"></div>
+            <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1200" class="absolute inset-0 w-full h-full object-cover transition-transform duration-[4000ms] group-hover:scale-110" alt="VIP Chauffeur">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/20 to-black/90 group-hover:from-slate-900/60 transition-all duration-700"></div>
             
             <div class="relative h-full p-8 lg:p-20 flex flex-col justify-between z-10 lg:items-end text-left lg:text-right">
                 <div data-aos="fade-down">
-                    <span class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 backdrop-blur-md text-white font-bold tracking-[0.2em] text-[10px] uppercase border border-white/20">
-                        Option 02 <span class="w-1.5 h-1.5 rounded-full bg-slate-400 ml-2 animate-pulse"></span>
+                    <span class="inline-flex items-center px-4 py-2 rounded-full glass-card text-white font-bold tracking-[0.2em] text-[10px] uppercase border border-white/20">
+                         Premier Service <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 ml-2 animate-pulse"></span>
                     </span>
                 </div>
 
                 <div class="space-y-6">
-                    <h2 class="text-white text-6xl lg:text-8xl font-black italic leading-none tracking-tighter" data-aos="zoom-out-up">
-                        VIP<br><span class="text-slate-400">CHAUFFEUR</span>
+                    <h2 class="text-white text-6xl lg:text-8xl font-black italic leading-none tracking-tighter uppercase" data-aos="zoom-out-up">
+                        VIP<br><span class="text-yellow-500/80">Chauffeur</span>
                     </h2>
-                    <p class="text-white/70 max-w-sm lg:ml-auto text-base lg:text-lg leading-relaxed lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 lg:translate-y-4 lg:group-hover:translate-y-0">
-                        Tận hưởng sự sang trọng bậc nhất với đội ngũ tài xế chuyên nghiệp, phục vụ 24/7.
+                    <p class="text-white/60 max-w-sm lg:ml-auto text-base lg:text-lg leading-relaxed lg:translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                        Trải nghiệm thượng lưu với đội ngũ tài xế riêng phục vụ chuyên nghiệp.
                     </p>
                     <div class="flex items-center justify-start lg:justify-end gap-4 text-white font-black uppercase text-[10px] tracking-[0.4em]">
-                        <span>Đặt lịch VIP</span>
-                        <span class="w-12 h-[3px] bg-slate-400 group-hover:w-20 transition-all duration-500"></span>
+                        <span>Book Private Driver</span>
+                        <span class="w-12 h-[2px] bg-yellow-600 group-hover:w-20 transition-all"></span>
                     </div>
                 </div>
             </div>
         </a>
     </section>
 
-    <section class="py-24 lg:py-40 bg-white">
+    <section class="py-20 bg-black border-y border-white/5">
         <div class="container mx-auto px-6">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-                
-                <div class="lg:col-span-5 space-y-10" data-aos="fade-right">
-                    <div class="space-y-4">
-                        <h3 class="text-blue-600 font-black tracking-[0.3em] text-[10px] uppercase italic">The Difference</h3>
-                        <h2 class="text-5xl lg:text-7xl font-black italic tracking-tighter text-slate-900 uppercase leading-[0.9]">
-                            Tinh hoa <br><span class="text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-indigo-900">dịch vụ</span>
-                        </h2>
-                    </div>
-                    
-                    <div class="space-y-6">
-                        <div class="p-6 rounded-3xl bg-slate-50 border border-slate-100 flex gap-5 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/10 transition-all group">
-                            <div class="w-14 h-14 shrink-0 rounded-2xl bg-blue-600 text-white flex items-center justify-center text-xl group-hover:rotate-12 transition-transform">
-                                <i class="fas fa-crown"></i>
-                            </div>
-                            <div>
-                                <h4 class="font-black uppercase italic text-slate-900 text-lg">Hạm đội Exotic 2025</h4>
-                                <p class="text-slate-500 text-sm mt-1 leading-relaxed">Cung cấp các dòng xe đời mới nhất, kiểm định khắt khe từng km.</p>
-                            </div>
-                        </div>
-                    </div>
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-12 text-center">
+                <div data-aos="fade-up">
+                    <p class="text-4xl lg:text-6xl font-black text-white italic">500+</p>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-blue-500 mt-2 font-bold">Premium Cars</p>
                 </div>
-
-                <div class="lg:col-span-7 grid grid-cols-2 gap-4 lg:gap-8">
-                    <div class="space-y-4 lg:space-y-8 mt-12">
-                        <div class="aspect-[4/5] rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-2xl" data-aos="fade-up">
-                            <img src="https://images.unsplash.com/photo-1603584173870-7f3ca99a4141?q=80&w=600" class="w-full h-full object-cover">
-                        </div>
-                        <div class="bg-blue-600 p-8 lg:p-12 rounded-[2rem] lg:rounded-[3rem] text-white" data-aos="fade-up" data-aos-delay="200">
-                            <p class="text-5xl lg:text-7xl font-black italic tracking-tighter leading-none">5'</p>
-                            <p class="text-[10px] uppercase font-bold tracking-widest mt-4 opacity-80">Thủ tục siêu tốc</p>
-                        </div>
-                    </div>
-                    <div class="space-y-4 lg:space-y-8">
-                        <div class="bg-slate-900 p-8 lg:p-12 rounded-[2rem] lg:rounded-[3rem] text-white" data-aos="fade-up">
-                            <p class="text-5xl lg:text-7xl font-black italic tracking-tighter leading-none">100%</p>
-                            <p class="text-[10px] uppercase font-bold tracking-widest mt-4 opacity-80">Bảo hiểm 2 chiều</p>
-                        </div>
-                        <div class="aspect-[4/5] rounded-[2rem] lg:rounded-[3rem] overflow-hidden shadow-2xl" data-aos="fade-up" data-aos-delay="200">
-                            <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=600" class="w-full h-full object-cover">
-                        </div>
-                    </div>
+                <div data-aos="fade-up" data-aos-delay="100">
+                    <p class="text-4xl lg:text-6xl font-black text-white italic">15k+</p>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-blue-500 mt-2 font-bold">Happy Clients</p>
                 </div>
-
+                <div data-aos="fade-up" data-aos-delay="200">
+                    <p class="text-4xl lg:text-6xl font-black text-white italic">24/7</p>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-blue-500 mt-2 font-bold">VIP Support</p>
+                </div>
+                <div data-aos="fade-up" data-aos-delay="300">
+                    <p class="text-4xl lg:text-6xl font-black text-white italic">05</p>
+                    <p class="text-[10px] uppercase tracking-[0.3em] text-blue-500 mt-2 font-bold">Global Cities</p>
+                </div>
             </div>
         </div>
     </section>
+
+    <section class="py-32 bg-white text-slate-900">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col lg:flex-row justify-between items-end mb-20 gap-8">
+                <div class="max-w-2xl space-y-4" data-aos="fade-right">
+                    <h3 class="text-blue-600 font-black tracking-[0.4em] text-[10px] uppercase">The Art of Mobility</h3>
+                    <h2 class="text-5xl lg:text-7xl font-black italic tracking-tighter uppercase leading-[0.85]">
+                        Sự khác biệt <br><span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-indigo-900">đến từ đẳng cấp</span>
+                    </h2>
+                </div>
+                <p class="text-slate-500 max-w-sm italic pb-2 border-l-2 border-blue-600 pl-6" data-aos="fade-left">
+                    Chúng tôi không chỉ cho thuê xe, chúng tôi kiến tạo những hành trình đáng nhớ nhất của bạn.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10">
+                <div class="lg:col-span-8 relative rounded-[3rem] overflow-hidden group min-h-[450px]" data-aos="fade-up">
+                    <img src="https://images.unsplash.com/photo-1563720223185-11003d516905?q=80&w=1200" class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent p-12 flex flex-col justify-end">
+                        <h4 class="text-white text-3xl font-black italic uppercase">Đội xe Exotic 2025</h4>
+                        <p class="text-white/60 mt-2 max-w-md">Sở hữu những mẫu mới và phù hợp với mọi người.</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-4 bg-slate-100 rounded-[3rem] p-12 flex flex-col justify-between hover:bg-blue-600 group transition-all duration-500" data-aos="fade-up" data-aos-delay="100">
+                    <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center text-2xl shadow-xl">
+                        <i class="fas fa-shield-heart text-blue-600"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-black uppercase italic group-hover:text-white transition-colors">Bảo hiểm 2 chiều</h4>
+                        <p class="text-slate-500 mt-4 group-hover:text-white/70 transition-colors">An tâm tuyệt đối với gói bảo hiểm cao cấp nhất dành cho khách hàng VIP.</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-4 bg-slate-900 rounded-[3rem] p-12 text-white flex flex-col justify-between hover:bg-slate-800 transition-all" data-aos="fade-up">
+                    <div class="text-6xl font-black italic text-blue-500 leading-none">5'</div>
+                    <div>
+                        <h4 class="text-2xl font-black uppercase italic">Check-in Thần tốc</h4>
+                        <p class="text-white/50 mt-4">Quy trình bàn giao xe tối giản trong 5 phút qua ứng dụng di động.</p>
+                    </div>
+                </div>
+                <div class="lg:col-span-8 relative rounded-[3rem] overflow-hidden group min-h-[400px]" data-aos="fade-up" data-aos-delay="100">
+                    <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?q=80&w=1000" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-1000">
+                    <div class="absolute inset-0 bg-blue-900/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-center p-12">
+                        <div>
+                            <h4 class="text-white text-4xl font-black italic uppercase italic">Giao xe tận nơi</h4>
+                            <p class="text-white/80 mt-4">Phục vụ tại sân bay, khách sạn hoặc tư gia theo yêu cầu riêng.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-32 relative overflow-hidden bg-slate-950">
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[150%] h-full bg-[radial-gradient(circle_at_center,_rgba(37,99,235,0.1),_transparent_70%)]"></div>
+        <div class="container mx-auto px-6 relative z-10 text-center space-y-12">
+            <h2 class="text-white text-6xl lg:text-9xl font-black italic tracking-tighter uppercase leading-[0.8]" data-aos="zoom-in">
+                Ready to<br><span class="text-blue-500">Upgrade?</span>
+            </h2>
+            <p class="text-white/40 max-w-xl mx-auto text-lg italic">Đừng chỉ đi từ A đến B, hãy biến nó thành một trải nghiệm nghệ thuật.</p>
+            <div class="flex flex-col sm:flex-row gap-6 justify-center items-center pt-8" data-aos="fade-up">
+                <a href="cars.html" class="px-12 py-6 bg-blue-600 text-white font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-black transition-all shadow-[0_0_30px_rgba(37,99,235,0.3)]">
+                    Book Your Ride Now
+                </a>
+                <a href="https://zalo.me/your-id" class="px-12 py-6 border border-white/20 text-white font-black uppercase tracking-widest rounded-full hover:bg-white/5 transition-all">
+                    Contact VIP Support
+                </a>
+            </div>
+        </div>
+    </section>
+
 </main>
 <style>
     /* CSS hỗ trợ cho slider mượt mà */
