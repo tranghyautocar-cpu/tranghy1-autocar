@@ -355,21 +355,17 @@
 </header>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Lexend:wght@700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&family=Lexend:wght@700;800;900&family=Playfair+Display:italic,wght@700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
 <style>
     :root {
         --primary-blue: #3b82f6;
+        --accent-gold: #c5a059;
         --dark-bg: #050505;
-        --glass: rgba(255, 255, 255, 0.03);
+        --card-bg: rgba(255, 255, 255, 0.02);
     }
-
-    /* Scrollbar tinh tế */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-track { background: var(--dark-bg); }
-    ::-webkit-scrollbar-thumb { background: var(--primary-blue); border-radius: 10px; }
 
     body { 
         background: var(--dark-bg); 
@@ -379,207 +375,267 @@
         margin: 0;
     }
 
-    h1, h2, h3, h4, .font-heading { font-family: 'Lexend', sans-serif; }
+    h1, h2, h3, .font-heading { font-family: 'Lexend', sans-serif; }
+    .serif-italic { font-family: 'Playfair Display', serif; font-style: italic; }
 
-    /* Hiệu ứng nền mượt mà hơn */
-    .bg-glow {
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: var(--primary-blue); }
+
+    /* Background Ambient */
+    .bg-grid {
         position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-        background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.05) 0%, transparent 80%);
-        pointer-events: none; z-index: -1;
+        background-image: radial-gradient(rgba(59, 130, 246, 0.1) 1px, transparent 1px);
+        background-size: 40px 40px;
+        z-index: -1; opacity: 0.3;
     }
 
-    /* Card & Hover Effects */
-    .glass-card {
-        background: var(--glass);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Thẻ Hero biến hình */
+    .hero-container {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
+        padding: 40px;
+        min-height: 110vh;
     }
 
-    .hero-card {
-        border-radius: 3rem;
+    .main-card {
+        grid-column: span 8;
+        height: 80vh;
+        border-radius: 40px;
         overflow: hidden;
         position: relative;
-        transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        display: block; /* Sửa lỗi thẻ <a> không bao hết nội dung */
-        text-decoration: none;
+        transition: 0.8s cubic-bezier(0.2, 1, 0.2, 1);
     }
 
-    .hero-card:hover { 
-        transform: translateY(-10px) scale(1.01); 
-        box-shadow: 0 30px 60px -20px rgba(0,0,0,0.8);
+    .side-card {
+        grid-column: span 4;
+        height: 80vh;
+        border-radius: 40px;
+        overflow: hidden;
+        position: relative;
+        top: 60px; /* Tạo độ lệch tầng */
+    }
+
+    .img-zoom {
+        width: 100%; height: 100%; object-fit: cover;
+        transition: 1.5s ease;
+    }
+
+    .main-card:hover .img-zoom { transform: scale(1.1); }
+
+    .overlay-content {
+        position: absolute; inset: 0;
+        background: linear-gradient(to top, rgba(0,0,0,0.9) 10%, transparent 60%);
+        padding: 60px;
+        display: flex; flex-direction: column; justify-content: flex-end;
+    }
+
+    /* Chữ chạy nền khổng lồ */
+    .marquee-text {
+        font-size: 25vh;
+        font-weight: 900;
+        color: transparent;
+        -webkit-text-stroke: 1px rgba(255,255,255,0.05);
+        white-space: nowrap;
+        position: absolute;
+        z-index: -1;
+        pointer-events: none;
+    }
+
+    /* Section mới: Khám phá dịch vụ */
+    .service-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        padding: 100px 60px;
+    }
+
+    .service-item {
+        background: var(--card-bg);
+        border: 1px solid rgba(255,255,255,0.05);
+        padding: 50px;
+        border-radius: 30px;
+        transition: 0.5s;
+    }
+
+    .service-item:hover {
+        background: rgba(59, 130, 246, 0.05);
+        border-color: var(--primary-blue);
+        transform: translateY(-10px);
+    }
+
+    .icon-box {
+        width: 60px; height: 60px;
+        background: var(--primary-blue);
+        border-radius: 15px;
+        display: flex; align-items: center; justify-content: center;
+        margin-bottom: 30px; font-size: 24px;
     }
 
     /* Typography Upgrades */
-    .text-stroke { 
-        -webkit-text-stroke: 1.5px rgba(255,255,255,0.15); 
-        color: transparent; 
-        transition: 0.5s;
-    }
-    
-    .hero-card:hover .text-stroke { 
-        -webkit-text-stroke: 1.5px var(--primary-blue);
-        color: rgba(59, 130, 246, 0.1);
+    .giant-title {
+        font-size: clamp(3rem, 8vw, 10rem);
+        line-height: 0.85;
+        letter-spacing: -0.04em;
     }
 
-    .moving-bg-text {
-        white-space: nowrap; font-size: 18vh; font-weight: 900;
-        opacity: 0.03; position: absolute; pointer-events: none;
-        text-transform: uppercase; z-index: -1; font-family: 'Lexend';
-        will-change: transform; /* Tối ưu hiệu năng cuộn */
+    .text-outline {
+        color: transparent;
+        -webkit-text-stroke: 1px white;
     }
 
-    .btn-luxury {
-        position: relative;
-        display: inline-flex;
-        align-items: center;
-        padding: 1.25rem 3rem;
-        background: var(--primary-blue);
-        border-radius: 100px;
-        font-weight: 800;
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        color: white;
-        text-decoration: none;
-        transition: all 0.4s ease;
-        border: 1px solid transparent;
+    .btn-ultra {
+        background: white; color: black;
+        padding: 20px 45px; border-radius: 100px;
+        font-weight: 800; text-transform: uppercase;
+        display: inline-flex; align-items: center; gap: 15px;
+        transition: 0.5s; cursor: pointer; text-decoration: none;
     }
 
-    .btn-luxury:hover {
-        background: white;
-        color: var(--primary-blue) !important;
-        transform: scale(1.05);
-        box-shadow: 0 10px 40px rgba(59, 130, 246, 0.4);
+    .btn-ultra:hover {
+        background: var(--primary-blue); color: white;
+        transform: scale(1.05) rotate(-2deg);
+    }
+
+    @media (max-width: 1024px) {
+        .main-card, .side-card { grid-column: span 12; top: 0; height: 60vh; }
     }
 </style>
 
-<div class="bg-glow"></div>
+<div class="bg-grid"></div>
 
-<main class="relative z-10">
-    <section class="min-h-screen flex flex-col lg:flex-row p-6 lg:p-10 gap-8">
-        <div class="moving-bg-text top-20 left-0" id="parallaxText">LUXURY PERFORMANCE 2026</div>
-        
-        <a href="cars.html" class="hero-card flex-[1.4] group" data-aos="fade-right">
-            <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200" 
-                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/10 to-transparent"></div>
-            
-            <div class="relative h-full p-12 lg:p-20 flex flex-col justify-between">
+<main class="relative">
+    
+    <div class="marquee-text" style="top: 10%; transform: translateX(-20%);">ELITE DRIVING</div>
+    
+    <section class="hero-container">
+        <a href="cars.html" class="main-card group shadow-2xl" data-aos="zoom-out-right">
+            <img src="https://images.unsplash.com/photo-1614162692292-7ac56d7f7f1e?q=80&w=1600" class="img-zoom" alt="Sport Car">
+            <div class="overlay-content">
+                <span class="text-blue-500 font-bold tracking-[0.4em] mb-4">PREMIUM FLEET</span>
+                <h2 class="giant-title font-black uppercase italic mb-6">
+                    TỰ LÁI <br> <span class="text-outline">ĐẲNG CẤP</span>
+                </h2>
+                <p class="max-w-md text-white/50 mb-8 uppercase text-xs tracking-widest">
+                    Trải nghiệm những mẫu xe hiệu năng cao đời mới nhất. Thủ tục minh bạch, giao xe tận nơi.
+                </p>
                 <div>
-                    <span class="inline-block px-6 py-2 rounded-full glass-card text-[10px] font-bold tracking-widest uppercase border-blue-500/30">
-                        <span class="inline-block w-2 h-2 bg-blue-500 rounded-full mr-2 animate-pulse"></span> Hạm đội 2026
-                    </span>
-                </div>
-                <div>
-                    <h2 class="text-7xl lg:text-[10rem] font-black italic uppercase leading-[0.75] tracking-tighter mb-6">
-                        TỰ<br><span class="text-blue-500 group-hover:text-blue-400 transition-colors">LÁI</span>
-                    </h2>
-                    <p class="text-white/60 max-w-sm text-sm uppercase tracking-[0.2em] leading-relaxed">
-                        Trải nghiệm quyền năng tuyệt đối sau tay lái những siêu phẩm.
-                    </p>
+                    <span class="btn-ultra">Khám phá ngay <i class="fas fa-arrow-right"></i></span>
                 </div>
             </div>
         </a>
 
-        <a href="driver.html" class="hero-card flex-1 group" data-aos="fade-left">
-            <img src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?q=80&w=1200" 
-                 class="absolute inset-0 w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-[2.5s]">
-            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent"></div>
-            
-            <div class="relative h-full p-12 flex flex-col justify-between items-end text-right">
-                <span class="px-6 py-2 rounded-full glass-card text-[10px] font-bold tracking-widest uppercase">Phục vụ VIP</span>
-                <div>
-                    <h2 class="text-6xl lg:text-8xl font-black italic uppercase leading-[0.75] tracking-tighter mb-6">
-                        CÓ<br><span class="text-stroke">LÁI</span>
-                    </h2>
-                    <p class="text-white/40 max-w-[220px] ml-auto text-xs uppercase tracking-widest group-hover:text-white transition-colors">
-                        Nghệ thuật của sự thảnh thơi và sang trọng.
-                    </p>
+        <a href="driver.html" class="side-card group shadow-2xl" data-aos="zoom-out-left">
+            <img src="https://images.unsplash.com/photo-1511407397940-d57f68e8118a?q=80&w=1000" class="img-zoom" alt="Chauffeur">
+            <div class="overlay-content">
+                <span class="text-blue-500 font-bold tracking-[0.4em] mb-4">CHAUFFEUR</span>
+                <h2 class="text-5xl font-black uppercase italic mb-4">VIP <span class="text-outline">SERVICE</span></h2>
+                <p class="text-white/40 text-xs mb-6 uppercase">Nghệ thuật phục vụ dành cho thượng khách.</p>
+                <div class="w-12 h-12 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-white group-hover:text-black transition-all">
+                    <i class="fas fa-chevron-right"></i>
                 </div>
             </div>
         </a>
     </section>
 
-    <section class="py-24 container mx-auto px-6">
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-12">
-            <div class="text-center" data-aos="fade-up">
-                <div class="text-5xl font-black text-blue-500 mb-2 font-heading">500+</div>
-                <div class="text-[10px] text-white/30 uppercase tracking-[0.4em] font-bold">Lượt thuê / Tháng</div>
+    <section class="py-32 overflow-hidden bg-white/5 backdrop-blur-md">
+        <div class="flex whitespace-nowrap space-x-20 animate-marquee">
+            <h3 class="text-7xl font-black italic uppercase text-white/20">Lamborghini • Ferrari • Porsche • Bentley • Rolls Royce •</h3>
+            <h3 class="text-7xl font-black italic uppercase text-white/20">Lamborghini • Ferrari • Porsche • Bentley • Rolls Royce •</h3>
+        </div>
+    </section>
+
+    <section class="container mx-auto py-40">
+        <div class="text-center mb-24" data-aos="fade-up">
+            <h2 class="text-7xl font-black italic mb-4 uppercase">TRANGHY <span class="text-blue-500">EXCELLENCE</span></h2>
+            <div class="w-24 h-1 bg-blue-500 mx-auto"></div>
+        </div>
+
+        <div class="service-grid">
+            <div class="service-item" data-aos="fade-up" data-aos-delay="100">
+                <div class="icon-box"><i class="fas fa-bolt"></i></div>
+                <h4 class="text-2xl font-bold mb-4 uppercase italic">Tốc độ & Hiệu năng</h4>
+                <p class="text-white/40 text-sm leading-relaxed">Bộ sưu tập xe của chúng tôi luôn thuộc thế hệ mới nhất, được bảo dưỡng khắt khe theo tiêu chuẩn toàn cầu.</p>
             </div>
-            <div class="text-center" data-aos="fade-up" data-aos-delay="100">
-                <div class="text-5xl font-black text-white mb-2 font-heading">24/7</div>
-                <div class="text-[10px] text-white/30 uppercase tracking-[0.4em] font-bold">Hỗ trợ khẩn cấp</div>
+            <div class="service-item" data-aos="fade-up" data-aos-delay="200">
+                <div class="icon-box"><i class="fas fa-shield-alt"></i></div>
+                <h4 class="text-2xl font-bold mb-4 uppercase italic">Đặc quyền Bảo hiểm</h4>
+                <p class="text-white/40 text-sm leading-relaxed">Gói bảo hiểm cao cấp nhất dành riêng cho dòng xe sang, giúp bạn an tâm tuyệt đối trên mọi cung đường.</p>
             </div>
-            <div class="text-center" data-aos="fade-up" data-aos-delay="200">
-                <div class="text-5xl font-black text-blue-500 mb-2 font-heading">100%</div>
-                <div class="text-[10px] text-white/30 uppercase tracking-[0.4em] font-bold">Xe đời 2024-2026</div>
-            </div>
-            <div class="text-center" data-aos="fade-up" data-aos-delay="300">
-                <div class="text-5xl font-black text-white mb-2 font-heading">VIP</div>
-                <div class="text-[10px] text-white/30 uppercase tracking-[0.4em] font-bold">Bảo mật thông tin</div>
+            <div class="service-item" data-aos="fade-up" data-aos-delay="300">
+                <div class="icon-box"><i class="fas fa-concierge-bell"></i></div>
+                <h4 class="text-2xl font-bold mb-4 uppercase italic">Hỗ trợ 24/7/365</h4>
+                <p class="text-white/40 text-sm leading-relaxed">Đội ngũ kỹ thuật và cứu hộ túc trực mọi lúc, đảm bảo hành trình của bạn không bao giờ bị gián đoạn.</p>
             </div>
         </div>
     </section>
 
-    <section class="py-48 text-center relative overflow-hidden">
-        <div class="container mx-auto px-6 relative z-10" data-aos="zoom-out">
-            <h2 class="text-6xl lg:text-[11rem] font-black italic text-stroke mb-12 leading-none">READY?</h2>
-            <a href="tel:0123456789" class="btn-luxury">
-                <i class="fas fa-phone-alt mr-4"></i> Liên hệ đặt lịch ngay
-            </a>
+    <section class="min-h-screen flex items-center px-6 lg:px-20 relative">
+        <div class="grid lg:grid-cols-2 gap-20 items-center">
+            <div class="relative" data-aos="fade-right">
+                <img src="https://images.unsplash.com/photo-1542362567-b05500269774?q=80&w=1200" class="rounded-[50px] shadow-2xl" alt="Interior">
+                <div class="absolute -bottom-10 -right-10 bg-blue-600 p-10 rounded-[40px] shadow-xl">
+                    <span class="text-4xl font-black italic">100+</span><br>
+                    <span class="uppercase text-[10px] font-bold tracking-widest">Siêu phẩm sẵn sàng</span>
+                </div>
+            </div>
+            <div class="space-y-8" data-aos="fade-left">
+                <h3 class="serif-italic text-blue-500 text-3xl">Lựa chọn của giới thượng lưu</h3>
+                <h2 class="text-6xl font-black uppercase italic leading-none">CẢM XÚC TRÊN <br> MỖI CUNG ĐƯỜNG</h2>
+                <p class="text-white/60 leading-loose">
+                    Tại Tranghy Autocar, chúng tôi không chỉ bán một dịch vụ thuê xe. Chúng tôi trao cho bạn chiếc chìa khóa để mở ra thế giới của tốc độ, sự sang trọng và tự do đích thực. Mỗi chiếc xe đều mang một câu chuyện, và chúng tôi muốn bạn là người viết tiếp nó.
+                </p>
+                <div class="pt-6">
+                    <a href="tel:0123456789" class="btn-ultra">Gọi Hotline VIP <i class="fas fa-phone"></i></a>
+                </div>
+            </div>
         </div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] -z-10"></div>
     </section>
+
+    <section class="py-48 relative overflow-hidden text-center">
+        <div class="marquee-text" style="bottom: 0; left: 0; opacity: 0.1;">TRANGHY AUTOCAR</div>
+        <div class="container mx-auto px-6" data-aos="zoom-in">
+            <h2 class="text-8xl lg:text-[14rem] font-black italic text-outline mb-12">DRIVE NOW</h2>
+            <div class="flex flex-col lg:flex-row justify-center items-center gap-10">
+                <div class="text-left border-l-2 border-blue-500 pl-6">
+                    <p class="uppercase text-xs font-bold tracking-widest text-white/40">Hà Nội - Đà Nẵng - TP.HCM</p>
+                    <p class="text-2xl font-bold">Phủ sóng toàn quốc</p>
+                </div>
+                <div class="text-left border-l-2 border-blue-500 pl-6">
+                    <p class="uppercase text-xs font-bold tracking-widest text-white/40">Giao xe tận nơi</p>
+                    <p class="text-2xl font-bold">Dưới 30 phút</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
 </main>
 
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 <script>
-    // Khởi tạo AOS với cấu hình tối ưu
-    AOS.init({ 
-        duration: 1000, 
-        once: true,
-        easing: 'ease-out-quart'
-    });
+    AOS.init({ duration: 1200, once: false });
 
-    // Parallax mượt mà hơn với RequestAnimationFrame
-    const parallaxText = document.getElementById('parallaxText');
-    let scrollPos = 0;
-
-    window.addEventListener('scroll', function() {
-        scrollPos = window.pageYOffset;
-        if (parallaxText) {
-            // Tối ưu: Chỉ chạy animation khi phần tử trong tầm nhìn (tùy chọn nâng cao)
-            parallaxText.style.transform = `translateX(${scrollPos * 0.15}px)`;
-        }
+    // Smooth Scroll Parallax
+    window.addEventListener('scroll', () => {
+        const scrolled = window.pageYOffset;
+        const marquees = document.querySelectorAll('.marquee-text');
+        marquees.forEach((m, index) => {
+            m.style.transform = `translateX(${(scrolled * 0.2) - 200}px)`;
+        });
     });
 </script>
 
-<script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
-<script>
-    AOS.init({
-        duration: 1000,
-        once: true,
-        offset: 100,
-        easing: 'ease-out-cubic'
-    });
-</script>
 <style>
-    /* CSS hỗ trợ cho slider mượt mà */
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-</style>
-<style>
-/* CSS cho thanh cuộn đẹp hơn, không bị thô */
-.custom-scroll-payment::-webkit-scrollbar {
-    width: 4px;
-}
-.custom-scroll-payment::-webkit-scrollbar-track {
-    background: rgba(255, 255, 255, 0.05);
-}
-.custom-scroll-payment::-webkit-scrollbar-thumb {
-    background: #3b82f6;
-    border-radius: 10px;
-}
+    @keyframes marquee {
+        0% { transform: translateX(0); }
+        100% { transform: translateX(-50%); }
+    }
+    .animate-marquee {
+        display: flex;
+        width: 200%;
+        animation: marquee 30s linear infinite;
+    }
 </style>
 <footer class="bg-slate-950 text-slate-400 py-16 border-t border-white/5 relative overflow-hidden">
     <div class="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 blur-[120px] rounded-full"></div>
