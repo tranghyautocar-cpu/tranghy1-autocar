@@ -173,19 +173,19 @@
         .fb-vip .icon-box { background: #1877F2 !important; color: white !important; font-size: 26px !important; }
         .zalo-vip .icon-box { background: #0068ff !important; color: white !important; font-size: 26px !important; }
 
-        .vip-pulse {
-            position: absolute !important;
-            top: 50% !important;
-            left: 50% !important;
-            width: 60px !important;
-            height: 60px !important;
-            margin-top: -30px !important;
-            margin-left: -30px !important;
-            border-radius: 50% !important;
-            z-index: 1 !important;
-            pointer-events: none !important;
-            animation: vip-pulse-ring-new 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite !important;
-        }
+      .vip-pulse {
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important; /* Luôn bằng kích thước nút cha */
+    height: 100% !important;
+    border-radius: 50% !important;
+    z-index: 1 !important;
+    pointer-events: none !important;
+    /* Giúp vòng nháy nở ra từ đúng tâm */
+    transform-origin: center !important; 
+    animation: vip-pulse-ring-new 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite !important;
+}
 
         .fb-vip .vip-pulse { background: rgba(24, 119, 242, 0.7) !important; }
         .zalo-vip .vip-pulse { background: rgba(0, 104, 255, 0.7) !important; }
