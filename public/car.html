@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh sách xe - TrangHy Autocar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Montserrat', sans-serif; background-color: #f8fafc; }
+        .car-card:hover { transform: translateY(-10px); }
+        .status-ready { color: #16a34a; background: #dcfce7; }
+        .status-busy { color: #dc2626; background: #fee2e2; }
+    </style>
+</head>
+<body class="p-6 md:p-12">
+
+    <header class="max-w-7xl mx-auto mb-12 flex justify-between items-end">
+        <div>
+            <h1 class="text-4xl font-black italic text-slate-900 uppercase tracking-tighter">Đội Xe <span class="text-blue-600">TrangHy</span></h1>
+            <p class="text-slate-500 font-medium">Khám phá 24 dòng xe cao cấp sẵn sàng phục vụ bạn</p>
+        </div>
+        <a href="admin.html" class="bg-slate-900 text-white px-6 py-3 rounded-2xl font-bold text-sm hover:bg-blue-600 transition-all shadow-lg">
+            <i class="fas fa-user-shield mr-2"></i> Quản trị hệ thống
+        </a>
+    </header>
+
+    <div class="max-w-7xl mx-auto mb-8 flex gap-4 overflow-x-auto pb-4">
+        <button class="bg-blue-600 text-white px-6 py-2 rounded-full text-sm font-bold shadow-md">Tất cả</button>
+        <button class="bg-white text-slate-600 px-6 py-2 rounded-full text-sm font-bold shadow-sm border border-slate-200">5 Chỗ</button>
+        <button class="bg-white text-slate-600 px-6 py-2 rounded-full text-sm font-bold shadow-sm border border-slate-200">7 Chỗ</button>
+        <button class="bg-white text-slate-600 px-6 py-2 rounded-full text-sm font-bold shadow-sm border border-slate-200">Xe Sang</button>
+    </div>
+
+    <div id="car-display-grid" class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        </div>
+
+<script>
+    const carListData = [
+        { "id": 1, "name": "Toyota Camry 2024", "category": "5 chỗ", "price": 1200000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.5L Dynamic Force", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cửa sổ trời", "Ghế da chỉnh điện", "Hệ thống an toàn TSS"] },
+        { "id": 2, "name": "VinFast VF8", "category": "5 chỗ", "price": 1500000, "image_url": "images/vinvf8.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Hỗ trợ lái ADAS", "Trợ lý ảo thông minh", "Pin 82kWh"] },
+        { "id": 3, "name": "Hyundai SantaFe", "category": "7 chỗ", "price": 1800000, "image_url": "images/santafe.jpg", "transmission": "Tự động", "engine": "2.2L Diesel Smartstream", "fuel": "Dầu", "status": "Đang thuê", "features": ["Dẫn động 4 bánh HTRAC", "Loa Harman Kardon", "Cần số nút bấm"] },
+        { "id": 4, "name": "Kia Morning", "category": "4 chỗ", "price": 600000, "image_url": "images/kiamoning.jpg", "transmission": "Số sàn", "engine": "1.25L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gương chiếu hậu chỉnh điện", "Kết nối Bluetooth", "Kích thước nhỏ gọn"] },
+        { "id": 5, "name": "Mazda 3", "category": "5 chỗ", "price": 950000, "image_url": "images/mazda3.jpg", "transmission": "Tự động", "engine": "1.5L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Màn hình HUD", "Thiết kế KODO", "Phanh tay điện tử"] },
+        { "id": 6, "name": "Mitsubishi Xpander", "category": "7 chỗ", "price": 1000000, "image_url": "images/xpander.jpg", "transmission": "Tự động", "engine": "1.5L MIVEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gầm cao 225mm", "Apple CarPlay", "Nội thất rộng rãi"] },
+        { "id": 7, "name": "Mercedes C200", "category": "5 chỗ", "price": 2800000, "image_url": "images/e200.jpg", "transmission": "Tự động", "engine": "1.5L Turbo Mild-Hybrid", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn LED High Performance", "Màn hình 11.9 inch", "Nội thất ốp gỗ"] },
+        { "id": 8, "name": "Ford Everest", "category": "7 chỗ", "price": 2200000, "image_url": "images/foreverret.jpg", "transmission": "Tự động", "engine": "2.0L Bi-Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Dẫn động 4x4", "Cửa sổ trời toàn cảnh", "Hỗ trợ đỗ xe tự động"] },
+        { "id": 9, "name": "Honda City", "category": "5 chỗ", "price": 800000, "image_url": "images/honda_citi.jpg", "transmission": "Tự động", "engine": "1.5L i-VTEC", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda SENSING", "Lẫy chuyển số", "Chế độ lái tiết kiệm ECON"] },
+        { "id": 10, "name": "Kia Carnival", "category": "7 chỗ", "price": 3500000, "image_url": "images/kia_carnival.jpg", "transmission": "Tự động", "engine": "2.2L Smartstream D", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Cửa lùa điện", "Ghế thương gia", "Màn hình kép 12.3 inch"] },
+        { "id": 11, "name": "Hyundai Accent", "category": "5 chỗ", "price": 750000, "image_url": "images/huyndai_acen.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Cảm biến lùi", "Đèn định vị LED", "Điều hòa tự động"] },
+        { "id": 12, "name": "BMW 320i", "category": "5 chỗ", "price": 3200000, "image_url": "images/bmw_320i.jpg", "transmission": "Tự động", "engine": "2.0L TwinPower Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Đèn Adaptive LED", "Live Cockpit Professional", "Dẫn động cầu sau"] },
+        { "id": 13, "name": "Toyota Fortuner", "category": "7 chỗ", "price": 1700000, "image_url": "images/toyota_fortune.jpg", "transmission": "Tự động", "engine": "2.4L Diesel", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khung gầm rời (Body-on-frame)", "7 túi khí", "Bền bỉ cao"] },
+        { "id": 14, "name": "VinFast VF9", "category": "7 chỗ", "price": 2500000, "image_url": "images/vin_vf9.jpg", "transmission": "Tự động", "engine": "2 Động cơ điện (300kW)", "fuel": "Điện", "status": "Sẵn sàng", "features": ["Massage ghế", "Màn hình 15.6 inch", "Tầm xa 438 km"] },
+        { "id": 15, "name": "Kia Soluto", "category": "4 chỗ", "price": 550000, "image_url": "images/kia_soluto.jpg", "transmission": "Số sàn", "engine": "1.4L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Giá thuê rẻ", "Tiết kiệm nhiên liệu", "Cốp rộng"] },
+        { "id": 16, "name": "Toyota Vios", "category": "5 chỗ", "price": 700000, "image_url": "images/vios_2025.jpg", "transmission": "Số sàn", "engine": "1.5L 2NR-FE", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["7 túi khí", "Điều hòa cực mát", "Hệ thống phanh ABS/EBD"] },
+        { "id": 17, "name": "Mazda CX-5", "category": "5 chỗ", "price": 1300000, "image_url": "images/cx5.jpg", "transmission": "Tự động", "engine": "2.0L SkyActiv-G", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Loa Bose", "i-Activsense", "Cốp điện"] },
+        { "id": 18, "name": "Hyundai Tucson", "category": "5 chỗ", "price": 1250000, "image_url": "images/tucson.jpg", "transmission": "Tự động", "engine": "2.0L Nu MPI", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sạc không dây", "Đèn hậu LED Parametric", "Màn hình giải trí lớn"] },
+        { "id": 19, "name": "Toyota Innova", "category": "7 chỗ", "price": 1100000, "image_url": "images/toyota_2024.jpg", "transmission": "Tự động", "engine": "2.0L Dual VVT-i", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Điều hòa 2 dàn lạnh", "Ghế gập linh hoạt", "Chở đồ tốt"] },
+        { "id": 20, "name": "Kia K3", "category": "5 chỗ", "price": 900000, "image_url": "images/kia_k3.jpg", "transmission": "Tự động", "engine": "1.6L Gamma", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Sưởi & làm mát ghế", "Cửa sổ trời", "Màn hình 10.25 inch"] },
+        { "id": 21, "name": "Honda CR-V", "category": "7 chỗ", "price": 1600000, "image_url": "images/cr-v.jpg", "transmission": "Tự động", "engine": "1.5L VTEC Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Honda Sensing", "Camera LaneWatch", "Cốp điện rảnh tay"] },
+        { "id": 22, "name": "Huyndai i10", "category": "4 chỗ", "price": 500000, "image_url": "images/huyn_i10.jpg", "transmission": "Số sàn", "engine": "1.2L Kappa", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Dễ đỗ xe", "Tiết kiệm xăng", "Bản đồ dẫn đường tích hợp"] },
+        { "id": 23, "name": "Mercedes E300", "category": "5 chỗ", "price": 4500000, "image_url": "images/e300.jpg", "transmission": "Tự động", "engine": "2.0L Turbo", "fuel": "Xăng", "status": "Sẵn sàng", "features": ["Gói AMG Line", "Cửa hít", "Loa Burmester"] },
+        { "id": 24, "name": "Ford Ranger", "category": "5 chỗ", "price": 1400000, "image_url": "images/foer_ranger.jpg", "transmission": "Tự động", "engine": "2.0L Single Turbo", "fuel": "Dầu", "status": "Sẵn sàng", "features": ["Khả năng lội nước 800mm", "Màn hình dọc 10 inch", "Thùng xe rộng"] }
+    ];
+
+    // --- 1. KHỞI TẠO DỮ LIỆU CHO ADMIN ---
+    function initDataForAdmin() {
+        // Chuyển đổi format sang format của admin.html (key: tranghy_cars)
+        const formattedCars = carListData.map(car => ({
+            name: car.name,
+            type: car.category,
+            price: car.price,
+            img: car.image_url, // Đảm bảo đúng key 'img' mà admin.html đang dùng
+            status: car.status === "Sẵn sàng" ? "ready" : "busy"
+        }));
+
+        localStorage.setItem('tranghy_cars', JSON.stringify(formattedCars));
+        
+        // Tạo tài khoản admin mẫu nếu chưa có
+        if(!localStorage.getItem('tranghy_user')) {
+            localStorage.setItem('tranghy_user', JSON.stringify({ name: 'Admin', role: 'ADMIN' }));
+        }
+    }
+
+    // --- 2. HIỂN THỊ LÊN GIAO DIỆN ---
+    function renderCarGrid() {
+        const grid = document.getElementById('car-display-grid');
+        grid.innerHTML = carListData.map(car => `
+            <div class="car-card bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden transition-all duration-300">
+                <div class="relative h-48 overflow-hidden bg-slate-200">
+                    <img src="${car.image_url}" class="w-full h-full object-cover" onerror="this.src='https://placehold.co/600x400?text=No+Image'">
+                    <div class="absolute top-4 left-4">
+                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-sm ${car.status === 'Sẵn sàng' ? 'status-ready' : 'status-busy'}">
+                            ${car.status}
+                        </span>
+                    </div>
+                </div>
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-2">
+                        <h3 class="text-lg font-extrabold text-slate-800 leading-tight">${car.name}</h3>
+                    </div>
+                    <div class="flex gap-2 mb-4">
+                        <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-bold">${car.transmission}</span>
+                        <span class="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded-md font-bold">${car.fuel}</span>
+                    </div>
+                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-50">
+                        <div>
+                            <p class="text-[10px] text-slate-400 font-bold uppercase">Giá thuê ngày</p>
+                            <p class="text-xl font-black text-blue-600">${car.price.toLocaleString('vi-VN')}đ</p>
+                        </div>
+                        <button class="bg-blue-50 text-blue-600 w-10 h-10 rounded-full flex items-center justify-center hover:bg-blue-600 hover:text-white transition-all">
+                            <i class="fas fa-plus text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Chạy khi trang load
+    window.onload = () => {
+        initDataForAdmin();
+        renderCarGrid();
+        console.log("✅ Hệ thống đã nạp 24 xe vào bộ nhớ quản trị.");
+    };
+</script>
+</body>
+</html>

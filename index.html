@@ -136,16 +136,18 @@
         .terms-scroll::-webkit-scrollbar { width: 4px; }
         .terms-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        .vip-contact-container {
-            position: fixed !important;
-            bottom: 30px !important;
-            right: 30px !important;
-            z-index: 999999 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 20px !important;
-            align-items: flex-end !important;
-        }
+      .vip-contact-container {
+    position: fixed !important;
+    bottom: 30px !important;
+    right: 30px !important;
+    z-index: 999999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 20px !important;
+    /* Quan trọng: Căn các nút con thẳng hàng bên phải */
+    align-items: center !important; 
+    width: 60px !important; /* Khóa chiều rộng cố định */
+}
 
         .vip-btn {
             width: 60px !important;
@@ -462,13 +464,20 @@
         transform: translateY(-10px);
     }
 
-    .icon-box {
-        width: 60px; height: 60px;
-        background: var(--primary-blue);
-        border-radius: 15px;
-        display: flex; align-items: center; justify-content: center;
-        margin-bottom: 30px; font-size: 24px;
-    }
+   /* Dùng riêng cho nút liên hệ cố định */
+.vip-icon-box {
+    width: 60px !important;
+    height: 60px !important;
+    border-radius: 50% !important; /* Luôn tròn */
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    position: relative !important;
+    z-index: 5 !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3) !important;
+    transition: all 0.3s ease !important;
+    margin-bottom: 0 !important; /* Triệt tiêu margin gây lệch */
+}
 
     /* Typography */
     .giant-title {
