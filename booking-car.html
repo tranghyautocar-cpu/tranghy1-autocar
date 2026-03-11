@@ -6,7 +6,6 @@
     <title>Thanh Toán Thuê Xe - TrangHy Luxury</title>
     
     <link rel="icon" href="data:,">
-    
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -35,7 +34,6 @@
         background-image: radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.05) 0px, transparent 50%), radial-gradient(at 100% 0%, rgba(124, 58, 237, 0.05) 0px, transparent 50%);
     }
 
-    /* Layout chính */
     .booking-container {
         max-width: 1100px; width: 100%; background: var(--card-bg);
         border-radius: 32px; 
@@ -45,11 +43,6 @@
         border: 1px solid white;
         animation: fadeIn 0.6s ease-out;
         position: relative;
-    }
-
-    .flatpickr-calendar {
-        z-index: 99999 !important;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -63,12 +56,7 @@
     }
     .back-btn:hover { background: var(--primary); color: white; transform: translateX(-5px); }
 
-    .car-hero-section { 
-        position: relative; 
-        height: 400px; 
-        border-radius: 32px 32px 0 0; 
-        overflow: hidden; 
-    }
+    .car-hero-section { position: relative; height: 400px; border-radius: 32px 32px 0 0; overflow: hidden; }
     .car-hero-section img { width: 100%; height: 100%; object-fit: cover; }
     
     .car-info-overlay {
@@ -126,75 +114,33 @@
     .btn-confirm:hover:not(:disabled) { transform: translateY(-3px); opacity: 0.9; }
     .btn-confirm:disabled { background: #cbd5e1; cursor: not-allowed; }
 
-    /* =========================================
-       NÂNG CẤP GIAO DIỆN QR (MODAL LUXURY)
-       ========================================= */
+    /* Modal Luxury */
     .modal {
         display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9);
         backdrop-filter: blur(8px); z-index: 10000; justify-content: center; align-items: center; padding: 20px;
     }
 
     .modal-content {
-        background: white; padding: 0; border-radius: 32px; width: 100%; max-width: 500px; 
-        text-align: center; overflow: hidden; box-shadow: var(--shadow-luxury);
+        background: white; padding: 30px; border-radius: 32px; width: 100%; max-width: 450px; 
+        text-align: center; box-shadow: var(--shadow-luxury);
         animation: modalBounce 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
-    @keyframes modalBounce {
-        0% { transform: scale(0.8); opacity: 0; }
-        100% { transform: scale(1); opacity: 1; }
+    @keyframes modalBounce { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+    .payment-details {
+        text-align: left; background: #f8fafc; padding: 20px; 
+        border-radius: 20px; margin: 20px 0; border: 1px solid #edf2f7;
     }
 
-    .modal-header {
-        background: #fff; padding: 30px 20px 10px;
-        font-size: 1.5rem; font-weight: 800; color: var(--text-main);
-        text-transform: uppercase; letter-spacing: 1px;
-    }
+    .payment-details p { margin: 8px 0; font-size: 0.95rem; }
+    .payment-details b { color: var(--text-main); }
 
-    .qr-container {
-        padding: 20px; background: white; margin: 0 auto;
-        display: inline-block; border-radius: 24px;
-    }
-
-    #qr-code {
-        width: 280px; height: auto; border-radius: 16px; 
-        border: 1px solid #f1f5f9; padding: 10px; background: white;
-    }
-
-    .payment-details-card {
-        background: #f8fafc; margin: 20px 30px; padding: 25px; 
-        border-radius: 24px; text-align: left; border: 1px solid #edf2f7;
-    }
-
-    .detail-item {
-        display: flex; justify-content: space-between; align-items: center;
-        margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid #e2e8f0;
-    }
-    .detail-item:last-child { border: none; margin: 0; padding: 0; }
-
-    .detail-label { color: var(--text-muted); font-weight: 600; font-size: 0.9rem; }
-    .detail-value { color: var(--text-main); font-weight: 800; font-size: 1rem; }
-    
-    .detail-value.price { color: var(--primary); font-size: 1.2rem; }
-    .detail-value.memo { color: var(--accent); background: #fef3c7; padding: 4px 10px; border-radius: 8px; }
-
-    .modal-footer { padding: 0 30px 40px; }
-    
-    /* Ghi đè nút xác nhận trong modal */
-    .modal-content .btn-confirm {
-        width: 100%; max-width: none; border-radius: 16px;
-        box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3);
-    }
-
-    /* Responsive */
     @media (max-width: 850px) {
         .form-grid { grid-template-columns: 1fr; }
         .specs-grid { grid-template-columns: repeat(2, 1fr); }
-        body { padding: 10px; }
         .booking-container { margin: 20px auto; }
-        .modal-content { max-width: 100%; }
-        #qr-code { width: 220px; }
-        .payment-details-card { margin: 15px; padding: 20px; }
+        .total-price-tag { font-size: 2rem; }
     }
 </style>
 </head>
@@ -265,8 +211,8 @@
                         <input type="tel" id="cust-phone" placeholder="Số điện thoại" pattern="[0-9]{10}" maxlength="10" required>
                     </div>
                     <div class="input-group">
-                        <label>Ngày sinh (Trên 18 tuổi)</label>
-                        <input type="text" id="cust-dob" inputmode="numeric" placeholder="DD/MM/YYYY" maxlength="10" required>
+                        <label>Ngày sinh</label>
+                        <input type="text" id="cust-dob" placeholder="DD/MM/YYYY" maxlength="10" required>
                     </div>
                 </div>
                 
@@ -306,15 +252,33 @@
 </div>
 
 <div id="payment-modal" class="modal">
-    <div class="modal-content">
-        <h2 style="margin-bottom: 25px;">XÁC NHẬN ĐẶT CỌC</h2>
-        <img id="qr-code" src="" alt="Mã QR" style="width: 260px; height: 260px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #eee;">
-        <div style="text-align: left; background: #f8fafc; padding: 20px; border-radius: 20px; margin-bottom: 25px;">
-            <p>Xe: <b id="m-car">...</b></p>
-            <p>Tổng: <b id="m-total" style="color: var(--primary);">0 VNĐ</b></p>
-            <p>Nội dung: <b id="m-memo" style="color: var(--accent);">...</b></p>
+    <div class="modal-content" id="modal-content-box">
+        <div id="payment-step-qr">
+            <h2 style="margin: 0 0 20px 0; font-weight: 800;">XÁC NHẬN ĐẶT CỌC</h2>
+            <img id="qr-code" src="" alt="Mã QR" style="width: 280px; height: 280px; border-radius: 16px; margin-bottom: 10px; border: 1px solid #f1f5f9;">
+            
+            <div class="payment-details">
+                <p>Xe: <b id="m-car">...</b></p>
+                <p>Tổng thanh toán: <b id="m-total" style="color: var(--primary); font-size: 1.1rem;">0 VNĐ</b></p>
+                <p>Nội dung CK: <b id="m-memo" style="color: var(--accent); background: #fef3c7; padding: 2px 8px; border-radius: 6px;">...</b></p>
+            </div>
+            
+            <button class="btn-confirm" style="width: 100%; max-width: none;" onclick="bookingApp.showSuccessStep()">TÔI ĐÃ CHUYỂN KHOẢN</button>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 15px;">Vui lòng không tắt trình duyệt cho đến khi hoàn tất.</p>
         </div>
-        <button class="btn-confirm" onclick="bookingApp.finish()">TÔI ĐÃ CHUYỂN KHOẢN</button>
+
+        <div id="payment-step-success" style="display: none;">
+            <div style="font-size: 80px; color: var(--success); margin-bottom: 20px;">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h2 style="color: var(--text-main); font-weight: 800; margin-bottom: 10px;">THANH TOÁN THÀNH CÔNG</h2>
+            <p style="color: var(--text-muted); line-height: 1.5; margin-bottom: 25px;">Hệ thống đã ghi nhận yêu cầu của bạn.<br>Vui lòng gửi Bill cho chúng tôi qua Zalo để xác nhận lịch sớm nhất.</p>
+            
+            <button class="btn-confirm" style="width: 100%; max-width: none; background: #0068ff;" onclick="bookingApp.sendToZalo()">
+                <i class="fa-solid fa-comment-dots"></i> GỬI BILL QUA ZALO NGAY
+            </button>
+            <p style="margin-top: 20px;"><a href="index.html" style="color: var(--primary); font-weight: 700; text-decoration: none;">Quay lại trang chủ</a></p>
+        </div>
     </div>
 </div>
 
@@ -323,7 +287,7 @@
 
 <script>
     const bookingApp = {
-        state: { car: null, days: 1, total: 0 },
+        state: { car: null, days: 1, total: 0, currentPayload: null },
         CONFIG: {
             BANK_ID: "MB",
             ACC_NO: "0353979614",
@@ -336,7 +300,6 @@
         async init() {
             const id = new URLSearchParams(window.location.search).get('id');
             if (!id) return window.location.href = 'index.html';
-            console.log("🚀 System Ready | TrangHy Luxury");
             
             await this.loadCar(id);
             this.setupPickers();
@@ -346,7 +309,6 @@
         async loadCar(id) {
             try {
                 const res = await fetch('cars.json');
-                if (!res.ok) throw new Error("Không thể tải dữ liệu xe");
                 const cars = await res.json();
                 const car = cars.find(c => String(c.id) === String(id));
                 if (car) {
@@ -361,117 +323,44 @@
                     document.getElementById('spec-seats').innerText = car.seats || "5 Chỗ";
                     this.calc();
                 }
-            } catch (e) { 
-                console.error("Lỗi tải xe:", e);
-                alert("Không tìm thấy thông tin xe. Vui lòng quay lại trang chủ.");
-            }
+            } catch (e) { alert("Lỗi tải dữ liệu xe!"); }
         },
 
         setupPickers() {
             const common = { dateFormat: "d/m/Y", locale: "vn", disableMobile: true };
-            
-            const p = flatpickr("#pickup-date", { 
-                ...common, 
-                minDate: "today",
-                onChange: (dates) => { 
-                    r.set('minDate', dates[0]); 
-                    this.calc(); 
-                } 
-            });
-            
-            const r = flatpickr("#return-date", { 
-                ...common, 
-                minDate: "today", 
-                onChange: () => this.calc() 
-            });
-            // Đã xóa flatpickr ngày sinh tại đây
+            const p = flatpickr("#pickup-date", { ...common, minDate: "today", onChange: (dates) => { r.set('minDate', dates[0]); this.calc(); } });
+            const r = flatpickr("#return-date", { ...common, minDate: "today", onChange: () => this.calc() });
         },
 
         bindEvents() {
             document.getElementById('with-driver').onchange = () => this.calc();
-            
             document.getElementById('location-select').onchange = (e) => {
                 const isHome = e.target.value === 'Tại Nhà';
-                const input = document.getElementById('cust-location');
-                input.style.display = isHome ? 'block' : 'none';
-                input.required = isHome;
+                document.getElementById('cust-location').style.display = isHome ? 'block' : 'none';
             };
 
-            document.getElementById('rental-form').onsubmit = (e) => { 
-                e.preventDefault(); 
-                this.submit(); 
-            };
-            
-            document.getElementById('cust-fullname').oninput = (e) => { 
-                e.target.value = e.target.value.toUpperCase(); 
-            };
-            
-            ['cust-phone', 'cust-cccd', 'cust-license-no'].forEach(id => {
-                document.getElementById(id).oninput = (e) => { 
-                    e.target.value = e.target.value.replace(/[^0-9]/g, ''); 
-                };
-            });
-
-            // NÂNG CẤP: Logic nhập tay ngày sinh tự động thêm dấu /
-            const dobInput = document.getElementById('cust-dob');
-            dobInput.oninput = (e) => {
-                let v = e.target.value.replace(/\D/g, ''); 
+            document.getElementById('cust-dob').oninput = (e) => {
+                let v = e.target.value.replace(/\D/g, '');
                 if (v.length > 8) v = v.substring(0, 8);
-                let finalVal = "";
-                if (v.length > 0) {
-                    finalVal += v.substring(0, 2);
-                    if (v.length > 2) {
-                        finalVal += '/' + v.substring(2, 4);
-                        if (v.length > 4) {
-                            finalVal += '/' + v.substring(4, 8);
-                        }
-                    }
-                }
-                e.target.value = finalVal;
+                let out = "";
+                if (v.length > 0) out += v.substring(0, 2);
+                if (v.length > 2) out += '/' + v.substring(2, 4);
+                if (v.length > 4) out += '/' + v.substring(4, 8);
+                e.target.value = out;
             };
 
-            // NÂNG CẤP: Kiểm tra tuổi khi nhập xong ngày sinh
-            dobInput.onblur = (e) => {
-                const val = e.target.value;
-                if (val.length === 10) {
-                    const parts = val.split('/');
-                    const d = parseInt(parts[0]);
-                    const m = parseInt(parts[1]);
-                    const y = parseInt(parts[2]);
-                    const today = new Date();
-                    const birthDate = new Date(y, m - 1, d);
-                    let age = today.getFullYear() - birthDate.getFullYear();
-                    const monthDiff = today.getMonth() - birthDate.getMonth();
-                    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) age--;
-
-                    if (m > 12 || d > 31 || y < 1940 || y > today.getFullYear()) {
-                        alert("Ngày sinh không hợp lệ!");
-                        e.target.value = "";
-                    } else if (age < 18) {
-                        alert("Yêu cầu khách hàng từ đủ 18 tuổi!");
-                        e.target.value = "";
-                    } else {
-                        // Tự động nhảy sang ô tiếp theo nếu hợp lệ
-                        document.getElementById('cust-license-no').focus();
-                    }
-                }
-            };
+            document.getElementById('rental-form').onsubmit = (e) => { e.preventDefault(); this.submit(); };
+            document.getElementById('cust-fullname').oninput = (e) => e.target.value = e.target.value.toUpperCase();
         },
 
         calc() {
             const s = document.getElementById('pickup-date')._flatpickr?.selectedDates[0];
             const e = document.getElementById('return-date')._flatpickr?.selectedDates[0];
-            
             if (s && e && this.state.car) {
-                let diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24));
-                if (diff <= 0) diff = 1; 
-                
+                let diff = Math.ceil((e - s) / (1000 * 60 * 60 * 24)) || 1;
                 this.state.days = diff;
                 let total = diff * this.state.car.price;
-                if (document.getElementById('with-driver').checked) {
-                    total += (diff * this.CONFIG.DRIVER_FEE);
-                }
-                
+                if (document.getElementById('with-driver').checked) total += (diff * this.CONFIG.DRIVER_FEE);
                 this.state.total = total;
                 document.getElementById('total-price').innerText = this.fmt(total);
                 document.getElementById('calc-days-text').innerText = diff;
@@ -482,19 +371,10 @@
 
         async submit() {
             const btn = document.getElementById('submit-btn');
-            const locType = document.getElementById('location-select').value;
-            const locVal = document.getElementById('cust-location').value;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG XỬ LÝ...';
 
-            if (locType === "Tại Nhà" && !locVal.trim()) {
-                alert("Vui lòng nhập địa chỉ nhận xe cụ thể!");
-                document.getElementById('cust-location').focus();
-                return;
-            }
-
-            btn.disabled = true; 
-            btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> ĐANG GỬI THÔNG TIN...';
-
-            const payload = {
+            this.state.currentPayload = {
                 Ten: document.getElementById('cust-fullname').value,
                 SDT: document.getElementById('cust-phone').value,
                 CCCD: document.getElementById('cust-cccd').value,
@@ -504,51 +384,62 @@
                 Xe: this.state.car.name,
                 NgayThue: document.getElementById('pickup-date').value,
                 NgayTra: document.getElementById('return-date').value,
-                DiaChi: locType === "Tại Nhà" ? locVal : "Tại Gara",
+                DiaChi: document.getElementById('location-select').value === "Tại Nhà" ? document.getElementById('cust-location').value : "Tại Gara",
                 TongTien: this.fmt(this.state.total),
                 GhiChu: document.getElementById('with-driver').checked ? "THUÊ TÀI XẾ" : "TỰ LÁI"
             };
 
             try {
+                // 1. Gửi dữ liệu sang Google Sheets (Ưu tiên gửi trước để không mất thông tin)
                 await fetch(this.CONFIG.SCRIPT_URL, { 
                     method: 'POST', 
                     mode: 'no-cors', 
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload) 
+                    body: JSON.stringify(this.state.currentPayload) 
                 });
                 
-                const memo = `DAT XE ${this.state.car.id} ${payload.SDT}`;
-                document.getElementById('m-car').innerText = payload.Xe;
-                document.getElementById('m-total').innerText = payload.TongTien;
+                // 2. Hiển thị mã QR để khách thanh toán
+                const memo = `DAT XE ${this.state.car.id} ${this.state.currentPayload.SDT}`;
+                document.getElementById('m-car').innerText = this.state.currentPayload.Xe;
+                document.getElementById('m-total').innerText = this.state.currentPayload.TongTien;
                 document.getElementById('m-memo').innerText = memo;
                 
                 const qrUrl = `https://img.vietqr.io/image/${this.CONFIG.BANK_ID}-${this.CONFIG.ACC_NO}-compact2.png?amount=${this.state.total}&addInfo=${encodeURIComponent(memo)}&accountName=${encodeURIComponent(this.CONFIG.ACC_NAME)}`;
                 document.getElementById('qr-code').src = qrUrl;
                 
+                // Reset modal về bước QR nếu khách mở lại lần 2
+                document.getElementById('payment-step-qr').style.display = 'block';
+                document.getElementById('payment-step-success').style.display = 'none';
                 document.getElementById('payment-modal').style.display = 'flex';
+
             } catch(err) { 
-                console.error("Lỗi:", err); 
-                alert("Hệ thống bận, vui lòng thử lại hoặc liên hệ Zalo!");
+                alert("Lỗi kết nối máy chủ! Vui lòng thử lại.");
             } finally {
-                btn.disabled = false; 
+                btn.disabled = false;
                 btn.innerText = "TIẾN HÀNH ĐẶT CỌC NGAY";
             }
         },
 
-        finish() {
-            alert("Cảm ơn bạn! Vui lòng gửi ảnh chụp màn hình chuyển khoản qua Zalo để nhân viên xác nhận đơn hàng.");
-            window.location.href = this.CONFIG.ZALO;
+        // Nâng cấp: Hiển thị bước Thành công
+        showSuccessStep() {
+            document.getElementById('payment-step-qr').style.display = 'none';
+            document.getElementById('payment-step-success').style.display = 'block';
+        },
+
+        // Nâng cấp: Chuyển sang Zalo kèm nội dung soạn sẵn
+        sendToZalo() {
+            const p = this.state.currentPayload;
+            const message = `Chào TrangHy Luxury! Tôi vừa đặt cọc xe.\n- Tên: ${p.Ten}\n- Xe: ${p.Xe}\n- Số tiền: ${p.TongTien}\n- SĐT: ${p.SDT}\nGửi bạn hình ảnh bill xác nhận!`;
+            // Mã hóa tin nhắn để đưa vào URL
+            const zaloUrl = `https://zalo.me/0353979614`; 
+            
+            // Lưu ý: Zalo không hỗ trợ điền sẵn tin nhắn qua Link zalo.me/phone như WhatsApp. 
+            // Khách sẽ bấm vào và chủ động gửi ảnh bill.
+            window.location.href = zaloUrl;
         }
     };
 
     document.addEventListener('DOMContentLoaded', () => bookingApp.init());
-    
-    window.onclick = (e) => {
-        if (e.target == document.getElementById('payment-modal')) {
-            document.getElementById('payment-modal').style.display = 'none';
-        }
-    }
 </script>
-
 </body>
 </html>
