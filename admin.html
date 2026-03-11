@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ thống Quản trị - TrangHy Autocar v2.0</title>
+    <title>TrangHy Autocar - Smart Admin v2.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,32 +13,25 @@
         :root { --primary: #2563eb; --dark: #0f172a; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f8fafc; scroll-behavior: smooth; }
         
-        /* Sidebar Styles */
         .nav-item { color: #94a3b8; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); cursor: pointer; border-radius: 12px; }
         .nav-item:hover { color: white; background: rgba(255,255,255,0.05); }
         .nav-item.active { background: linear-gradient(135deg, #2563eb, #1e40af); color: white; box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.3); }
         
-        /* Dashboard Cards */
-        .stat-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
-        
         .content-view { animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Custom Scrollbar */
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
-        /* Status Badges */
         .badge { padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 700; text-transform: uppercase; }
-        .badge-pending { background: #fef3c7; color: #92400e; }
         .badge-success { background: #dcfce7; color: #166534; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .badge-warning { background: #fef3c7; color: #92400e; }
         
-        #toast { position: fixed; bottom: 24px; right: 24px; z-index: 1000; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%); }
-        #toast.show { transform: translateY(0); }
-
-        .modal-overlay { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(8px); opacity: 0; pointer-events: none; transition: all 0.3s; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        #toast { position: fixed; bottom: 24px; right: 24px; z-index: 1000; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); transform: translateY(150%); visibility: hidden; }
+        #toast.show { transform: translateY(0); visibility: visible; }
+        .car-card:hover { transform: translateY(-5px); }
+        .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); }
     </style>
 </head>
 <body class="flex h-screen overflow-hidden text-slate-800">
@@ -46,57 +39,52 @@
     <aside class="w-72 bg-slate-950 text-slate-300 flex flex-col z-20">
         <div class="h-24 flex items-center px-8">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-black italic shadow-lg text-white">T</div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-black italic shadow-lg text-white font-serif">T</div>
                 <div>
                     <h1 class="text-lg font-extrabold italic text-white leading-none tracking-tight">TRANGHY<span class="text-blue-500">.</span></h1>
-                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mt-1">Management v2.0</p>
+                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mt-1">Smart Admin v2.2</p>
                 </div>
             </div>
         </div>
         
         <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scroll">
-            <p class="px-4 text-[10px] font-bold uppercase text-slate-600 mb-4 tracking-widest">Menu chính</p>
+            <p class="px-4 text-[10px] font-bold uppercase text-slate-600 mb-4 tracking-widest">Hệ thống</p>
             <button onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item active w-full flex items-center gap-4 px-4 py-3.5 text-sm font-semibold">
-                <i class="fas fa-grid-2 w-5 text-center"></i> Dashboard
+                <i class="fas fa-chart-pie w-5"></i> Dashboard
             </button>
             <button onclick="switchTab('orders')" id="nav-orders" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm font-semibold">
-                <i class="fas fa-shopping-cart w-5 text-center"></i> Đơn hàng 
-                <span id="badge-orders-count" class="ml-auto bg-slate-800 text-[10px] px-2 py-0.5 rounded-md text-slate-400">0</span>
+                <i class="fas fa-shopping-cart w-5"></i> Đơn hàng 
+                <span id="badge-orders-count" class="ml-auto bg-blue-600 text-[10px] px-2 py-0.5 rounded-md text-white">0</span>
             </button>
             <button onclick="switchTab('cars')" id="nav-cars" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm font-semibold">
-                <i class="fas fa-car w-5 text-center"></i> Đội xe
+                <i class="fas fa-car w-5"></i> Đội xe
             </button>
             <button onclick="switchTab('drivers')" id="nav-drivers" class="nav-item w-full flex items-center gap-4 px-4 py-3.5 text-sm font-semibold">
-                <i class="fas fa-id-card w-5 text-center"></i> Tài xế
+                <i class="fas fa-id-card w-5"></i> Tài xế
             </button>
         </nav>
-
-        <div class="p-6 border-t border-white/5">
-            <button onclick="logout()" class="w-full flex items-center justify-center gap-3 px-4 py-3 bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white rounded-xl text-xs font-bold transition-all">
-                <i class="fas fa-sign-out-alt"></i> Đăng xuất hệ thống
-            </button>
-        </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between">
+        <header class="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between shadow-sm z-10">
             <div class="flex items-center gap-4">
                 <h2 class="text-xl font-bold text-slate-900" id="page-title">Dashboard</h2>
-                <div id="loading-spinner" class="hidden"><i class="fas fa-spinner fa-spin text-blue-600"></i></div>
+                <div id="loading-spinner" class="hidden"><i class="fas fa-circle-notch fa-spin text-blue-600"></i></div>
             </div>
             
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-6">
                 <div class="relative hidden md:block">
-                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" placeholder="Tìm kiếm nhanh..." class="bg-slate-100 border-none rounded-xl py-2.5 pl-10 pr-4 text-xs w-64 focus:ring-2 focus:ring-blue-500/20">
+                    <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="global-search" oninput="App.handleSearch(this.value)" placeholder="Tìm kiếm nhanh..." 
+                           class="bg-slate-100 border-none rounded-xl pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 transition-all">
                 </div>
-                <div class="w-px h-8 bg-slate-200 mx-2"></div>
-                <div class="flex items-center gap-3">
+                
+                <div class="flex items-center gap-3 border-l pl-6 border-slate-200">
                     <div class="text-right">
-                        <p class="text-xs font-bold text-slate-900 leading-none">Quản trị viên</p>
-                        <p class="text-[10px] text-green-500 font-bold mt-1 uppercase">Sẵn sàng</p>
+                        <p class="text-xs font-bold text-slate-900 leading-none">Admin TrangHy</p>
+                        <p class="text-[10px] text-green-500 font-bold mt-1 uppercase">Trực tuyến</p>
                     </div>
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=0f172a&color=fff" class="w-10 h-10 rounded-xl shadow-md">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff" class="w-10 h-10 rounded-xl shadow-sm">
                 </div>
             </div>
         </header>
@@ -104,32 +92,32 @@
         <div class="flex-1 overflow-y-auto p-8 custom-scroll">
             
             <div id="view-dashboard" class="content-view space-y-8">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-wallet"></i></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-car"></i></div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Doanh thu tháng</p>
-                            <h3 class="text-xl font-extrabold text-slate-900" id="stat-revenue">0đ</h3>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-calendar-check"></i></div>
-                        <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Tổng đơn hàng</p>
-                            <h3 class="text-xl font-extrabold text-slate-900" id="stat-orders">0</h3>
-                        </div>
-                    </div>
-                    <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-car"></i></div>
-                        <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Xe khả dụng</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Tổng số xe</p>
                             <h3 class="text-xl font-extrabold text-slate-900" id="stat-cars">0</h3>
                         </div>
                     </div>
-                    <div class="stat-card bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
-                        <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-users"></i></div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-check-double"></i></div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Đội ngũ tài xế</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Xe sẵn sàng</p>
+                            <h3 class="text-xl font-extrabold text-slate-900" id="stat-ready">0</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-file-invoice-dollar"></i></div>
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Doanh thu dự tính</p>
+                            <h3 class="text-xl font-extrabold text-slate-900" id="stat-revenue">0đ</h3>
+                        </div>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
+                        <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-star"></i></div>
+                        <div>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Tài xế</p>
                             <h3 class="text-xl font-extrabold text-slate-900" id="stat-drivers">0</h3>
                         </div>
                     </div>
@@ -137,17 +125,18 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                     <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
-                        <h3 class="font-bold text-slate-900 mb-6">Hiệu suất doanh thu</h3>
-                        <canvas id="revenueChart" height="120"></canvas>
-                    </div>
-                    
-                    <div class="bg-slate-900 p-8 rounded-3xl text-white shadow-xl flex flex-col">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="text-sm font-bold uppercase tracking-widest text-blue-400">Hoạt động mới</h3>
-                            <span class="flex h-2 w-2 rounded-full bg-blue-500 animate-ping"></span>
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-chart-line text-blue-500"></i> Hiệu suất thuê xe</h3>
+                            <select class="text-xs font-bold bg-slate-50 border-none rounded-lg px-3 py-1 outline-none">
+                                <option>7 ngày qua</option>
+                                <option>30 ngày qua</option>
+                            </select>
                         </div>
-                        <div class="flex-1 space-y-6 overflow-y-auto pr-2 custom-scroll" id="recent-logs">
-                            </div>
+                        <canvas id="revenueChart" height="130"></canvas>
+                    </div>
+                    <div class="bg-slate-900 p-8 rounded-3xl text-white shadow-xl flex flex-col">
+                        <h3 class="text-sm font-bold uppercase tracking-widest text-blue-400 mb-6">Nhật ký hệ thống</h3>
+                        <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scroll" id="recent-logs"></div>
                     </div>
                 </div>
             </div>
@@ -155,12 +144,12 @@
             <div id="view-orders" class="content-view hidden">
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                        <div class="flex items-center gap-4">
-                            <h3 class="font-bold text-lg">Quản lý Đơn hàng</h3>
-                            <div class="bg-blue-100 text-blue-700 text-[10px] px-2 py-1 rounded-md font-bold uppercase">Live Sync</div>
+                        <div>
+                            <h3 class="font-bold text-lg">Hợp đồng & Đơn hàng</h3>
+                            <p class="text-xs text-slate-400">Quản lý các yêu cầu thuê xe từ khách hàng</p>
                         </div>
-                        <button onclick="App.syncData()" class="bg-white border border-slate-200 px-4 py-2 rounded-xl font-bold text-xs hover:bg-slate-50 flex items-center gap-2 transition-all">
-                            <i class="fas fa-sync"></i> Làm mới dữ liệu
+                        <button onclick="App.syncOrders()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
+                            <i class="fas fa-sync mr-2"></i> Đồng bộ Sheets
                         </button>
                     </div>
                     <div class="overflow-x-auto">
@@ -169,44 +158,46 @@
                                 <tr class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500">
                                     <th class="px-8 py-4">Mã đơn</th>
                                     <th class="px-8 py-4">Khách hàng</th>
-                                    <th class="px-8 py-4">Thông tin xe</th>
-                                    <th class="px-8 py-4">Thanh toán</th>
+                                    <th class="px-8 py-4">Dòng xe</th>
+                                    <th class="px-8 py-4">Tổng tiền</th>
                                     <th class="px-8 py-4">Trạng thái</th>
-                                    <th class="px-8 py-4 text-right">Hành động</th>
+                                    <th class="px-8 py-4">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100">
-                                </tbody>
+                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
             <div id="view-cars" class="content-view hidden">
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="font-bold text-2xl">Quản lý <span class="text-blue-600">Đội xe</span></h3>
-                    <button onclick="toggleModal('modal-car')" class="bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-xs hover:bg-blue-700 shadow-lg shadow-blue-500/20">
-                        <i class="fas fa-plus mr-2"></i> THÊM XE MỚI
-                    </button>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <div>
+                        <h3 class="font-bold text-2xl">Đội xe TrangHy <span class="text-blue-600" id="car-count-title">(0)</span></h3>
+                        <p class="text-sm text-slate-400">Danh sách phương tiện đang quản lý</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">Tất cả</button>
+                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">Sedan</button>
+                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">SUV / 7 Chỗ</button>
+                    </div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-6" id="cars-grid"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="cars-grid"></div>
             </div>
 
             <div id="view-drivers" class="content-view hidden">
-                <div class="flex justify-between items-center mb-8">
-                    <h3 class="font-bold text-2xl">Danh sách <span class="text-blue-600">Tài xế</span></h3>
-                    <button onclick="toggleModal('modal-driver')" class="bg-slate-900 text-white px-6 py-3 rounded-xl font-bold text-xs">
-                        <i class="fas fa-user-plus mr-2"></i> ĐĂNG KÝ TÀI XẾ
-                    </button>
+                <div class="mb-8">
+                    <h3 class="font-bold text-2xl">Danh sách Tài xế <span class="text-blue-600" id="driver-count-title">(0)</span></h3>
                 </div>
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-200 overflow-hidden">
                     <table class="w-full text-left">
                         <thead>
-                            <tr class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500 border-b">
-                                <th class="px-8 py-5">Họ tên tài xế</th>
-                                <th class="px-8 py-5">Số điện thoại</th>
-                                <th class="px-8 py-5">Trạng thái</th>
-                                <th class="px-8 py-5 text-right">Quản lý</th>
+                            <tr class="bg-slate-50 text-[11px] uppercase font-bold text-slate-500">
+                                <th class="px-8 py-5">Tài xế</th>
+                                <th class="px-8 py-5">Liên hệ</th>
+                                <th class="px-8 py-5">Kinh nghiệm</th>
+                                <th class="px-8 py-5">Đơn giá</th>
+                                <th class="px-8 py-5">Đánh giá</th>
                             </tr>
                         </thead>
                         <tbody id="drivers-table-body" class="text-sm divide-y divide-slate-100"></tbody>
@@ -216,192 +207,199 @@
         </div>
     </main>
 
-    <div id="toast" class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10">
-        <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center"><i class="fas fa-check"></i></div>
-        <div>
-            <p class="text-[10px] font-bold uppercase text-blue-400">Hệ thống</p>
-            <p class="text-sm font-semibold" id="toast-msg">Thao tác thành công!</p>
+    <div id="toast" class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10 glass">
+        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-bell text-xs"></i>
         </div>
-    </div>
-
-    <div id="modal-car" class="modal-overlay fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="bg-white w-full max-w-md rounded-3xl p-8 shadow-2xl">
-            <h3 class="text-xl font-bold mb-6">Thông tin xe mới</h3>
-            <div class="space-y-4">
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Tên xe</label>
-                    <input id="car-name" type="text" placeholder="VD: Toyota Camry 2024" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500/20">
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Loại xe</label>
-                        <select id="car-type" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                            <option>4 Chỗ</option>
-                            <option>7 Chỗ</option>
-                            <option>16 Chỗ</option>
-                        </select>
-                    </div>
-                    <div class="space-y-1">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Giá/Ngày</label>
-                        <input id="car-price" type="number" placeholder="đ" class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                    </div>
-                </div>
-                <div class="space-y-1">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Link ảnh</label>
-                    <input id="car-image" type="text" placeholder="https://..." class="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl">
-                </div>
-                <div class="flex gap-3 mt-8">
-                    <button onclick="saveCar()" class="flex-1 bg-blue-600 text-white py-3.5 rounded-xl font-bold text-xs hover:bg-blue-700 shadow-lg shadow-blue-500/20 transition-all">LƯU THÔNG TIN</button>
-                    <button onclick="toggleModal('modal-car')" class="px-6 bg-slate-100 text-slate-500 py-3.5 rounded-xl font-bold text-xs hover:bg-slate-200">HỦY</button>
-                </div>
-            </div>
+        <div>
+            <div id="toast-msg" class="text-sm font-bold"></div>
+            <p class="text-[10px] text-slate-400">Hệ thống TrangHy Autocar</p>
         </div>
     </div>
 
     <script>
-        // Cấu hình Google Sheet Apps Script URL
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz46WIU8JMv0DYbSYwfNEalpvsq7HcZIVjjfchPVJ6XxcuILr8MNDAipebtlzJuWymC/exec';
-
-        // State Management
+        
         let state = {
             orders: [],
-            cars: [
-                { id: 1, name: 'Mercedes-Benz S450', type: '4 Chỗ', price: 5000000, status: 'Sẵn sàng', img: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400' },
-                { id: 2, name: 'Toyota Fortuner', type: '7 Chỗ', price: 1500000, status: 'Bận', img: 'https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400' },
-                { id: 3, name: 'Hyundai Solati', type: '16 Chỗ', price: 2500000, status: 'Sẵn sàng', img: 'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400' }
-            ],
-            drivers: [
-                { id: 1, name: 'Nguyễn Văn Thành', phone: '0905 123 456', status: 'Đang chạy' },
-                { id: 2, name: 'Lê Minh Hoàng', phone: '0988 777 999', status: 'Nghỉ' }
-            ]
+            cars: [],
+            drivers: [],
+            currentTab: 'dashboard'
         };
 
         const App = {
             async init() {
                 this.initChart();
-                await this.syncData();
-                this.renderCars();
-                this.renderDrivers();
-                this.addLog("Hệ thống TrangHy v2.0 đã trực tuyến.");
+                this.addLog("Đang tải dữ liệu từ máy chủ...");
+                
+                await Promise.all([
+                    this.fetchData('cars.json', 'cars'),
+                    this.fetchData('drivers.json', 'drivers'),
+                    this.syncOrders()
+                ]);
+
+                this.renderAll();
+                this.addLog("Hệ thống đã sẵn sàng.");
             },
 
-            async syncData() {
-                const spinner = document.getElementById('loading-spinner');
-                spinner.classList.remove('hidden');
-                
+            async fetchData(fileName, key) {
                 try {
-                    const response = await fetch(SCRIPT_URL);
-                    const data = await response.json();
-                    
-                    // Chuẩn hóa dữ liệu từ Sheet
-                    state.orders = data.map(item => ({
-                        id: item.id || Math.floor(Math.random() * 1000),
-                        custName: item.custName || 'Khách lẻ',
-                        carName: item.carName || 'Chưa chọn xe',
-                        price: parseFloat(item.price) || 0,
-                        status: item.status || 'Chờ duyệt',
-                        date: item.date || 'Hôm nay'
-                    }));
-
-                    this.renderOrders();
-                    this.updateStats();
-                    this.notify("Dữ liệu đã được đồng bộ với Google Sheets");
+                    const response = await fetch(`./${fileName}?v=${Date.now()}`);
+                    if (!response.ok) throw new Error("File not found");
+                    state[key] = await response.json();
                 } catch (err) {
-                    console.error("Sync Error:", err);
-                    this.notify("Lỗi kết nối Sheet - Đang dùng dữ liệu tạm");
-                } finally {
-                    spinner.classList.add('hidden');
+                    this.addLog(`⚠️ Lỗi: Không thể nạp ${fileName}`);
+                    // Dữ liệu mẫu nếu không tìm thấy file
+                    if(key === 'cars') state.cars = [{id:1, name:'VinFast VF8', category:'SUV', status:'Sẵn sàng', price:1500000, engine:'Electric', fuel:'Pin', transmission:'Auto', features:['GPS', 'Sunroof'], image_url:''}];
                 }
             },
 
-            renderOrders() {
-                const tbody = document.getElementById('orders-table-body');
-                tbody.innerHTML = state.orders.map((order, idx) => `
-                    <tr class="hover:bg-slate-50/80 transition-all border-b border-slate-50 group">
-                        <td class="px-8 py-5 font-bold text-slate-900 tracking-tighter">#ORD-${1000 + idx}</td>
-                        <td class="px-8 py-5">
-                            <p class="font-bold text-blue-600">${order.custName}</p>
-                            <p class="text-[10px] text-slate-400 font-medium">${order.date}</p>
-                        </td>
-                        <td class="px-8 py-5 font-semibold text-slate-700 text-xs">${order.carName}</td>
-                        <td class="px-8 py-5 font-bold text-slate-900">${order.price.toLocaleString('vi-VN')}đ</td>
-                        <td class="px-8 py-5">
-                            <span class="badge ${order.status === 'Chờ duyệt' ? 'badge-pending' : 'badge-success'}">${order.status}</span>
-                        </td>
-                        <td class="px-8 py-5 text-right">
-                            <button class="w-8 h-8 rounded-lg text-slate-300 hover:text-blue-600 hover:bg-blue-50 transition-all">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `).join('');
-                document.getElementById('badge-orders-count').innerText = state.orders.length;
+            async syncOrders() {
+                const spinner = document.getElementById('loading-spinner');
+                spinner.classList.remove('hidden');
+                try {
+                    const response = await fetch(SCRIPT_URL);
+                    state.orders = await response.json();
+                    this.notify("Đồng bộ dữ liệu thành công");
+                    this.renderOrders();
+                } catch (err) {
+                    this.addLog("❌ Lỗi đồng bộ Google Sheets");
+                } finally {
+                    spinner.classList.add('hidden');
+                    this.updateStats();
+                }
             },
 
-            renderCars() {
+            handleSearch(val) {
+                const query = val.toLowerCase();
+                if (state.currentTab === 'cars') {
+                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query));
+                    this.renderCars(filtered);
+                } else if (state.currentTab === 'orders') {
+                    const filtered = state.orders.filter(o => (o.custName || '').toLowerCase().includes(query) || (o.carName || '').toLowerCase().includes(query));
+                    this.renderOrders(filtered);
+                }
+            },
+
+            renderCars(data = state.cars) {
                 const grid = document.getElementById('cars-grid');
-                grid.innerHTML = state.cars.map(car => `
-                    <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 group">
-                        <div class="h-44 relative">
-                            <img src="${car.img}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
-                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg text-[9px] font-black uppercase shadow-sm">${car.type}</div>
+                document.getElementById('car-count-title').innerText = `(${data.length})`;
+                
+                grid.innerHTML = data.map(car => `
+                    <div class="car-card bg-white rounded-3xl overflow-hidden shadow-sm border border-slate-100 transition-all duration-300 hover:shadow-xl group">
+                        <div class="h-40 bg-slate-100 relative overflow-hidden">
+                            <img src="${car.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" onerror="this.src='https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=400'">
+                            <div class="absolute top-3 right-3">
+                                <span class="badge ${car.status === 'Sẵn sàng' ? 'badge-success' : 'badge-danger'} shadow-sm">
+                                    ${car.status}
+                                </span>
+                            </div>
                         </div>
-                        <div class="p-6">
-                            <h4 class="font-bold text-slate-900 text-sm mb-4">${car.name}</h4>
-                            <div class="flex justify-between items-center">
+                        <div class="p-5">
+                            <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">${car.category}</p>
+                            <h4 class="font-bold text-slate-900 mb-3">${car.name}</h4>
+                            
+                            <div class="flex justify-between items-center bg-slate-50 rounded-2xl p-3 mb-4">
                                 <div>
-                                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter leading-none">Giá thuê</p>
-                                    <p class="text-blue-600 font-extrabold text-sm mt-1">${car.price.toLocaleString()}đ</p>
+                                    <p class="text-[10px] text-slate-400 uppercase font-bold">Giá thuê</p>
+                                    <p class="font-black text-blue-600">${(car.price || 0).toLocaleString()}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
                                 </div>
-                                <span class="text-[9px] font-bold px-2 py-1 rounded-md ${car.status === 'Sẵn sàng' ? 'bg-emerald-50 text-emerald-600' : 'bg-red-50 text-red-600'}">${car.status}</span>
+                                <i class="fas fa-arrow-right text-slate-300"></i>
+                            </div>
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <div class="text-[10px] text-slate-500 flex items-center gap-2"><i class="fas fa-gas-pump text-blue-400"></i> ${car.fuel}</div>
+                                <div class="text-[10px] text-slate-500 flex items-center gap-2"><i class="fas fa-cog text-blue-400"></i> ${car.transmission}</div>
                             </div>
                         </div>
                     </div>
                 `).join('');
             },
 
+            renderOrders(data = state.orders) {
+                const tbody = document.getElementById('orders-table-body');
+                tbody.innerHTML = data.map(o => `
+                    <tr class="hover:bg-slate-50/80 transition-all">
+                        <td class="px-8 py-4 font-bold text-slate-400 text-xs">#${o.id || '---'}</td>
+                        <td class="px-8 py-4">
+                            <p class="font-bold text-slate-900">${o.custName || 'Khách lẻ'}</p>
+                            <p class="text-[10px] text-slate-400 font-medium">${o.phone || 'Không có SĐT'}</p>
+                        </td>
+                        <td class="px-8 py-4 font-semibold text-blue-600">${o.carName || '---'}</td>
+                        <td class="px-8 py-4 font-black text-slate-900">${(Number(o.price) || 0).toLocaleString()}đ</td>
+                        <td class="px-8 py-4">
+                            <span class="badge ${o.status === 'Đã duyệt' ? 'badge-success' : 'badge-warning'}">
+                                ${o.status || 'Chờ duyệt'}
+                            </span>
+                        </td>
+                        <td class="px-8 py-4">
+                            <button class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
+                                <i class="fas fa-ellipsis-v text-xs"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `).join('');
+                document.getElementById('badge-orders-count').innerText = data.length;
+            },
+
             renderDrivers() {
                 const tbody = document.getElementById('drivers-table-body');
+                document.getElementById('driver-count-title').innerText = `(${state.drivers.length})`;
                 tbody.innerHTML = state.drivers.map(d => `
-                    <tr class="border-b border-slate-50 hover:bg-slate-50/50">
-                        <td class="px-8 py-5 font-bold text-slate-700">${d.name}</td>
-                        <td class="px-8 py-5 text-slate-500 font-medium">${d.phone}</td>
+                    <tr class="hover:bg-slate-50 transition-all">
                         <td class="px-8 py-5">
-                            <span class="badge ${d.status === 'Đang chạy' ? 'badge-success' : 'badge-pending'}">${d.status}</span>
+                            <div class="flex items-center gap-4">
+                                <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center text-lg shadow-inner">${d.avatar || '👨‍✈️'}</div>
+                                <div>
+                                    <p class="font-bold text-slate-900">${d.name}</p>
+                                    <p class="text-[10px] font-bold text-blue-500 uppercase">${d.id}</p>
+                                </div>
+                            </div>
                         </td>
-                        <td class="px-8 py-5 text-right">
-                             <button class="text-slate-300 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
-                        </td>
+                        <td class="px-8 py-5 font-semibold text-slate-600">${d.phone}</td>
+                        <td class="px-8 py-5"><span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-lg font-bold text-xs">${d.exp}</span></td>
+                        <td class="px-8 py-5 font-bold text-blue-600">${(d.price || 0).toLocaleString()}đ</td>
+                        <td class="px-8 py-5 text-yellow-500"><i class="fas fa-star"></i> 4.9</td>
                     </tr>
                 `).join('');
             },
 
             updateStats() {
-                const revenue = state.orders.reduce((sum, order) => sum + order.price, 0);
-                document.getElementById('stat-revenue').innerText = revenue.toLocaleString('vi-VN') + 'đ';
-                document.getElementById('stat-orders').innerText = state.orders.length;
+                const totalRevenue = state.orders.reduce((sum, o) => sum + (Number(o.price) || 0), 0);
+                const readyCars = state.cars.filter(c => c.status === 'Sẵn sàng').length;
+
                 document.getElementById('stat-cars').innerText = state.cars.length;
                 document.getElementById('stat-drivers').innerText = state.drivers.length;
+                document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString() + 'đ';
+                document.getElementById('stat-ready').innerText = readyCars;
+            },
+
+            renderAll() {
+                this.renderCars();
+                this.renderDrivers();
+                this.renderOrders();
+                this.updateStats();
+            },
+
+            addLog(msg) {
+                const logs = document.getElementById('recent-logs');
+                const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                logs.insertAdjacentHTML('afterbegin', `
+                    <div class="flex gap-3 items-start p-3 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 transition-all">
+                        <div class="w-2 h-2 rounded-full bg-blue-500 mt-1.5 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+                        <div>
+                            <p class="text-[11px] font-medium leading-relaxed">${msg}</p>
+                            <p class="text-[9px] text-slate-500 font-bold mt-1 uppercase">${time}</p>
+                        </div>
+                    </div>
+                `);
             },
 
             notify(msg) {
                 const toast = document.getElementById('toast');
                 document.getElementById('toast-msg').innerText = msg;
                 toast.classList.add('show');
-                setTimeout(() => toast.classList.remove('show'), 3500);
-            },
-
-            addLog(msg) {
-                const logs = document.getElementById('recent-logs');
-                const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                const logHtml = `
-                    <div class="flex gap-4 group">
-                        <div class="text-[10px] font-bold text-slate-500 mt-1">${time}</div>
-                        <div class="flex-1 border-l-2 border-blue-500/30 pl-4 group-hover:border-blue-500 transition-all">
-                            <p class="text-xs text-slate-300 leading-snug">${msg}</p>
-                        </div>
-                    </div>`;
-                logs.insertAdjacentHTML('afterbegin', logHtml);
+                setTimeout(() => toast.classList.remove('show'), 3000);
             },
 
             initChart() {
@@ -409,84 +407,47 @@
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                        labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
                         datasets: [{ 
-                            label: 'Doanh thu',
-                            data: [12, 19, 15, 28, 22, 35, 45], 
+                            data: [12, 19, 15, 25, 22, 45, 50], 
                             borderColor: '#2563eb', 
-                            borderWidth: 3,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#2563eb',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
+                            borderWidth: 4,
                             tension: 0.4,
                             fill: true,
-                            backgroundColor: (context) => {
-                                const gradient = context.chart.ctx.createLinearGradient(0, 0, 0, 300);
-                                gradient.addColorStop(0, 'rgba(37, 99, 235, 0.15)');
-                                gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-                                return gradient;
-                            }
+                            backgroundColor: 'rgba(37, 99, 235, 0.05)',
+                            pointRadius: 0,
+                            pointHoverRadius: 6,
+                            pointHoverBackgroundColor: '#2563eb',
+                            pointHoverBorderColor: '#fff',
+                            pointHoverBorderWidth: 3
                         }]
                     },
-                    options: {
-                        responsive: true,
-                        plugins: { legend: { display: false } },
+                    options: { 
+                        plugins: { legend: { display: false } }, 
                         scales: { 
-                            y: { beginAtZero: true, grid: { borderDash: [5, 5] } },
-                            x: { grid: { display: false } }
-                        }
+                            y: { display: false },
+                            x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' } } }
+                        },
+                        interaction: { intersect: false, mode: 'index' }
                     }
                 });
             }
         };
 
-        // NAVIGATION LOGIC
         function switchTab(tabId) {
+            state.currentTab = tabId;
             document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`nav-${tabId}`).classList.add('active');
             
-            const titles = { 'dashboard': 'Tổng quan hệ thống', 'orders': 'Danh sách đơn hàng', 'cars': 'Quản lý đội xe', 'drivers': 'Nhân sự tài xế' };
+            const titles = { 'dashboard': 'Dashboard', 'orders': 'Quản lý Đơn hàng', 'cars': 'Đội xe TrangHy', 'drivers': 'Danh sách Tài xế' };
             document.getElementById('page-title').innerText = titles[tabId];
+            
+            // Xóa thanh search khi chuyển tab
+            document.getElementById('global-search').value = '';
         }
 
-        function toggleModal(id) {
-            document.getElementById(id).classList.toggle('active');
-        }
-
-        function saveCar() {
-            const name = document.getElementById('car-name').value;
-            const price = document.getElementById('car-price').value;
-            const img = document.getElementById('car-image').value;
-
-            if(!name || !price) return alert("Vui lòng nhập đủ thông tin!");
-
-            state.cars.unshift({
-                id: Date.now(),
-                name: name,
-                type: document.getElementById('car-type').value,
-                price: parseInt(price),
-                status: 'Sẵn sàng',
-                img: img || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=400'
-            });
-
-            App.renderCars();
-            App.updateStats();
-            toggleModal('modal-car');
-            App.notify(`Đã thêm xe ${name} thành công`);
-            App.addLog(`Thêm xe mới: ${name}`);
-        }
-
-        function logout() {
-            if(confirm("Bạn có muốn đăng xuất?")) {
-                window.location.reload();
-            }
-        }
-
-        // START APP
         document.addEventListener('DOMContentLoaded', () => App.init());
     </script>
 </body>
