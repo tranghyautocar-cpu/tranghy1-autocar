@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrangHy Autocar - Smart Admin v2.4</title>
+    <title>TrangHy Autocar - Smart Admin v2.5</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -13,14 +13,14 @@
         :root { --primary: #2563eb; --accent: #f59e0b; }
         body { font-family: 'Plus Jakarta Sans', sans-serif; background: #f1f5f9; }
         
-        /* Sidebar Glassmorphism */
-        .sidebar-glass { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(12px); }
+        /* Sidebar & Modal Glassmorphism */
+        .glass-panel { background: rgba(2, 6, 23, 0.95); backdrop-filter: blur(12px); }
+        .glass-modal { background: rgba(255, 255, 255, 0.98); backdrop-filter: blur(16px); }
         
         .nav-item { color: #94a3b8; transition: all 0.3s ease; border-radius: 12px; margin: 2px 0; }
         .nav-item:hover { color: white; background: rgba(255,255,255,0.08); transform: translateX(5px); }
         .nav-item.active { background: linear-gradient(135deg, #2563eb, #3b82f6); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
         
-        /* Dashboard Cards */
         .stat-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .stat-card:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
 
@@ -33,17 +33,21 @@
         
         #toast { position: fixed; bottom: 30px; right: 30px; z-index: 9999; transform: translateX(120%); transition: 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
         #toast.active { transform: translateX(0); }
+
+        /* Form Inputs */
+        .form-input { @apply w-full bg-slate-50 border border-slate-200 text-slate-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block p-3 transition-colors; outline: none; }
+        .form-label { @apply block mb-2 text-xs font-bold text-slate-600; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-slate-800">
+<body class="flex h-screen overflow-hidden text-slate-800 relative">
 
-    <aside class="w-72 sidebar-glass text-slate-300 flex flex-col z-50">
+    <aside class="w-72 glass-panel text-slate-300 flex flex-col z-40 relative">
         <div class="h-24 flex items-center px-8">
             <div class="flex items-center gap-3">
                 <div class="w-11 h-11 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center text-xl font-black shadow-lg text-white transform -rotate-3">T</div>
                 <div>
                     <h1 class="text-xl font-extrabold italic text-white tracking-tighter">TRANGHY<span class="text-blue-500">.</span></h1>
-                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Enterprise v2.4</p>
+                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Enterprise v2.5</p>
                 </div>
             </div>
         </div>
@@ -68,13 +72,13 @@
         <div class="p-4 border-t border-white/5">
             <div class="bg-blue-600/10 rounded-2xl p-4 border border-blue-600/20">
                 <p class="text-xs font-bold text-blue-400 mb-1">Phiên bản mới</p>
-                <p class="text-[10px] text-slate-400">Bạn đang sử dụng bản cập nhật ổn định nhất.</p>
+                <p class="text-[10px] text-slate-400">Bạn đang sử dụng bản cập nhật mới nhất (v2.5).</p>
             </div>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col overflow-hidden">
-        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between z-40">
+        <header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-200 px-8 flex items-center justify-between z-30">
             <div class="flex items-center gap-4">
                 <h2 class="text-xl font-extrabold text-slate-900 tracking-tight" id="page-title">Dashboard Tổng Quan</h2>
                 <div id="loading-spinner" class="hidden text-blue-600"><i class="fas fa-spinner fa-spin"></i></div>
@@ -98,7 +102,6 @@
         </header>
 
         <div class="flex-1 overflow-y-auto p-8 custom-scroll bg-[#f8fafc]">
-            
             <div id="view-dashboard" class="content-view space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="stat-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
@@ -109,7 +112,6 @@
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Tổng Đội Xe</p>
                         <h3 class="text-3xl font-black text-slate-900 mt-1" id="stat-cars">--</h3>
                     </div>
-
                     <div class="stat-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-12 h-12 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-calendar-check"></i></div>
@@ -118,7 +120,6 @@
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Xe Sẵn Sàng</p>
                         <h3 class="text-3xl font-black text-slate-900 mt-1" id="stat-ready">--</h3>
                     </div>
-
                     <div class="stat-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-coins"></i></div>
@@ -127,7 +128,6 @@
                         <p class="text-xs font-bold text-slate-400 uppercase tracking-wider">Doanh Thu Tháng</p>
                         <h3 class="text-2xl font-black text-slate-900 mt-1" id="stat-revenue">--</h3>
                     </div>
-
                     <div class="stat-card bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                         <div class="flex justify-between items-start mb-4">
                             <div class="w-12 h-12 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-xl"><i class="fas fa-users"></i></div>
@@ -150,18 +150,14 @@
                                 <option>Theo tháng</option>
                             </select>
                         </div>
-                        <div class="h-64">
-                            <canvas id="revenueChart"></canvas>
-                        </div>
+                        <div class="h-64"><canvas id="revenueChart"></canvas></div>
                     </div>
-
                     <div class="bg-slate-950 p-8 rounded-[2rem] text-white shadow-2xl flex flex-col">
                         <div class="flex items-center justify-between mb-6">
                             <h3 class="text-sm font-bold uppercase tracking-widest text-blue-400">System Logs</h3>
                             <span class="flex h-2 w-2 rounded-full bg-green-500"></span>
                         </div>
-                        <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scroll" id="recent-logs">
-                            </div>
+                        <div class="flex-1 space-y-4 overflow-y-auto pr-2 custom-scroll" id="recent-logs"></div>
                     </div>
                 </div>
             </div>
@@ -189,8 +185,7 @@
                                     <th class="px-8 py-5 text-right">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-50">
-                                </tbody>
+                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-50"></tbody>
                         </table>
                     </div>
                 </div>
@@ -202,19 +197,29 @@
                         <h3 class="font-black text-3xl text-slate-900">Showroom <span class="text-blue-600" id="car-count-title">...</span></h3>
                         <p class="text-sm text-slate-500 font-medium">Quản lý trạng thái và danh mục đội xe</p>
                     </div>
-                    <div class="flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
-                        <button onclick="App.filterCars('all')" class="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white transition-all" id="btn-filter-all">Tất cả</button>
-                        <button onclick="App.filterCars('Sẵn sàng')" class="px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Sẵn sàng</button>
-                        <button onclick="App.filterCars('Đang thuê')" class="px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Đang thuê</button>
+                    <div class="flex items-center gap-4">
+                        <div class="flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
+                            <button onclick="App.filterCars('all')" class="px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white transition-all" id="btn-filter-all">Tất cả</button>
+                            <button onclick="App.filterCars('Sẵn sàng')" class="px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Sẵn sàng</button>
+                            <button onclick="App.filterCars('Đang thuê')" class="px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Đang thuê</button>
+                        </div>
+                        <button onclick="UI.openModal('carModal')" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                            <i class="fas fa-plus"></i> Thêm Xe Mới
+                        </button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8" id="cars-grid"></div>
             </div>
 
             <div id="view-drivers" class="content-view hidden">
-                <div class="mb-8">
-                    <h3 class="font-black text-3xl text-slate-900">Partner Drivers</h3>
-                    <p class="text-sm text-slate-500 font-medium">Hệ thống cộng tác viên tài xế</p>
+                <div class="flex justify-between items-end mb-8">
+                    <div>
+                        <h3 class="font-black text-3xl text-slate-900">Partner Drivers</h3>
+                        <p class="text-sm text-slate-500 font-medium mt-1">Hệ thống cộng tác viên tài xế</p>
+                    </div>
+                    <button onclick="UI.openModal('driverModal')" class="bg-gradient-to-r from-blue-600 to-blue-500 text-white px-6 py-3 rounded-2xl font-bold text-xs shadow-lg hover:shadow-blue-500/30 hover:-translate-y-0.5 transition-all flex items-center gap-2">
+                        <i class="fas fa-user-plus"></i> Thêm Tài Xế
+                    </button>
                 </div>
                 <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden">
                     <table class="w-full text-left border-collapse">
@@ -225,6 +230,7 @@
                                 <th class="px-8 py-6 text-center">Xếp hạng</th>
                                 <th class="px-8 py-6">Thù lao</th>
                                 <th class="px-8 py-6">Trạng thái</th>
+                                <th class="px-8 py-6 text-right">Thao tác</th>
                             </tr>
                         </thead>
                         <tbody id="drivers-table-body" class="text-sm divide-y divide-slate-100"></tbody>
@@ -233,6 +239,83 @@
             </div>
         </div>
     </main>
+
+    <div id="carModal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="UI.closeModal('carModal')"></div>
+        <div class="glass-modal w-full max-w-md rounded-[2rem] shadow-2xl relative z-10 border border-white p-8 transform scale-95 opacity-0 transition-all duration-300" id="carModalContent">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900">Thêm Xe Mới</h3>
+                    <p class="text-xs font-medium text-slate-500">Cập nhật danh mục showroom</p>
+                </div>
+                <button onclick="UI.closeModal('carModal')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-red-100 hover:text-red-500 transition-colors flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="App.handleAddCar(event)" class="space-y-4">
+                <div>
+                    <label class="form-label">Tên Xe</label>
+                    <input type="text" id="carName" required placeholder="VD: VinFast VF8 Plus" class="form-input">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Phân Khúc</label>
+                        <select id="carCategory" class="form-input">
+                            <option value="Sedan">Sedan</option>
+                            <option value="SUV">SUV</option>
+                            <option value="Luxury">Luxury</option>
+                            <option value="Electric">Electric</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="form-label">Giá Thuê/Ngày</label>
+                        <input type="number" id="carPrice" required placeholder="1500000" class="form-input">
+                    </div>
+                </div>
+                <div>
+                    <label class="form-label">URL Hình Ảnh</label>
+                    <input type="url" id="carImage" placeholder="https://..." class="form-input">
+                </div>
+                <button type="submit" class="w-full bg-slate-900 text-white font-bold text-sm py-3.5 rounded-xl hover:bg-blue-600 transition-colors mt-6 shadow-lg">Lưu Xe Vào Kho</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="driverModal" class="fixed inset-0 z-[100] hidden items-center justify-center">
+        <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="UI.closeModal('driverModal')"></div>
+        <div class="glass-modal w-full max-w-md rounded-[2rem] shadow-2xl relative z-10 border border-white p-8 transform scale-95 opacity-0 transition-all duration-300" id="driverModalContent">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h3 class="text-xl font-black text-slate-900">Thêm Tài Xế Mới</h3>
+                    <p class="text-xs font-medium text-slate-500">Mở rộng đội ngũ đối tác</p>
+                </div>
+                <button onclick="UI.closeModal('driverModal')" class="w-8 h-8 rounded-full bg-slate-100 text-slate-500 hover:bg-red-100 hover:text-red-500 transition-colors flex items-center justify-center">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form onsubmit="App.handleAddDriver(event)" class="space-y-4">
+                <div>
+                    <label class="form-label">Họ và Tên</label>
+                    <input type="text" id="driverName" required placeholder="VD: Nguyễn Văn A" class="form-input">
+                </div>
+                <div>
+                    <label class="form-label">Số Điện Thoại</label>
+                    <input type="tel" id="driverPhone" required placeholder="09xx.xxx.xxx" class="form-input">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="form-label">Kinh Nghiệm (Năm)</label>
+                        <input type="number" id="driverExp" required placeholder="5" class="form-input">
+                    </div>
+                    <div>
+                        <label class="form-label">Lương/Ngày</label>
+                        <input type="number" id="driverPrice" required placeholder="500000" class="form-input">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 text-white font-bold text-sm py-3.5 rounded-xl hover:bg-blue-700 transition-colors mt-6 shadow-[0_8px_20px_rgba(37,99,235,0.2)]">Tạo Hồ Sơ</button>
+            </form>
+        </div>
+    </div>
 
     <div id="toast" class="bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] p-4 rounded-3xl flex items-center gap-4 min-w-[320px] border border-slate-100">
         <div id="toast-icon" class="w-12 h-12 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-lg">
@@ -247,24 +330,37 @@
     <script>
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzmWBoYAviV4TcLXun9SzEe_gX9xeQCQb1XYTwq7Nq4gt59GTgLmfi2LbQHb8aKl3gB/exec';
         
-        let state = {
-            orders: [],
-            cars: [],
-            drivers: [],
-            currentTab: 'dashboard'
+        let state = { orders: [], cars: [], drivers: [], currentTab: 'dashboard' };
+
+        // UI Helpers
+        const UI = {
+            openModal(id) {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(id + 'Content');
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                setTimeout(() => {
+                    content.classList.remove('scale-95', 'opacity-0');
+                    content.classList.add('scale-100', 'opacity-100');
+                }, 10);
+            },
+            closeModal(id) {
+                const modal = document.getElementById(id);
+                const content = document.getElementById(id + 'Content');
+                content.classList.remove('scale-100', 'opacity-100');
+                content.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }, 300);
+            }
         };
 
         const App = {
             async init() {
                 this.initChart();
-                this.addLog("Hệ thống đã sẵn sàng.");
-                
-                await Promise.all([
-                    this.fetchData('cars.json', 'cars'),
-                    this.fetchData('drivers.json', 'drivers'),
-                    this.syncOrders()
-                ]);
-
+                this.addLog("Hệ thống v2.5 đã sẵn sàng.");
+                await Promise.all([this.fetchData('cars.json', 'cars'), this.fetchData('drivers.json', 'drivers'), this.syncOrders()]);
                 this.renderAll();
             },
 
@@ -275,10 +371,9 @@
                     state[key] = await response.json();
                 } catch (err) {
                     this.addLog(`⚠️ Đang sử dụng dữ liệu offline cho ${key}`);
-                    // Fallback data
                     if(key === 'cars') state.cars = [
-                        {id:1, name:'VinFast VF8', category:'Electric SUV', status:'Sẵn sàng', price:1800000, image_url: 'https://images.unsplash.com/photo-1669275086835-24c7e43685f0?auto=format&fit=crop&w=600'},
-                        {id:2, name:'Mercedes E300', category:'Luxury Sedan', status:'Đang thuê', price:3500000, image_url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600'}
+                        {id:1, name:'VinFast VF8', category:'Electric', status:'Sẵn sàng', price:1800000, image_url: 'https://images.unsplash.com/photo-1669275086835-24c7e43685f0?auto=format&fit=crop&w=600'},
+                        {id:2, name:'Mercedes E300', category:'Luxury', status:'Đang thuê', price:3500000, image_url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600'}
                     ];
                     if(key === 'drivers') state.drivers = [{id:'TX01', name:'Lê Hoàng Nam', phone:'0988.123.456', exp:'8 năm', price:600000, rating: 4.9}];
                 }
@@ -286,61 +381,90 @@
 
             async syncOrders() {
                 const syncIcon = document.getElementById('sync-icon');
-                syncIcon.classList.add('fa-spin');
+                if(syncIcon) syncIcon.classList.add('fa-spin');
                 document.getElementById('loading-spinner').classList.remove('hidden');
 
                 try {
                     const response = await fetch(SCRIPT_URL);
                     const rawData = await response.json();
-                    
-                    // NÂNG CẤP: Lọc thông minh bỏ dòng rỗng & định dạng lại
-                    state.orders = rawData
-                        .filter(o => o.custName && o.custName !== "" && o.id)
-                        .map(o => ({
-                            ...o,
-                            price: Number(o.price) || 0
-                        }));
-                    
+                    state.orders = rawData.filter(o => o.custName && o.custName !== "" && o.id).map(o => ({ ...o, price: Number(o.price) || 0 }));
                     this.notify("Đồng bộ dữ liệu thành công!");
                     this.renderOrders();
                 } catch (err) {
-                    this.notify("Lỗi kết nối máy chủ!", "bg-red-500");
+                    this.notify("Lỗi kết nối máy chủ Sheet!", "bg-red-500");
                 } finally {
-                    syncIcon.classList.remove('fa-spin');
+                    if(syncIcon) syncIcon.classList.remove('fa-spin');
                     document.getElementById('loading-spinner').classList.add('hidden');
                     this.updateStats();
                 }
             },
 
+            // Xử lý Form Xe Mới
+            handleAddCar(e) {
+                e.preventDefault();
+                const newCar = {
+                    id: Date.now(),
+                    name: document.getElementById('carName').value,
+                    category: document.getElementById('carCategory').value,
+                    price: parseInt(document.getElementById('carPrice').value),
+                    image_url: document.getElementById('carImage').value || 'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600',
+                    status: 'Sẵn sàng'
+                };
+                state.cars.unshift(newCar); // Thêm lên đầu danh sách
+                this.renderCars();
+                this.updateStats();
+                this.notify("Thêm xe mới thành công!");
+                this.addLog(`Đã thêm phương tiện mới: ${newCar.name}`);
+                UI.closeModal('carModal');
+                e.target.reset(); // Xóa trắng form
+            },
+
+            // Xử lý Form Tài Xế Mới
+            handleAddDriver(e) {
+                e.preventDefault();
+                const newDriver = {
+                    id: 'TX' + Math.floor(Math.random() * 1000),
+                    name: document.getElementById('driverName').value,
+                    phone: document.getElementById('driverPhone').value,
+                    exp: document.getElementById('driverExp').value + ' năm',
+                    price: parseInt(document.getElementById('driverPrice').value),
+                    rating: 5.0
+                };
+                state.drivers.unshift(newDriver);
+                this.renderDrivers();
+                this.updateStats();
+                this.notify("Thêm hồ sơ tài xế thành công!", "bg-green-600");
+                this.addLog(`Đã tạo hồ sơ đối tác: ${newDriver.name}`);
+                UI.closeModal('driverModal');
+                e.target.reset();
+            },
+
+            // --- CÁC HÀM RENDER ĐƯỢC NÂNG CẤP UI ---
             renderCars(data = state.cars) {
                 const grid = document.getElementById('cars-grid');
                 document.getElementById('car-count-title').innerText = `(${data.length})`;
-                
                 grid.innerHTML = data.map(car => `
-                    <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500">
+                    <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 relative">
+                        <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 flex items-center justify-center gap-3">
+                            <button class="w-10 h-10 rounded-full bg-white text-blue-600 hover:scale-110 transition-transform shadow-lg"><i class="fas fa-pen"></i></button>
+                            <button class="w-10 h-10 rounded-full bg-red-500 text-white hover:scale-110 transition-transform shadow-lg"><i class="fas fa-trash"></i></button>
+                        </div>
                         <div class="h-52 overflow-hidden relative">
                             <img src="${car.image_url}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" onerror="this.src='https://images.unsplash.com/photo-1494976388531-d1058494cdd8?auto=format&fit=crop&w=600'">
-                            <div class="absolute top-4 right-4">
-                                <span class="status-pill ${car.status === 'Sẵn sàng' ? 'status-ready' : 'status-busy'} shadow-lg backdrop-blur-md">
-                                    ${car.status}
-                                </span>
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="status-pill ${car.status === 'Sẵn sàng' ? 'status-ready' : 'status-busy'} shadow-lg backdrop-blur-md">${car.status}</span>
                             </div>
-                            <div class="absolute bottom-4 left-4">
-                                <span class="bg-black/50 backdrop-blur-md text-white text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">
-                                    ${car.category}
-                                </span>
+                            <div class="absolute bottom-4 left-4 z-20">
+                                <span class="bg-black/50 backdrop-blur-md text-white text-[9px] px-3 py-1 rounded-full font-bold uppercase tracking-widest">${car.category}</span>
                             </div>
                         </div>
-                        <div class="p-6">
+                        <div class="p-6 relative z-20 bg-white">
                             <h4 class="font-extrabold text-slate-900 text-lg mb-4 line-clamp-1">${car.name}</h4>
                             <div class="flex items-end justify-between">
                                 <div>
                                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">Giá thuê theo ngày</p>
                                     <p class="text-xl font-black text-blue-600">${new Intl.NumberFormat('vi-VN').format(car.price)}đ</p>
                                 </div>
-                                <button class="w-10 h-10 rounded-2xl bg-slate-50 text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                                    <i class="fas fa-arrow-right"></i>
-                                </button>
                             </div>
                         </div>
                     </div>
@@ -348,7 +472,6 @@
             },
 
             filterCars(status) {
-                // Cập nhật UI nút bấm (tối giản hóa cho ví dụ)
                 const filtered = status === 'all' ? state.cars : state.cars.filter(c => c.status === status);
                 this.renderCars(filtered);
             },
@@ -356,15 +479,11 @@
             renderOrders(data = state.orders) {
                 const tbody = document.getElementById('orders-table-body');
                 if (data.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-20 text-center">
-                        <i class="fas fa-folder-open text-4xl text-slate-200 mb-4"></i>
-                        <p class="text-slate-400 font-bold">Chưa có đơn hàng nào được ghi nhận</p>
-                    </td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-20 text-center"><p class="text-slate-400 font-bold">Chưa có đơn hàng</p></td></tr>`;
                     return;
                 }
-
                 tbody.innerHTML = data.map(o => `
-                    <tr class="hover:bg-blue-50/30 transition-colors">
+                    <tr class="hover:bg-blue-50/30 transition-colors group">
                         <td class="px-8 py-5 font-bold text-slate-400 text-xs">#${o.id}</td>
                         <td class="px-8 py-5">
                             <div class="flex items-center gap-3">
@@ -378,12 +497,10 @@
                         <td class="px-8 py-5 font-bold text-slate-600">${o.carName}</td>
                         <td class="px-8 py-5 font-black text-slate-900">${new Intl.NumberFormat('vi-VN').format(o.price)}đ</td>
                         <td class="px-8 py-5">
-                            <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase ${o.status === 'Đã duyệt' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">
-                                ${o.status || 'Đang xử lý'}
-                            </span>
+                            <span class="px-3 py-1 rounded-lg text-[10px] font-black uppercase ${o.status === 'Đã duyệt' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}">${o.status || 'Đang xử lý'}</span>
                         </td>
                         <td class="px-8 py-5 text-right">
-                            <button class="text-slate-400 hover:text-blue-600 transition-colors"><i class="fas fa-ellipsis-v"></i></button>
+                            <button class="text-slate-400 hover:text-blue-600 transition-colors p-2"><i class="fas fa-ellipsis-v"></i></button>
                         </td>
                     </tr>
                 `).join('');
@@ -393,7 +510,7 @@
             renderDrivers() {
                 const tbody = document.getElementById('drivers-table-body');
                 tbody.innerHTML = state.drivers.map(d => `
-                    <tr class="hover:bg-slate-50 transition-all">
+                    <tr class="hover:bg-slate-50 transition-all group">
                         <td class="px-8 py-6">
                             <div class="flex items-center gap-4">
                                 <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-lg">${d.name.charAt(0)}</div>
@@ -415,6 +532,12 @@
                                 <span class="w-2 h-2 rounded-full bg-green-500"></span> Trực tuyến
                             </span>
                         </td>
+                        <td class="px-8 py-6 text-right">
+                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition-colors"><i class="fas fa-pen text-xs"></i></button>
+                                <button class="w-8 h-8 rounded-full bg-red-50 text-red-500 hover:bg-red-500 hover:text-white transition-colors"><i class="fas fa-trash text-xs"></i></button>
+                            </div>
+                        </td>
                     </tr>
                 `).join('');
             },
@@ -422,20 +545,14 @@
             updateStats() {
                 const totalRevenue = state.orders.reduce((sum, o) => sum + o.price, 0);
                 const readyCars = state.cars.filter(c => c.status === 'Sẵn sàng').length;
-
                 document.getElementById('stat-cars').innerText = state.cars.length;
                 document.getElementById('stat-drivers').innerText = state.drivers.length;
                 document.getElementById('stat-revenue').innerText = new Intl.NumberFormat('vi-VN').format(totalRevenue) + 'đ';
                 document.getElementById('stat-ready').innerText = readyCars;
             },
 
-            renderAll() {
-                this.renderCars();
-                this.renderDrivers();
-                this.renderOrders();
-                this.updateStats();
-            },
-
+            renderAll() { this.renderCars(); this.renderDrivers(); this.renderOrders(); this.updateStats(); },
+            
             addLog(msg) {
                 const logs = document.getElementById('recent-logs');
                 const time = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
@@ -444,12 +561,12 @@
                         <div class="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shadow-[0_0_12px_#3b82f6]"></div>
                         <div>
                             <p class="text-xs font-bold text-slate-300 group-hover:text-white transition-colors leading-relaxed">${msg}</p>
-                            <p class="text-[9px] text-slate-600 font-black mt-1 uppercase">${time} - SYSTEM OK</p>
+                            <p class="text-[9px] text-slate-600 font-black mt-1 uppercase">${time} - SYSTEM</p>
                         </div>
                     </div>
                 `);
             },
-
+            
             notify(msg, bgColor = "bg-blue-600") {
                 const toast = document.getElementById('toast');
                 const icon = document.getElementById('toast-icon');
@@ -458,56 +575,23 @@
                 toast.classList.add('active');
                 setTimeout(() => toast.classList.remove('active'), 4000);
             },
-
+            
             initChart() {
                 const ctx = document.getElementById('revenueChart').getContext('2d');
                 const gradient = ctx.createLinearGradient(0, 0, 0, 400);
                 gradient.addColorStop(0, 'rgba(37, 99, 235, 0.2)');
                 gradient.addColorStop(1, 'rgba(37, 99, 235, 0)');
-
                 new Chart(ctx, {
                     type: 'line',
-                    data: {
-                        labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
-                        datasets: [{ 
-                            data: [12, 19, 15, 25, 22, 40, 35], 
-                            borderColor: '#2563eb', 
-                            borderWidth: 4,
-                            pointBackgroundColor: '#fff',
-                            pointBorderColor: '#2563eb',
-                            pointBorderWidth: 2,
-                            pointRadius: 4,
-                            pointHoverRadius: 6,
-                            tension: 0.4,
-                            fill: true,
-                            backgroundColor: gradient
-                        }]
-                    },
-                    options: { 
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false } }, 
-                        scales: { 
-                            y: { display: false },
-                            x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 11 } } }
-                        }
-                    }
+                    data: { labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'], datasets: [{ data: [12, 19, 15, 25, 22, 40, 35], borderColor: '#2563eb', borderWidth: 4, pointBackgroundColor: '#fff', pointBorderColor: '#2563eb', pointBorderWidth: 2, pointRadius: 4, pointHoverRadius: 6, tension: 0.4, fill: true, backgroundColor: gradient }] },
+                    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { y: { display: false }, x: { grid: { display: false }, ticks: { font: { family: 'Plus Jakarta Sans', weight: 'bold', size: 11 } } } } }
                 });
             },
-
+            
             handleSearch(val) {
                 const query = val.toLowerCase().trim();
-                if (state.currentTab === 'cars') {
-                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query));
-                    this.renderCars(filtered);
-                } else if (state.currentTab === 'orders') {
-                    const filtered = state.orders.filter(o => 
-                        o.custName.toLowerCase().includes(query) || 
-                        o.carName.toLowerCase().includes(query) ||
-                        (o.id && o.id.toString().includes(query))
-                    );
-                    this.renderOrders(filtered);
-                }
+                if (state.currentTab === 'cars') { this.renderCars(state.cars.filter(c => c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query))); } 
+                else if (state.currentTab === 'orders') { this.renderOrders(state.orders.filter(o => o.custName.toLowerCase().includes(query) || o.carName.toLowerCase().includes(query) || (o.id && o.id.toString().includes(query)))); }
             }
         };
 
@@ -515,10 +599,8 @@
             state.currentTab = tabId;
             document.querySelectorAll('.content-view').forEach(v => v.classList.add('hidden'));
             document.getElementById(`view-${tabId}`).classList.remove('hidden');
-            
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`nav-${tabId}`).classList.add('active');
-            
             const titles = { 'dashboard': 'Dashboard Tổng Quan', 'orders': 'Quản lý Hợp Đồng', 'cars': 'Showroom TrangHy', 'drivers': 'Partner Drivers' };
             document.getElementById('page-title').innerText = titles[tabId];
             document.getElementById('global-search').value = '';
