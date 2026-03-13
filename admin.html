@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrangHy Autocar - Smart Admin v2.2</title>
+    <title>TrangHy Autocar - Smart Admin v2.3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -39,10 +39,10 @@
     <aside class="w-72 bg-slate-950 text-slate-300 flex flex-col z-20">
         <div class="h-24 flex items-center px-8">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-black italic shadow-lg text-white font-serif">T</div>
+                <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-xl font-black italic shadow-lg text-white">T</div>
                 <div>
                     <h1 class="text-lg font-extrabold italic text-white leading-none tracking-tight">TRANGHY<span class="text-blue-500">.</span></h1>
-                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mt-1">Smart Admin v2.2</p>
+                    <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500 mt-1">Smart Admin v2.3</p>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
             <div class="flex items-center gap-6">
                 <div class="relative hidden md:block">
                     <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="global-search" oninput="App.handleSearch(this.value)" placeholder="Tìm kiếm nhanh..." 
+                    <input type="text" id="global-search" oninput="App.handleSearch(this.value)" placeholder="Tìm khách hàng, tên xe..." 
                            class="bg-slate-100 border-none rounded-xl pl-9 pr-4 py-2 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-64 transition-all">
                 </div>
                 
@@ -90,7 +90,6 @@
         </header>
 
         <div class="flex-1 overflow-y-auto p-8 custom-scroll">
-            
             <div id="view-dashboard" class="content-view space-y-8">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
@@ -110,7 +109,7 @@
                     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 flex items-center gap-4">
                         <div class="w-12 h-12 bg-orange-50 text-orange-600 rounded-xl flex items-center justify-center text-lg"><i class="fas fa-file-invoice-dollar"></i></div>
                         <div>
-                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Doanh thu dự tính</p>
+                            <p class="text-[11px] font-bold text-slate-400 uppercase tracking-tight">Doanh thu (Tháng)</p>
                             <h3 class="text-xl font-extrabold text-slate-900" id="stat-revenue">0đ</h3>
                         </div>
                     </div>
@@ -127,10 +126,6 @@
                     <div class="lg:col-span-2 bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-slate-900 flex items-center gap-2"><i class="fas fa-chart-line text-blue-500"></i> Hiệu suất thuê xe</h3>
-                            <select class="text-xs font-bold bg-slate-50 border-none rounded-lg px-3 py-1 outline-none">
-                                <option>7 ngày qua</option>
-                                <option>30 ngày qua</option>
-                            </select>
                         </div>
                         <canvas id="revenueChart" height="130"></canvas>
                     </div>
@@ -146,10 +141,10 @@
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                         <div>
                             <h3 class="font-bold text-lg">Hợp đồng & Đơn hàng</h3>
-                            <p class="text-xs text-slate-400">Quản lý các yêu cầu thuê xe từ khách hàng</p>
+                            <p class="text-xs text-slate-400">Tự động đồng bộ từ Google Sheets</p>
                         </div>
                         <button onclick="App.syncOrders()" class="bg-blue-600 text-white px-5 py-2.5 rounded-xl font-bold text-xs hover:bg-blue-700 transition-all shadow-lg shadow-blue-200">
-                            <i class="fas fa-sync mr-2"></i> Đồng bộ Sheets
+                            <i class="fas fa-sync mr-2" id="sync-icon"></i> Đồng bộ dữ liệu
                         </button>
                     </div>
                     <div class="overflow-x-auto">
@@ -164,7 +159,8 @@
                                     <th class="px-8 py-4">Thao tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100"></tbody>
+                            <tbody id="orders-table-body" class="text-sm divide-y divide-slate-100">
+                                </tbody>
                         </table>
                     </div>
                 </div>
@@ -174,12 +170,6 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
                     <div>
                         <h3 class="font-bold text-2xl">Đội xe TrangHy <span class="text-blue-600" id="car-count-title">(0)</span></h3>
-                        <p class="text-sm text-slate-400">Danh sách phương tiện đang quản lý</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">Tất cả</button>
-                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">Sedan</button>
-                        <button class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold hover:bg-slate-50">SUV / 7 Chỗ</button>
                     </div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="cars-grid"></div>
@@ -208,8 +198,8 @@
     </main>
 
     <div id="toast" class="bg-slate-900 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 border border-white/10 glass">
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <i class="fas fa-bell text-xs"></i>
+        <div id="toast-icon" class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <i class="fas fa-check text-xs"></i>
         </div>
         <div>
             <div id="toast-msg" class="text-sm font-bold"></div>
@@ -227,11 +217,29 @@
             currentTab: 'dashboard'
         };
 
+        const Utils = {
+            formatVND(amount) {
+                return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(amount || 0);
+            },
+            showLoading(show) {
+                const spinner = document.getElementById('loading-spinner');
+                const syncIcon = document.getElementById('sync-icon');
+                if (show) {
+                    spinner.classList.remove('hidden');
+                    if (syncIcon) syncIcon.classList.add('fa-spin');
+                } else {
+                    spinner.classList.add('hidden');
+                    if (syncIcon) syncIcon.classList.remove('fa-spin');
+                }
+            }
+        };
+
         const App = {
             async init() {
                 this.initChart();
-                this.addLog("Đang tải dữ liệu từ máy chủ...");
+                this.addLog("Khởi tạo hệ thống...");
                 
+                // Tải dữ liệu ban đầu
                 await Promise.all([
                     this.fetchData('cars.json', 'cars'),
                     this.fetchData('drivers.json', 'drivers'),
@@ -239,44 +247,52 @@
                 ]);
 
                 this.renderAll();
-                this.addLog("Hệ thống đã sẵn sàng.");
+                this.addLog("Dữ liệu đã được cập nhật mới nhất.");
             },
 
             async fetchData(fileName, key) {
                 try {
                     const response = await fetch(`./${fileName}?v=${Date.now()}`);
-                    if (!response.ok) throw new Error("File not found");
+                    if (!response.ok) throw new Error();
                     state[key] = await response.json();
                 } catch (err) {
-                    this.addLog(`⚠️ Lỗi: Không thể nạp ${fileName}`);
-                    // Dữ liệu mẫu nếu không tìm thấy file
-                    if(key === 'cars') state.cars = [{id:1, name:'VinFast VF8', category:'SUV', status:'Sẵn sàng', price:1500000, engine:'Electric', fuel:'Pin', transmission:'Auto', features:['GPS', 'Sunroof'], image_url:''}];
+                    this.addLog(`⚠️ Dùng dữ liệu dự phòng cho ${key}`);
+                    if(key === 'cars') state.cars = [{id:1, name:'VinFast VF8', category:'SUV', status:'Sẵn sàng', price:1500000, fuel:'Pin', transmission:'Tự động', image_url:''}];
+                    if(key === 'drivers') state.drivers = [{id:'TX01', name:'Nguyễn Văn A', phone:'0901234567', exp:'5 năm', price:500000}];
                 }
             },
 
             async syncOrders() {
-                const spinner = document.getElementById('loading-spinner');
-                spinner.classList.remove('hidden');
+                Utils.showLoading(true);
                 try {
                     const response = await fetch(SCRIPT_URL);
-                    state.orders = await response.json();
-                    this.notify("Đồng bộ dữ liệu thành công");
+                    const rawData = await response.json();
+                    
+                    // Lọc bỏ các dòng rỗng (Lỗi trong hình image_e242fd.png)
+                    state.orders = rawData.filter(o => o.custName || o.carName || o.id);
+                    
+                    this.notify("Đã đồng bộ với Google Sheets");
                     this.renderOrders();
                 } catch (err) {
-                    this.addLog("❌ Lỗi đồng bộ Google Sheets");
+                    this.addLog("❌ Lỗi kết nối Google Sheets");
+                    this.notify("Lỗi đồng bộ!", "bg-red-600");
                 } finally {
-                    spinner.classList.add('hidden');
+                    Utils.showLoading(false);
                     this.updateStats();
                 }
             },
 
             handleSearch(val) {
-                const query = val.toLowerCase();
+                const query = val.toLowerCase().trim();
                 if (state.currentTab === 'cars') {
-                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query));
+                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query));
                     this.renderCars(filtered);
                 } else if (state.currentTab === 'orders') {
-                    const filtered = state.orders.filter(o => (o.custName || '').toLowerCase().includes(query) || (o.carName || '').toLowerCase().includes(query));
+                    const filtered = state.orders.filter(o => 
+                        (o.custName || '').toLowerCase().includes(query) || 
+                        (o.carName || '').toLowerCase().includes(query) ||
+                        (o.phone || '').includes(query)
+                    );
                     this.renderOrders(filtered);
                 }
             },
@@ -298,18 +314,11 @@
                         <div class="p-5">
                             <p class="text-[10px] font-black text-blue-600 uppercase tracking-widest mb-1">${car.category}</p>
                             <h4 class="font-bold text-slate-900 mb-3">${car.name}</h4>
-                            
                             <div class="flex justify-between items-center bg-slate-50 rounded-2xl p-3 mb-4">
                                 <div>
                                     <p class="text-[10px] text-slate-400 uppercase font-bold">Giá thuê</p>
-                                    <p class="font-black text-blue-600">${(car.price || 0).toLocaleString()}đ<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
+                                    <p class="font-black text-blue-600">${Utils.formatVND(car.price)}<span class="text-[10px] font-medium text-slate-400">/ngày</span></p>
                                 </div>
-                                <i class="fas fa-arrow-right text-slate-300"></i>
-                            </div>
-
-                            <div class="grid grid-cols-2 gap-2">
-                                <div class="text-[10px] text-slate-500 flex items-center gap-2"><i class="fas fa-gas-pump text-blue-400"></i> ${car.fuel}</div>
-                                <div class="text-[10px] text-slate-500 flex items-center gap-2"><i class="fas fa-cog text-blue-400"></i> ${car.transmission}</div>
                             </div>
                         </div>
                     </div>
@@ -318,15 +327,20 @@
 
             renderOrders(data = state.orders) {
                 const tbody = document.getElementById('orders-table-body');
+                if (data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="6" class="px-8 py-10 text-center text-slate-400">Không có dữ liệu đơn hàng nào</td></tr>`;
+                    return;
+                }
+
                 tbody.innerHTML = data.map(o => `
                     <tr class="hover:bg-slate-50/80 transition-all">
                         <td class="px-8 py-4 font-bold text-slate-400 text-xs">#${o.id || '---'}</td>
                         <td class="px-8 py-4">
-                            <p class="font-bold text-slate-900">${o.custName || 'Khách lẻ'}</p>
-                            <p class="text-[10px] text-slate-400 font-medium">${o.phone || 'Không có SĐT'}</p>
+                            <p class="font-bold text-slate-900">${o.custName || 'Khách vãng lai'}</p>
+                            <p class="text-[10px] text-slate-400 font-medium">${o.phone || 'Chưa cập nhật SĐT'}</p>
                         </td>
                         <td class="px-8 py-4 font-semibold text-blue-600">${o.carName || '---'}</td>
-                        <td class="px-8 py-4 font-black text-slate-900">${(Number(o.price) || 0).toLocaleString()}đ</td>
+                        <td class="px-8 py-4 font-black text-slate-900">${Utils.formatVND(o.price)}</td>
                         <td class="px-8 py-4">
                             <span class="badge ${o.status === 'Đã duyệt' ? 'badge-success' : 'badge-warning'}">
                                 ${o.status || 'Chờ duyệt'}
@@ -334,7 +348,7 @@
                         </td>
                         <td class="px-8 py-4">
                             <button class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 hover:bg-blue-600 hover:text-white transition-all">
-                                <i class="fas fa-ellipsis-v text-xs"></i>
+                                <i class="fas fa-eye text-xs"></i>
                             </button>
                         </td>
                     </tr>
@@ -349,7 +363,7 @@
                     <tr class="hover:bg-slate-50 transition-all">
                         <td class="px-8 py-5">
                             <div class="flex items-center gap-4">
-                                <div class="w-10 h-10 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center text-lg shadow-inner">${d.avatar || '👨‍✈️'}</div>
+                                <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center font-bold shadow-inner">${d.name.charAt(0)}</div>
                                 <div>
                                     <p class="font-bold text-slate-900">${d.name}</p>
                                     <p class="text-[10px] font-bold text-blue-500 uppercase">${d.id}</p>
@@ -358,8 +372,8 @@
                         </td>
                         <td class="px-8 py-5 font-semibold text-slate-600">${d.phone}</td>
                         <td class="px-8 py-5"><span class="bg-orange-50 text-orange-600 px-3 py-1 rounded-lg font-bold text-xs">${d.exp}</span></td>
-                        <td class="px-8 py-5 font-bold text-blue-600">${(d.price || 0).toLocaleString()}đ</td>
-                        <td class="px-8 py-5 text-yellow-500"><i class="fas fa-star"></i> 4.9</td>
+                        <td class="px-8 py-5 font-bold text-blue-600">${Utils.formatVND(d.price)}</td>
+                        <td class="px-8 py-5 text-yellow-500"><i class="fas fa-star"></i> 5.0</td>
                     </tr>
                 `).join('');
             },
@@ -370,7 +384,7 @@
 
                 document.getElementById('stat-cars').innerText = state.cars.length;
                 document.getElementById('stat-drivers').innerText = state.drivers.length;
-                document.getElementById('stat-revenue').innerText = totalRevenue.toLocaleString() + 'đ';
+                document.getElementById('stat-revenue').innerText = Utils.formatVND(totalRevenue);
                 document.getElementById('stat-ready').innerText = readyCars;
             },
 
@@ -395,9 +409,11 @@
                 `);
             },
 
-            notify(msg) {
+            notify(msg, colorClass = "bg-blue-600") {
                 const toast = document.getElementById('toast');
+                const icon = document.getElementById('toast-icon');
                 document.getElementById('toast-msg').innerText = msg;
+                icon.className = `w-8 h-8 ${colorClass} rounded-lg flex items-center justify-center`;
                 toast.classList.add('show');
                 setTimeout(() => toast.classList.remove('show'), 3000);
             },
@@ -407,28 +423,23 @@
                 new Chart(ctx, {
                     type: 'line',
                     data: {
-                        labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
+                        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
                         datasets: [{ 
-                            data: [12, 19, 15, 25, 22, 45, 50], 
+                            data: [5, 12, 8, 15, 10, 25, 20], 
                             borderColor: '#2563eb', 
-                            borderWidth: 4,
+                            borderWidth: 3,
                             tension: 0.4,
                             fill: true,
                             backgroundColor: 'rgba(37, 99, 235, 0.05)',
-                            pointRadius: 0,
-                            pointHoverRadius: 6,
-                            pointHoverBackgroundColor: '#2563eb',
-                            pointHoverBorderColor: '#fff',
-                            pointHoverBorderWidth: 3
+                            pointRadius: 2
                         }]
                     },
                     options: { 
                         plugins: { legend: { display: false } }, 
                         scales: { 
                             y: { display: false },
-                            x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' } } }
-                        },
-                        interaction: { intersect: false, mode: 'index' }
+                            x: { grid: { display: false }, ticks: { font: { size: 10 } } }
+                        }
                     }
                 });
             }
@@ -443,8 +454,6 @@
             
             const titles = { 'dashboard': 'Dashboard', 'orders': 'Quản lý Đơn hàng', 'cars': 'Đội xe TrangHy', 'drivers': 'Danh sách Tài xế' };
             document.getElementById('page-title').innerText = titles[tabId];
-            
-            // Xóa thanh search khi chuyển tab
             document.getElementById('global-search').value = '';
         }
 
