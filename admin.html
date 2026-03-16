@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TrangHy Autocar - Smart Admin v3.0</title>
+    <title>TrangHy Autocar - Smart Admin v3.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -34,10 +34,10 @@
         #toast.active { transform: translateX(0); }
 
         .form-input { width: 100%; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; font-size: 14px; transition: all 0.2s; outline: none; }
-        .form-input:focus { border-color: #2563eb; ring: 2px; ring-color: #2563eb/20; background: white; }
+        .form-input:focus { border-color: #2563eb; box-shadow: 0 0 0 2px rgba(37,99,235,0.2); background: white; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-slate-800 relative">
+<body class="flex h-screen overflow-hidden text-slate-800 relative" onload="App.init()">
 
     <aside class="w-72 glass-panel text-slate-300 flex flex-col z-40 relative hidden md:flex">
         <div class="h-24 flex items-center px-8">
@@ -45,7 +45,7 @@
                 <div class="w-11 h-11 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-2xl flex items-center justify-center text-xl font-black shadow-lg text-white transform -rotate-3">T</div>
                 <div>
                     <h1 class="text-xl font-extrabold italic text-white tracking-tighter">TRANGHY<span class="text-blue-500">.</span></h1>
-                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Enterprise v3.0</p>
+                    <p class="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500">Enterprise v3.1</p>
                 </div>
             </div>
         </div>
@@ -86,14 +86,14 @@
                 <div class="relative group hidden sm:block">
                     <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-xs group-focus-within:text-blue-500 transition-colors"></i>
                     <input type="text" id="global-search" oninput="App.handleSearch(this.value)" placeholder="Tìm biển số, khách hàng..." 
-                           class="bg-slate-100 border-none rounded-2xl pl-11 pr-4 py-2.5 text-sm focus:ring-2 focus:ring-blue-500 outline-none w-72 transition-all">
+                           class="bg-slate-100 border-none rounded-2xl pl-11 pr-4 py-2.5 text-sm outline-none w-72 transition-all focus:bg-white focus:ring-2 focus:ring-blue-500">
                 </div>
                 
                 <div class="flex items-center gap-4 border-l pl-6 border-slate-200">
                     <button onclick="App.syncOrders()" title="Refresh" class="w-10 h-10 bg-slate-100 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:bg-blue-50 transition-all">
                         <i class="fas fa-sync-alt" id="header-sync-icon"></i>
                     </button>
-                    <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff&bold=true" class="w-10 h-10 rounded-2xl shadow-md border-2 border-white">
+                    <img src="https://ui-avatars.com/api/?name=Admin&background=2563eb&color=fff&bold=true" class="w-10 h-10 rounded-2xl shadow-md border-2 border-white" alt="Admin">
                 </div>
             </div>
         </header>
@@ -191,7 +191,7 @@
                         <p class="text-sm text-slate-500 font-medium">Danh sách xe tự lái và có tài</p>
                     </div>
                     <div class="flex items-center gap-4">
-                        <div class="flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200">
+                        <div class="flex bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200" id="car-filters">
                             <button onclick="App.filterCars('all')" class="filter-btn active px-5 py-2 text-xs font-bold rounded-xl bg-slate-900 text-white transition-all">Tất cả</button>
                             <button onclick="App.filterCars('Sẵn sàng')" class="filter-btn px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Sẵn sàng</button>
                             <button onclick="App.filterCars('Đang thuê')" class="filter-btn px-5 py-2 text-xs font-bold rounded-xl text-slate-500 hover:text-slate-900 transition-all">Đang thuê</button>
@@ -221,6 +221,7 @@
                                 <th class="px-8 py-6">Họ Tên</th>
                                 <th class="px-8 py-6">Liên hệ</th>
                                 <th class="px-8 py-6">Kinh nghiệm</th>
+                                <th class="px-8 py-6">Lương/Ngày</th>
                                 <th class="px-8 py-6 text-right">Hành động</th>
                             </tr>
                         </thead>
@@ -264,8 +265,8 @@
                 <div><label class="text-[10px] font-bold uppercase text-slate-500">Họ và Tên</label><input type="text" id="driverName" required class="form-input"></div>
                 <div><label class="text-[10px] font-bold uppercase text-slate-500">Số điện thoại</label><input type="tel" id="driverPhone" required class="form-input"></div>
                 <div class="grid grid-cols-2 gap-4">
-                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Kinh nghiệm</label><input type="number" id="driverExp" placeholder="Số năm" class="form-input"></div>
-                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Lương/Ngày</label><input type="number" id="driverPrice" class="form-input"></div>
+                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Kinh nghiệm</label><input type="number" id="driverExp" placeholder="Số năm" class="form-input" required></div>
+                    <div><label class="text-[10px] font-bold uppercase text-slate-500">Lương/Ngày</label><input type="number" id="driverPrice" class="form-input" required></div>
                 </div>
                 <button type="submit" class="w-full bg-blue-600 text-white font-bold py-4 rounded-xl hover:bg-blue-700 transition-all mt-4">Lưu Hồ Sơ</button>
             </form>
@@ -284,8 +285,8 @@
 
     <script>
         // --- THAY LINK APPS SCRIPT CỦA BẠN TẠI ĐÂY ---
-        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyexXz04RTDZ-MpZWRYXy9KIi6dmraAf6UNJpQpxJIBM1cgsi4NSqGSPLFRgFBzRgrrwg/exec';
-        exec
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyexXz04RTDZ-MpZWRYXy9KIi6dmraAf6UNJpQpxJIBM1cgsi4NSqGSPLFRgFBzRgrrwg/';
+        
         let state = {
             orders: [],
             cars: JSON.parse(localStorage.getItem('th_cars')) || [
@@ -335,7 +336,7 @@
                 this.initChart();
                 this.syncOrders();
                 this.renderAll();
-                this.addLog("Hệ thống TrangHy v3.0 đã khởi động.");
+                this.addLog("Hệ thống TrangHy v3.1 đã khởi động thành công.");
             },
 
             switchTab(tabId) {
@@ -349,6 +350,100 @@
                 
                 const titles = { dashboard: 'Dashboard Tổng Quan', orders: 'Quản Lý Đơn Hàng', cars: 'Đội Xe TrangHy', drivers: 'Đối Tác Tài Xế' };
                 document.getElementById('page-title').innerText = titles[tabId];
+            },
+
+            // --- CÁC HÀM BỊ THIẾU ĐÃ ĐƯỢC BỔ SUNG ---
+            initChart() {
+                const ctx = document.getElementById('revenueChart');
+                if(!ctx) return;
+                new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                        datasets: [{
+                            label: 'Lượt đặt xe',
+                            data: [12, 19, 15, 25, 22, 30, 28],
+                            borderColor: '#2563eb',
+                            tension: 0.4,
+                            fill: true,
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            },
+
+            addLog(msg) {
+                const logContainer = document.getElementById('recent-logs');
+                if(!logContainer) return;
+                const time = new Date().toLocaleTimeString('vi-VN');
+                const logHTML = `
+                    <div class="flex items-start gap-3 py-2 border-b border-white/10">
+                        <span class="text-slate-500 w-16 shrink-0">${time}</span>
+                        <p class="text-slate-300">${msg}</p>
+                    </div>`;
+                logContainer.insertAdjacentHTML('afterbegin', logHTML);
+            },
+
+            filterCars(status) {
+                // Xử lý UI cho nút filter
+                const buttons = document.querySelectorAll('#car-filters .filter-btn');
+                buttons.forEach(btn => {
+                    btn.classList.remove('bg-slate-900', 'text-white', 'active');
+                    btn.classList.add('text-slate-500');
+                });
+                event.target.classList.remove('text-slate-500');
+                event.target.classList.add('bg-slate-900', 'text-white', 'active');
+
+                // Lọc dữ liệu
+                if (status === 'all') {
+                    this.renderCars(state.cars);
+                } else {
+                    const filtered = state.cars.filter(c => c.status === status);
+                    this.renderCars(filtered);
+                }
+            },
+
+            handleAddDriver(e) {
+                e.preventDefault();
+                const newDriver = {
+                    id: 'TX' + Date.now().toString().slice(-4),
+                    name: document.getElementById('driverName').value,
+                    phone: document.getElementById('driverPhone').value,
+                    exp: document.getElementById('driverExp').value + ' năm',
+                    price: parseInt(document.getElementById('driverPrice').value)
+                };
+                state.drivers.unshift(newDriver);
+                this.saveToLocal();
+                this.renderDrivers();
+                this.updateStats();
+                UI.closeModal('driverModal');
+                UI.showToast("Đã thêm hồ sơ tài xế");
+                this.addLog(`Thêm tài xế mới: ${newDriver.name}`);
+                e.target.reset();
+            },
+
+            // --- TÍNH NĂNG MỚI: XÓA XE & TÀI XẾ ---
+            deleteCar(id) {
+                if(confirm("Bạn có chắc chắn muốn xóa xe này khỏi hệ thống?")) {
+                    state.cars = state.cars.filter(c => c.id !== id);
+                    this.saveToLocal();
+                    this.renderCars();
+                    this.updateStats();
+                    UI.showToast("Đã xóa phương tiện", "success");
+                    this.addLog(`Đã xóa một phương tiện khỏi hệ thống.`);
+                }
+            },
+
+            deleteDriver(id) {
+                if(confirm("Bạn có chắc chắn muốn xóa tài xế này khỏi hệ thống?")) {
+                    state.drivers = state.drivers.filter(d => d.id !== id);
+                    this.saveToLocal();
+                    this.renderDrivers();
+                    this.updateStats();
+                    UI.showToast("Đã xóa hồ sơ tài xế", "success");
+                    this.addLog(`Đã xóa hồ sơ tài xế ID: ${id}`);
+                }
             },
 
             // --- ĐỒNG BỘ GOOGLE SHEETS ---
@@ -365,7 +460,6 @@
                     
                     state.orders = data; 
 
-                    // Đổ dữ liệu vào bảng
                     const body = document.getElementById('orders-table-body');
                     if (body) {
                         body.innerHTML = data.map(o => `
@@ -391,13 +485,14 @@
                         `).join('');
                     }
                     
-                    // Cập nhật thống kê
                     this.updateStats();
                     UI.showToast("Đã đồng bộ dữ liệu từ Cloud!");
+                    this.addLog("Đồng bộ Google Sheets thành công.");
                     
                 } catch (e) {
                     console.error("Lỗi đồng bộ:", e);
-                    UI.showToast("Lỗi kết nối Google Sheets", "error");
+                    UI.showToast("Lỗi kết nối hoặc chưa có API", "error");
+                    this.addLog("Lỗi đồng bộ dữ liệu!");
                 } finally {
                     icons.forEach(i => i?.classList.remove('fa-spin'));
                     spinner?.classList.add('hidden');
@@ -407,8 +502,11 @@
             handleSearch(query) {
                 query = query.toLowerCase();
                 if (state.activeTab === 'cars') {
-                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query));
+                    const filtered = state.cars.filter(c => c.name.toLowerCase().includes(query) || c.category.toLowerCase().includes(query));
                     this.renderCars(filtered);
+                } else if (state.activeTab === 'drivers') {
+                    const filtered = state.drivers.filter(d => d.name.toLowerCase().includes(query) || d.phone.includes(query));
+                    this.renderDrivers(filtered);
                 }
             },
 
@@ -428,6 +526,7 @@
                 this.updateStats();
                 UI.closeModal('carModal');
                 UI.showToast("Đã thêm xe vào danh sách");
+                this.addLog(`Đã thêm xe mới: ${newCar.name}`);
                 e.target.reset();
             },
 
@@ -457,22 +556,23 @@
                             <h4 class="font-extrabold text-slate-900 mb-4 line-clamp-1">${car.name}</h4>
                             <div class="flex justify-between items-end">
                                 <div><p class="text-[10px] font-bold text-slate-400">Giá thuê</p><p class="font-black text-blue-600">${new Intl.NumberFormat('vi-VN').format(car.price)}đ</p></div>
-                                <button class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
+                                <button onclick="App.deleteCar(${car.id})" title="Xóa xe" class="w-8 h-8 rounded-lg bg-slate-50 text-slate-400 hover:bg-red-50 hover:text-red-500 transition-all"><i class="fas fa-trash-alt text-xs"></i></button>
                             </div>
                         </div>
                     </div>
                 `).join('');
             },
 
-            renderDrivers() {
+            renderDrivers(data = state.drivers) {
                 const tbody = document.getElementById('drivers-table-body');
                 if (!tbody) return;
-                tbody.innerHTML = state.drivers.map(d => `
+                tbody.innerHTML = data.map(d => `
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-8 py-5 font-bold text-slate-900">${d.name}</td>
                         <td class="px-8 py-5 text-slate-600">${d.phone}</td>
                         <td class="px-8 py-5"><span class="bg-slate-100 px-3 py-1 rounded-full text-xs font-bold">${d.exp}</span></td>
-                        <td class="px-8 py-5 text-right"><button class="text-slate-400 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                        <td class="px-8 py-5 font-bold text-blue-600">${new Intl.NumberFormat('vi-VN').format(d.price)}đ</td>
+                        <td class="px-8 py-5 text-right"><button onclick="App.deleteDriver('${d.id}')" title="Xóa tài xế" class="text-slate-400 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
                     </tr>
                 `).join('');
             },
@@ -481,11 +581,14 @@
                 document.getElementById('stat-cars').innerText = state.cars.length;
                 document.getElementById('stat-ready').innerText = state.cars.filter(c => c.status === 'Sẵn sàng').length;
                 document.getElementById('stat-drivers').innerText = state.drivers.length;
-                document.getElementById('badge-orders-count').innerText = state.orders.length;
                 
-                const totalRev = state.orders.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+                const orderCount = state.orders ? state.orders.length : 0;
+                document.getElementById('badge-orders-count').innerText = orderCount;
+                
+                const totalRev = state.orders ? state.orders.reduce((sum, item) => sum + (Number(item.price) || 0), 0) : 0;
                 document.getElementById('stat-revenue').innerText = new Intl.NumberFormat('vi-VN').format(totalRev) + 'đ';
             },
+        
 
             addLog(msg) {
                 const logBox = document.getElementById('recent-logs');
