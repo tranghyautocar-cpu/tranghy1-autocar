@@ -282,21 +282,20 @@
             <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Thông báo từ hệ thống</p>
         </div>
     </div>
-
+    <script src="cars.js"></script>
+    <script src="drivers.js"></script>
     <script>
         // --- THAY LINK APPS SCRIPT CỦA BẠN TẠI ĐÂY ---
         const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxZdGYNWJFAikvmcWfCY7jtMGiX2JG_HzVykEg5Wnb9AxXw3Vhn-MDa2zbqiiKGJQk6/exec';
         
-        let state = {
-            orders: [],
-            cars: JSON.parse(localStorage.getItem('th_cars')) || [
-                {id: 1, name: 'VinFast VF8 - 51L-888.88', category: 'Electric', status: 'Sẵn sàng', price: 1800000, image_url: 'https://images.unsplash.com/photo-1669275086835-24c7e43685f0?auto=format&fit=crop&w=600'},
-                {id: 2, name: 'Mercedes E300 - 51A-999.99', category: 'Luxury', status: 'Đang thuê', price: 3500000, image_url: 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=600'}
-            ],
-            drivers: JSON.parse(localStorage.getItem('th_drivers')) || [
-                {id: 'TX01', name: 'Lê Hoàng Nam', phone: '0988.123.456', exp: '8 năm', price: 600000}
-            ],
-            activeTab: 'dashboard'
+       let state = {
+    orders: [],
+    cars: JSON.parse(localStorage.getItem('th_cars')) || (typeof carsData !== 'undefined' ? carsData : []),
+    
+    drivers: JSON.parse(localStorage.getItem('th_drivers')) || (typeof driversData !== 'undefined' ? driversData : []),
+    
+    activeTab: 'dashboard'
+
         };
 
         const UI = {
@@ -456,10 +455,13 @@
 
                 try {
                     const res = await fetch(SCRIPT_URL);
-                    const data = await res.json();
-                    
-                    state.orders = data; 
-
+                   const result = await res.json();
+                  if (result.status === "success") {
+                       state.orders = result.data; 
+              const data = result.data;   
+            } else {
+        throw new Error(result.message);
+         }
                     const body = document.getElementById('orders-table-body');
                     if (body) {
                         body.innerHTML = data.map(o => `
